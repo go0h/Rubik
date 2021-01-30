@@ -30,6 +30,8 @@ class Rubik:
         row = self.shift_row(side, opposite[up[side]], row)
         self.shift_row(side, left[side], row)
 
+
+
     def shift_row(self, side, shift_side, row):
 
         new_row = self.get_shift_row(side, shift_side)
