@@ -25,7 +25,7 @@ class Side:
 
     def rotate_180(self) -> None:
         """Вращение стороны по часовой стрелке на 180 градусов"""
-        for i in range(self.size // 2):
+        for i in range(self.size // 2 + (self.size % 2)):
             for j in range(i, self.size):
                 # top left <-> bottom right
                 self.side[i][j], self.side[self.size - 1 - i][self.size - 1 - j] = self.side[self.size - 1 - i][self.size - 1 - j], self.side[i][j]

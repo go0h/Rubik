@@ -52,12 +52,12 @@ class RotationTest(unittest.TestCase):
     def test_front_rotation(self):
         r = Rubik()
 
-        r.green.side[0][2] = ORANGE
-        r.green.side[1][2] = BLUE
-        r.green.side[2][2] = RED
-        r.blue.side[0][0] = ORANGE
-        r.blue.side[1][0] = BLUE
-        r.blue.side[2][0] = RED
+        r.left.side[0][2] = ORANGE
+        r.left.side[1][2] = BLUE
+        r.left.side[2][2] = RED
+        r.right.side[0][0] = ORANGE
+        r.right.side[1][0] = BLUE
+        r.right.side[2][0] = RED
 
         res = r.__copy__()
         for _ in range(4):
@@ -68,12 +68,12 @@ class RotationTest(unittest.TestCase):
     def test_front_reverse_rotation(self):
         r = Rubik()
 
-        r.green.side[0][2] = ORANGE
-        r.green.side[1][2] = BLUE
-        r.green.side[2][2] = RED
-        r.blue.side[0][0] = ORANGE
-        r.blue.side[1][0] = BLUE
-        r.blue.side[2][0] = RED
+        r.left.side[0][2] = ORANGE
+        r.left.side[1][2] = BLUE
+        r.left.side[2][2] = RED
+        r.right.side[0][0] = ORANGE
+        r.right.side[1][0] = BLUE
+        r.right.side[2][0] = RED
 
         res = r.__copy__()
         for _ in range(4):
@@ -85,31 +85,31 @@ class RotationTest(unittest.TestCase):
 
         r = Rubik()
 
-        r.white.side[2][0] = ORANGE
-        r.white.side[2][1] = BLUE
-        r.white.side[2][2] = RED
+        r.up.side[2][0] = ORANGE
+        r.up.side[2][1] = BLUE
+        r.up.side[2][2] = RED
 
-        r.green.side[0][2] = ORANGE
-        r.green.side[1][2] = BLUE
-        r.green.side[2][2] = RED
+        r.left.side[0][2] = ORANGE
+        r.left.side[1][2] = BLUE
+        r.left.side[2][2] = RED
 
-        r.blue.side[0][0] = ORANGE
-        r.blue.side[1][0] = BLUE
-        r.blue.side[2][0] = RED
+        r.right.side[0][0] = ORANGE
+        r.right.side[1][0] = BLUE
+        r.right.side[2][0] = RED
 
         res = r.__copy__()
         for _ in range(2):
-            r.move("2F")
+            r.move("F2")
 
         self.assertEqual(r, res)
 
     def test_common_front_rotation(self):
         r = Rubik()
 
-        r.white.side[0][2] = RED
-        r.green.side[2][0] = BLUE
-        r.blue.side[2][2] = RED
-        r.yellow.side[2][2] = BLUE
+        r.up.side[0][2] = RED
+        r.left.side[2][0] = BLUE
+        r.right.side[2][2] = RED
+        r.down.side[2][2] = BLUE
 
         r2 = r.__copy__()
         r.move("F")
@@ -117,23 +117,23 @@ class RotationTest(unittest.TestCase):
         self.assertEqual(r, r2)
         r.move("F")
         r.move("F")
-        r2.move("2F")
+        r2.move("F2")
         self.assertEqual(r, r2)
 
     def test_back_rotation(self):
         r = Rubik()
 
-        r.white.side[0][2] = RED
-        r.green.side[2][0] = BLUE
-        r.blue.side[2][2] = RED
-        r.yellow.side[2][2] = BLUE
+        r.up.side[0][2] = RED
+        r.left.side[2][0] = BLUE
+        r.right.side[2][2] = RED
+        r.down.side[2][2] = BLUE
 
         res = r.__copy__()
         r.move("B")
-        self.assertEqual(r.green.side[0][0], RED)
-        self.assertEqual(r.white.side[0][2], RED)
-        self.assertEqual(r.blue.side[0][2], BLUE)
-        self.assertEqual(r.yellow.side[2][2], BLUE)
+        self.assertEqual(r.left.side[0][0], RED)
+        self.assertEqual(r.up.side[0][2], RED)
+        self.assertEqual(r.right.side[0][2], BLUE)
+        self.assertEqual(r.down.side[2][2], BLUE)
 
         for _ in range(3):
             r.move("B")
@@ -143,17 +143,17 @@ class RotationTest(unittest.TestCase):
     def test_back_reverse_rotation(self):
         r = Rubik()
 
-        r.white.side[0][2] = RED
-        r.green.side[2][0] = BLUE
-        r.blue.side[2][2] = RED
-        r.yellow.side[2][2] = BLUE
+        r.up.side[0][2] = RED
+        r.left.side[2][0] = BLUE
+        r.right.side[2][2] = RED
+        r.down.side[2][2] = BLUE
 
         res = r.__copy__()
         r.move("B'")
-        self.assertEqual(r.green.side[2][0], BLUE)
-        self.assertEqual(r.white.side[0][0], BLUE)
-        self.assertEqual(r.blue.side[2][2], RED)
-        self.assertEqual(r.yellow.side[2][0], RED)
+        self.assertEqual(r.left.side[2][0], BLUE)
+        self.assertEqual(r.up.side[0][0], BLUE)
+        self.assertEqual(r.right.side[2][2], RED)
+        self.assertEqual(r.down.side[2][0], RED)
 
         for _ in range(3):
             r.move("B'")
@@ -163,36 +163,36 @@ class RotationTest(unittest.TestCase):
     def test_back_180_rotation(self):
         r = Rubik()
 
-        r.white.side[0][2] = RED
-        r.green.side[2][0] = BLUE
-        r.blue.side[2][2] = RED
-        r.yellow.side[2][2] = BLUE
+        r.up.side[0][2] = RED
+        r.left.side[2][0] = BLUE
+        r.right.side[2][2] = ORANGE
+        r.down.side[2][2] = BLUE
 
         res = r.__copy__()
-        r.move("2B")
-        self.assertEqual(r.green.side[0][0], RED)
-        self.assertEqual(r.white.side[0][0], BLUE)
-        self.assertEqual(r.blue.side[2][0], BLUE)
-        self.assertEqual(r.yellow.side[2][0], RED)
+        r.move("B2")
+        self.assertEqual(r.left.side[0][0], ORANGE)
+        self.assertEqual(r.up.side[0][0], BLUE)
+        self.assertEqual(r.right.side[0][2], BLUE)
+        self.assertEqual(r.down.side[2][0], RED)
 
-        r.move("2B")
+        r.move("B2")
 
         self.assertEqual(r, res)
 
     def test_up_rotation(self):
         r = Rubik()
 
-        r.green.side[0][0] = ORANGE
-        r.red.side[0][2] = GREEN
-        r.blue.side[0][2] = RED
-        r.orange.side[0][2] = BLUE
+        r.left.side[0][0] = ORANGE
+        r.front.side[0][2] = GREEN
+        r.right.side[0][2] = RED
+        r.back.side[0][2] = BLUE
 
         res = r.__copy__()
         r.move("U")
-        self.assertEqual(r.green.side[0][2], GREEN)
-        self.assertEqual(r.red.side[0][2], RED)
-        self.assertEqual(r.blue.side[0][2], BLUE)
-        self.assertEqual(r.orange.side[0][0], ORANGE)
+        self.assertEqual(r.left.side[0][2], GREEN)
+        self.assertEqual(r.front.side[0][2], RED)
+        self.assertEqual(r.right.side[0][2], BLUE)
+        self.assertEqual(r.back.side[0][0], ORANGE)
 
         for i in range(3):
             r.move("U")
@@ -202,17 +202,17 @@ class RotationTest(unittest.TestCase):
     def test_up_reverse_rotation(self):
         r = Rubik()
 
-        r.green.side[0][0] = ORANGE
-        r.red.side[0][2] = GREEN
-        r.blue.side[0][2] = RED
-        r.orange.side[0][2] = BLUE
+        r.left.side[0][0] = ORANGE
+        r.front.side[0][2] = GREEN
+        r.right.side[0][2] = RED
+        r.back.side[0][2] = BLUE
 
         res = r.__copy__()
         r.move("U'")
-        self.assertEqual(r.green.side[0][2], BLUE)
-        self.assertEqual(r.red.side[0][0], ORANGE)
-        self.assertEqual(r.blue.side[0][2], GREEN)
-        self.assertEqual(r.orange.side[0][2], RED)
+        self.assertEqual(r.left.side[0][2], BLUE)
+        self.assertEqual(r.front.side[0][0], ORANGE)
+        self.assertEqual(r.right.side[0][2], GREEN)
+        self.assertEqual(r.back.side[0][2], RED)
 
         for i in range(3):
             r.move("U'")
@@ -222,36 +222,36 @@ class RotationTest(unittest.TestCase):
     def test_up_180_rotation(self):
         r = Rubik()
 
-        r.green.side[0][2] = ORANGE
-        r.red.side[0][2] = GREEN
-        r.blue.side[0][2] = RED
-        r.orange.side[0][2] = BLUE
+        r.left.side[0][2] = ORANGE
+        r.front.side[0][2] = GREEN
+        r.right.side[0][2] = RED
+        r.back.side[0][2] = BLUE
 
         res = r.__copy__()
-        r.move("2U")
-        self.assertEqual(r.green.side[0][2], RED)
-        self.assertEqual(r.red.side[0][2], BLUE)
-        self.assertEqual(r.blue.side[0][2], ORANGE)
-        self.assertEqual(r.orange.side[0][2], GREEN)
+        r.move("U2")
+        self.assertEqual(r.left.side[0][2], RED)
+        self.assertEqual(r.front.side[0][2], BLUE)
+        self.assertEqual(r.right.side[0][2], ORANGE)
+        self.assertEqual(r.back.side[0][2], GREEN)
 
-        r.move("2U")
+        r.move("U2")
 
         self.assertEqual(r, res)
 
     def test_down_rotation(self):
         r = Rubik()
 
-        r.green.side[2][2] = ORANGE
-        r.red.side[2][2] = GREEN
-        r.blue.side[2][2] = RED
-        r.orange.side[2][2] = BLUE
+        r.left.side[2][2] = ORANGE
+        r.front.side[2][2] = GREEN
+        r.right.side[2][2] = RED
+        r.back.side[2][2] = BLUE
 
         res = r.__copy__()
         r.move("D")
-        self.assertEqual(r.green.side[2][2], BLUE)
-        self.assertEqual(r.red.side[2][2], ORANGE)
-        self.assertEqual(r.blue.side[2][2], GREEN)
-        self.assertEqual(r.orange.side[2][2], RED)
+        self.assertEqual(r.left.side[2][2], BLUE)
+        self.assertEqual(r.front.side[2][2], ORANGE)
+        self.assertEqual(r.right.side[2][2], GREEN)
+        self.assertEqual(r.back.side[2][2], RED)
 
         for i in range(3):
             r.move("D")
@@ -261,17 +261,17 @@ class RotationTest(unittest.TestCase):
     def test_down_reverse_rotation(self):
         r = Rubik()
 
-        r.green.side[2][2] = ORANGE
-        r.red.side[2][2] = GREEN
-        r.blue.side[2][2] = RED
-        r.orange.side[2][2] = BLUE
+        r.left.side[2][2] = ORANGE
+        r.front.side[2][2] = GREEN
+        r.right.side[2][2] = RED
+        r.back.side[2][2] = BLUE
 
         res = r.__copy__()
         r.move("D'")
-        self.assertEqual(r.green.side[2][2], GREEN)
-        self.assertEqual(r.red.side[2][2], RED)
-        self.assertEqual(r.blue.side[2][2], BLUE)
-        self.assertEqual(r.orange.side[2][2], ORANGE)
+        self.assertEqual(r.left.side[2][2], GREEN)
+        self.assertEqual(r.front.side[2][2], RED)
+        self.assertEqual(r.right.side[2][2], BLUE)
+        self.assertEqual(r.back.side[2][2], ORANGE)
 
         for i in range(3):
             r.move("D'")
@@ -281,36 +281,36 @@ class RotationTest(unittest.TestCase):
     def test_down_180_rotation(self):
         r = Rubik()
 
-        r.green.side[2][2] = ORANGE
-        r.red.side[2][2] = GREEN
-        r.blue.side[2][2] = RED
-        r.orange.side[2][2] = BLUE
+        r.left.side[2][2] = ORANGE
+        r.front.side[2][2] = GREEN
+        r.right.side[2][2] = RED
+        r.back.side[2][2] = BLUE
 
         res = r.__copy__()
-        r.move("2D")
-        self.assertEqual(r.green.side[2][2], RED)
-        self.assertEqual(r.red.side[2][2], BLUE)
-        self.assertEqual(r.blue.side[2][2], ORANGE)
-        self.assertEqual(r.orange.side[2][2], GREEN)
+        r.move("D2")
+        self.assertEqual(r.left.side[2][2], RED)
+        self.assertEqual(r.front.side[2][2], BLUE)
+        self.assertEqual(r.right.side[2][2], ORANGE)
+        self.assertEqual(r.back.side[2][2], GREEN)
 
-        r.move("2D")
+        r.move("D2")
 
         self.assertEqual(r, res)
 
     def test_right_rotation(self):
         r = Rubik()
 
-        r.white.side[2][2] = ORANGE
-        r.red.side[2][2] = GREEN
-        r.yellow.side[2][2] = RED
-        r.orange.side[2][0] = BLUE
+        r.up.side[2][2] = ORANGE
+        r.front.side[2][2] = GREEN
+        r.down.side[2][2] = RED
+        r.back.side[2][0] = BLUE
 
         res = r.__copy__()
         r.move("R")
-        self.assertEqual(r.white.side[2][2], GREEN)
-        self.assertEqual(r.red.side[2][2], RED)
-        self.assertEqual(r.yellow.side[0][2], BLUE)
-        self.assertEqual(r.orange.side[0][0], ORANGE)
+        self.assertEqual(r.up.side[2][2], GREEN)
+        self.assertEqual(r.front.side[2][2], RED)
+        self.assertEqual(r.down.side[0][2], BLUE)
+        self.assertEqual(r.back.side[0][0], ORANGE)
 
         for i in range(3):
             r.move("R")
@@ -320,17 +320,17 @@ class RotationTest(unittest.TestCase):
     def test_right_reverse_rotation(self):
         r = Rubik()
 
-        r.white.side[2][2] = ORANGE
-        r.red.side[2][2] = GREEN
-        r.yellow.side[2][2] = RED
-        r.orange.side[2][0] = BLUE
+        r.up.side[2][2] = ORANGE
+        r.front.side[2][2] = GREEN
+        r.down.side[2][2] = RED
+        r.back.side[2][0] = BLUE
 
         res = r.__copy__()
         r.move("R'")
-        self.assertEqual(r.white.side[0][2], BLUE)
-        self.assertEqual(r.red.side[2][2], ORANGE)
-        self.assertEqual(r.yellow.side[2][2], GREEN)
-        self.assertEqual(r.orange.side[0][0], RED)
+        self.assertEqual(r.up.side[0][2], BLUE)
+        self.assertEqual(r.front.side[2][2], ORANGE)
+        self.assertEqual(r.down.side[2][2], GREEN)
+        self.assertEqual(r.back.side[0][0], RED)
 
         for i in range(3):
             r.move("R'")
@@ -340,37 +340,37 @@ class RotationTest(unittest.TestCase):
     def test_right_180_rotation(self):
         r = Rubik()
 
-        r.white.side[2][2] = ORANGE
-        r.red.side[2][2] = GREEN
-        r.yellow.side[2][2] = RED
-        r.orange.side[2][0] = BLUE
+        r.up.side[2][2] = ORANGE
+        r.front.side[2][2] = GREEN
+        r.down.side[2][2] = RED
+        r.back.side[2][0] = BLUE
 
         res = r.__copy__()
-        r.move("2R")
-        self.assertEqual(r.white.side[2][2], RED)
-        self.assertEqual(r.red.side[0][2], BLUE)
-        self.assertEqual(r.yellow.side[2][2], ORANGE)
-        self.assertEqual(r.orange.side[0][0], GREEN)
+        r.move("R2")
+        self.assertEqual(r.up.side[2][2], RED)
+        self.assertEqual(r.front.side[0][2], BLUE)
+        self.assertEqual(r.down.side[2][2], ORANGE)
+        self.assertEqual(r.back.side[0][0], GREEN)
 
-        r.move("2R")
+        r.move("R2")
 
         self.assertEqual(r, res)
 
     def test_left_rotation(self):
         r = Rubik()
 
-        r.white.side[2][0] = ORANGE
-        r.red.side[2][0] = GREEN
+        r.up.side[2][0] = ORANGE
+        r.front.side[2][0] = GREEN
 
-        r.yellow.side[2][0] = RED
-        r.orange.side[2][2] = BLUE
+        r.down.side[2][0] = RED
+        r.back.side[2][2] = BLUE
 
         res = r.__copy__()
         r.move("L")
-        self.assertEqual(r.white.side[0][0], BLUE)
-        self.assertEqual(r.red.side[2][0], ORANGE)
-        self.assertEqual(r.yellow.side[2][0], GREEN)
-        self.assertEqual(r.orange.side[0][2], RED)
+        self.assertEqual(r.up.side[0][0], BLUE)
+        self.assertEqual(r.front.side[2][0], ORANGE)
+        self.assertEqual(r.down.side[2][0], GREEN)
+        self.assertEqual(r.back.side[0][2], RED)
 
         for i in range(3):
             r.move("L")
@@ -380,17 +380,17 @@ class RotationTest(unittest.TestCase):
     def test_left_reverse_rotation(self):
         r = Rubik()
 
-        r.white.side[2][0] = ORANGE
-        r.red.side[2][0] = GREEN
-        r.yellow.side[2][0] = RED
-        r.orange.side[2][2] = BLUE
+        r.up.side[2][0] = ORANGE
+        r.front.side[2][0] = GREEN
+        r.down.side[2][0] = RED
+        r.back.side[2][2] = BLUE
 
         res = r.__copy__()
         r.move("L'")
-        self.assertEqual(r.white.side[2][0], GREEN)
-        self.assertEqual(r.red.side[2][0], RED)
-        self.assertEqual(r.yellow.side[0][0], BLUE)
-        self.assertEqual(r.orange.side[0][2], ORANGE)
+        self.assertEqual(r.up.side[2][0], GREEN)
+        self.assertEqual(r.front.side[2][0], RED)
+        self.assertEqual(r.down.side[0][0], BLUE)
+        self.assertEqual(r.back.side[0][2], ORANGE)
 
         for i in range(3):
             r.move("L'")
@@ -400,22 +400,46 @@ class RotationTest(unittest.TestCase):
     def test_left_180_rotation(self):
         r = Rubik()
 
-        r.white.side[2][0] = ORANGE
-        r.red.side[2][0] = GREEN
+        r.up.side[2][0] = ORANGE
+        r.front.side[2][0] = GREEN
 
-        r.yellow.side[2][0] = RED
-        r.orange.side[2][2] = BLUE
+        r.down.side[2][0] = RED
+        r.back.side[2][2] = BLUE
 
         res = r.__copy__()
-        r.move("2L")
-        self.assertEqual(r.white.side[2][0], RED)
-        self.assertEqual(r.red.side[0][0], BLUE)
-        self.assertEqual(r.yellow.side[2][0], ORANGE)
-        self.assertEqual(r.orange.side[0][2], GREEN)
+        r.move("L2")
+        self.assertEqual(r.up.side[2][0], RED)
+        self.assertEqual(r.front.side[0][0], BLUE)
+        self.assertEqual(r.down.side[2][0], ORANGE)
+        self.assertEqual(r.back.side[0][2], GREEN)
 
-        r.move("2L")
+        r.move("L2")
 
         self.assertEqual(r, res)
+
+    def test_right_algo(self):
+        r = Rubik()
+
+        res = r.__copy__()
+        for _ in range(6):
+            r.move("R")
+            r.move("U")
+            r.move("R'")
+            r.move("U'")
+
+        self.assertEqual(res, r)
+
+    def test_left_algo(self):
+        r = Rubik()
+
+        res = r.__copy__()
+        for _ in range(6):
+            r.move("L'")
+            r.move("U'")
+            r.move("L")
+            r.move("U")
+
+        self.assertEqual(res, r)
 
 
 if __name__ == '__main__':
