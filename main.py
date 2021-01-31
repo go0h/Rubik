@@ -5,12 +5,13 @@ from rubik.Colors import *
 if __name__ == '__main__':
 
     r = Rubik()
-    print(r)
-    print("FRONT")
-    r.rotate(RED)
+
+    r.white.side[2][0] = ORANGE
+    r.red.side[2][0] = GREEN
+    r.yellow.side[2][0] = RED
+    r.orange.side[2][2] = BLUE
+
     print(r)
 
-    r = Rubik()
-    print("LEFT")
-    r.rotate(GREEN)
+    r.move("2L")
     print(r)

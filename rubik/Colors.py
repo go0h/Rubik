@@ -1,10 +1,5 @@
-DROP = -1
-RED = 0
-ORANGE = 1
-GREEN = 2
-BLUE = 3
-YELLOW = 4
-WHITE = 5
+
+DROP, RED, ORANGE, GREEN, BLUE, YELLOW, WHITE = range(-1, 6)
 
 __RED__ = '\033[41m  '
 __ORANGE__ = '\033[43m  '
