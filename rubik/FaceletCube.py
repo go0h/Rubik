@@ -4,16 +4,16 @@ from rubik.Colors import *
 from rubik.Side import Side
 
 
-class Rubik:
+class FaceletCube:
 
     def __init__(self, size=3):
         self.size = size
-        self.back = Side(self.size, GREEN)
-        self.left = Side(self.size, ORANGE)
-        self.up = Side(self.size, YELLOW)
-        self.right = Side(self.size, RED)
-        self.down = Side(self.size, WHITE)
-        self.front = Side(self.size, BLUE)
+        self.back = Side(self.size, BACK)
+        self.left = Side(self.size, LEFT)
+        self.up = Side(self.size, UP)
+        self.right = Side(self.size, RIGHT)
+        self.down = Side(self.size, DOWN)
+        self.front = Side(self.size, FRONT)
 
         self.sides = [self.back, self.left, self.up, self.right, self.down, self.front]
         self.__moves__ = {
@@ -25,11 +25,11 @@ class Rubik:
             "L": self.lf, "L'": self.l_r, "L2": self.l2
         }
 
-    def move(self, move: str):
+    def move(self, move: str) -> None:
         """Разрешенные действия F R U B L D - F' R' U' B' L' D'"""
         self.__moves__[move]()
 
-    def exec_scramble(self, scramble: str):
+    def scramble(self, scramble: str) -> None:
         allowed_moves = self.__moves__.keys()
         for move in scramble.split(" "):
             if move in allowed_moves:
@@ -37,7 +37,7 @@ class Rubik:
             else:
                 raise ValueError(f"Can't recognize move {move}")
 
-    def f(self):
+    def f(self) -> None:
         """ Notation - F
             Вращение передней (синей) стороны по часовой стрелке"""
         self.front.rotate_90()
@@ -47,7 +47,7 @@ class Rubik:
         line = self.down.set_row(0, line)
         self.left.set_col(self.size - 1, line)
 
-    def f_r(self):
+    def f_r(self) -> None:
         """ Notation - F'
             Вращение передней (синей) стороны против часовой стрелки"""
         self.front.rotate_270()
@@ -57,7 +57,7 @@ class Rubik:
         line = self.down.set_row(0, line, True)
         self.right.set_col(0, line)
 
-    def f2(self):
+    def f2(self) -> None:
         """ Notation - F2
             Вращение передней (синей) стороны на 180 градусов"""
         self.front.rotate_180()
@@ -67,7 +67,7 @@ class Rubik:
         line = self.left.set_col(self.size - 1, self.right.get_col(0, True), True)
         self.right.set_col(0, line)
 
-    def b(self):
+    def b(self) -> None:
         """ Notation - B
             Вращение задней (оранжевой) стороны по часовой стрелке"""
         self.back.rotate_90()
@@ -77,7 +77,7 @@ class Rubik:
         line = self.down.set_row(self.size - 1, line, True)
         self.right.set_col(self.size - 1, line)
 
-    def b_r(self):
+    def b_r(self) -> None:
         """ Notation - B'
             Вращение задней (оранжевой) стороны против часовой стрелки"""
         self.back.rotate_270()
@@ -87,7 +87,7 @@ class Rubik:
         line = self.down.set_row(self.size - 1, line)
         self.left.set_col(0, line)
 
-    def b2(self):
+    def b2(self) -> None:
         """ Notation - B2
             Вращение задней (оранжевой) стороны на 180 градусов"""
         self.back.rotate_180()
@@ -97,7 +97,7 @@ class Rubik:
         line = self.right.set_col(self.size - 1, self.left.get_col(0, True), True)
         self.left.set_col(0, line)
 
-    def u(self):
+    def u(self) -> None:
         """ Notation - U
             Вращение верхней (желтой) стороны по часовой стрелке"""
         self.up.rotate_90()
@@ -107,7 +107,7 @@ class Rubik:
         line = self.front.set_row(0, line)
         self.left.set_row(0, line)
 
-    def u_r(self):
+    def u_r(self) -> None:
         """ Notation - U'
             Вращение верхней (желтой) стороны против часовой стрелки"""
         self.up.rotate_270()
@@ -117,7 +117,7 @@ class Rubik:
         line = self.front.set_row(0, line)
         self.right.set_row(0, line)
 
-    def u2(self):
+    def u2(self) -> None:
         """ Notation - U2
             Вращение верхней (желтой) стороны стороны на 180 градусов"""
         self.up.rotate_180()
@@ -127,7 +127,7 @@ class Rubik:
         line = self.left.set_row(0, self.right.get_row(0))
         self.right.set_row(0, line)
 
-    def d(self):
+    def d(self) -> None:
         """ Notation - D
             Вращение нижней (белой) стороны по часовой стрелке"""
         self.down.rotate_90()
@@ -137,7 +137,7 @@ class Rubik:
         line = self.front.set_row(self.size - 1, line)
         self.right.set_row(self.size - 1, line)
 
-    def d_r(self):
+    def d_r(self) -> None:
         """ Notation - D'
             Вращение нижней (белой) стороны против часовой стрелки"""
         self.down.rotate_270()
@@ -147,7 +147,7 @@ class Rubik:
         line = self.front.set_row(self.size - 1, line)
         self.left.set_row(self.size - 1, line)
 
-    def d2(self):
+    def d2(self) -> None:
         """ Notation - D2
             Вращение нижней (белой) стороны стороны на 180 градусов"""
         self.down.rotate_180()
@@ -157,7 +157,7 @@ class Rubik:
         line = self.left.set_row(self.size - 1, self.right.get_row(self.size - 1))
         self.right.set_row(self.size - 1, line)
 
-    def r(self):
+    def r(self) -> None:
         """ Notation - R
         Вращение правой (красной) стороны по часовой стрелке"""
         self.right.rotate_90()
@@ -167,7 +167,7 @@ class Rubik:
         line = self.down.set_col(self.size - 1, line)
         self.front.set_col(self.size - 1, line)
 
-    def r_r(self):
+    def r_r(self) -> None:
         """ Notation - R'
         Вращение правой (красной) стороны против часовой стрелки"""
         self.right.rotate_270()
@@ -177,7 +177,7 @@ class Rubik:
         line = self.down.set_col(self.size - 1, line, True)
         self.back.set_col(0, line)
 
-    def r2(self):
+    def r2(self) -> None:
         """ Notation - R2
             Вращение правой (красной) стороны на 180 градусов"""
         self.right.rotate_180()
@@ -187,7 +187,7 @@ class Rubik:
         line = self.back.set_col(0, self.front.get_col(self.size - 1, True), True)
         self.front.set_col(self.size - 1, line)
 
-    def lf(self):
+    def lf(self) -> None:
         """ Notation - L
         Вращение левой (оранжевой) стороны по часовой стрелке"""
         self.left.rotate_90()
@@ -197,7 +197,7 @@ class Rubik:
         line = self.down.set_col(0, line, True)
         self.back.set_col(self.size - 1, line)
 
-    def l_r(self):
+    def l_r(self) -> None:
         """ Notation - L'
         Вращение левой (оранжевой) стороны против часовой стрелки"""
         self.left.rotate_270()
@@ -207,7 +207,7 @@ class Rubik:
         line = self.down.set_col(0, line)
         self.front.set_col(0, line)
 
-    def l2(self):
+    def l2(self) -> None:
         """ Notation - L2
             Вращение левой (оранжевой) стороны на 180 градусов"""
         self.left.rotate_180()
@@ -218,7 +218,19 @@ class Rubik:
         line = self.front.set_col(0, self.back.get_col(self.size - 1, True), True)
         self.back.set_col(self.size - 1, line)
 
-    def __str__(self):
+    def solved(self) -> bool:
+        for side in self.sides:
+            if not side.solved():
+                return False
+        return True
+
+    def to_string(self) -> str:
+        res = ""
+        for side in self.sides:
+            res += side.to_string()
+        return res
+
+    def __str__(self) -> str:
         """
         Печатает кубик в цвете в развернутом виде
              |  UP |
@@ -227,28 +239,34 @@ class Rubik:
         """
         res = ""
         for line in self.up.side:
-            res += "  " * self.size + ''.join(colors[i] for i in line) + colors[DROP] + "\n"
+            res += "  " * self.size + ''.join(colors[i] for i in line) + colors[NONE] + "\n"
 
         straight_sides = [self.left, self.front, self.right, self.back]
 
         for i in range(self.size):
             temp = ""
             for side in straight_sides:
-                temp += ''.join(colors[j] for j in side.side[i]) + colors[DROP]
-            res += temp + "\n" + colors[DROP]
+                temp += ''.join(colors[j] for j in side.side[i]) + colors[NONE]
+            res += temp + "\n" + colors[NONE]
 
         for line in self.down.side:
-            res += "  " * self.size + ''.join(colors[i] for i in line) + colors[DROP] + "\n"
+            res += "  " * self.size + ''.join(colors[i] for i in line) + colors[NONE] + "\n"
 
         return res
 
     def __copy__(self):
         return deepcopy(self)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if self.size != other.size:
             return False
         for i in range(6):
             if self.sides[i] != other.sides[i]:
                 return False
         return True
+
+    # def setCorner(self, pos, corner) -> None:
+    #
+    #     if pos ==
+    #
+    #     return None

@@ -3,7 +3,6 @@ from rubik.Colors import *
 
 class Side:
     """Сторона кубика"""
-
     def __init__(self, size, color, side=None):
         self.size = size
         self.color = color
@@ -11,6 +10,20 @@ class Side:
             self.side = [[color for _ in range(self.size)] for _ in range(self.size)]
         else:
             self.side = side
+
+    def solved(self) -> bool:
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.side[i][j] != self.color:
+                    return False
+        return True
+
+    def to_string(self) -> str:
+        res = ""
+        for i in range(self.size):
+            for j in range(self.size):
+                res += SIDE[self.side[i][j]]
+        return res
 
     def rotate_90(self) -> None:
         """Вращение стороны по часовой стрелке на 90 градусов"""
@@ -68,7 +81,7 @@ class Side:
     def __str__(self):
         res = ""
         for line in self.side:
-            res += ''.join(colors[i] for i in line) + colors[DROP] + colors[DROP] + "\n"
+            res += ''.join(colors[i] for i in line) + colors[DROP] + "\n"
         return res
 
     def __eq__(self, other):

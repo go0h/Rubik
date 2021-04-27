@@ -1,12 +1,15 @@
-from rubik.Rubik import Rubik
+from rubik.FaceletCube import FaceletCube
+from rubik.CubieCube import CubieCube
 from rubik.Colors import *
 
 
 if __name__ == '__main__':
 
-    r = Rubik()
+    r = FaceletCube()
 
     res = r.__copy__()
     print(r)
-    r.exec_scramble("B2 F' L2 R D2 U F' R' F2 D' U L2 B2 D2 U' L' D U2 F' D' L2 B' D2 B D F2 U' R D U'")
+    r.scramble("U' R U F R' B' F2 L2 B F L2 B' U L R' U B' U2 L D2 R' B F2 U B2 F2 U B' L' B2")
     print(r)
+    cubie = CubieCube()
+    print(cubie)
