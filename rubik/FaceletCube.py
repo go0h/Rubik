@@ -1,19 +1,21 @@
 from copy import deepcopy
 
-from rubik.Colors import *
+from rubik.Colors import colors, B, L, U, R, D, F, NONE
 from rubik.Side import Side
+from rubik.Corner import CORNERS_FACES
+from rubik.Edge import EDGE_FACES
 
 
 class FaceletCube:
 
     def __init__(self, size=3):
         self.size = size
-        self.back = Side(self.size, BACK)
-        self.left = Side(self.size, LEFT)
-        self.up = Side(self.size, UP)
-        self.right = Side(self.size, RIGHT)
-        self.down = Side(self.size, DOWN)
-        self.front = Side(self.size, FRONT)
+        self.back = Side(self.size, B)
+        self.left = Side(self.size, L)
+        self.up = Side(self.size, U)
+        self.right = Side(self.size, R)
+        self.down = Side(self.size, D)
+        self.front = Side(self.size, F)
 
         self.sides = [self.back, self.left, self.up, self.right, self.down, self.front]
         self.__moves__ = {
@@ -265,8 +267,15 @@ class FaceletCube:
                 return False
         return True
 
-    # def setCorner(self, pos, corner) -> None:
-    #
-    #     if pos ==
-    #
-    #     return None
+    def set_corner(self, pos, corner) -> None:
+        p1, p2, p3 = corner.get_coordinates(pos)
+        s1, s2, s3 = CORNERS_FACES[corner.c]
+        self.sides[s1].set_face(p1)
+        self.sides[s2].set_face(p2)
+        self.sides[s3].set_face(p3)
+
+    def set_edge(self, pos, edge) -> None:
+        p1, p2 = edge.get_coordinates(edge.c)
+        s1, s2 = EDGE_FACES[pos]
+        self.sides[s1].set_face(p1)
+        self.sides[s2].set_face(p2)

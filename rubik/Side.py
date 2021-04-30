@@ -78,6 +78,9 @@ class Side:
             self.side[i][num] = col[i]
         return old_col
 
+    def set_face(self, coordinates):
+        self.side[coordinates[0]][coordinates[1]] = coordinates[2]
+
     def __str__(self):
         res = ""
         for line in self.side:

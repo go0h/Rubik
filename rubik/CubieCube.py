@@ -20,14 +20,20 @@ basic_cube_moves = {
           (UR, 0), (UF, 0), (UL, 0), (BR, 1), (DR, 0), (DF, 0), (DL, 0), (BL, 1), (FR, 0), (FL, 0), (UB, 1), (DB, 1)]
 }
 
-identity_cube = []
-
 
 class CubieCube:
 
     def __init__(self):
         self.corners = [Corner(i) for i in range(8)]
         self.edges = [Edge(i) for i in range(12)]
+
+    def to_facelet_cube(self) -> FaceletCube:
+        facelet = FaceletCube()
+        for i in range(len(self.corners)):
+            facelet.set_corner(i, self.corners[i])
+        for i in range(len(self.edges)):
+            facelet.set_edge(i, self.edges[i])
+        return facelet
 
     def __str__(self) -> str:
         return ", ".join([f"({corner})" for corner in self.corners]) + '\n' + \
