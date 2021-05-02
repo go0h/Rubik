@@ -9,7 +9,7 @@ EDGES = {UF: "UF", UL: "UL", UB: "UB", UR: "UR",
          DF: "DF", DL: "DL", DB: "DB", DR: "DR",
          FL: "FL", FR: "FR", BL: "BL", BR: "BR"}
 
-EDGE_FACES = {
+EDGE_SIDES = {
     UR: [U, R], UF: [U, F], UL: [U, L], UB: [U, B], DR: [D, R], DF: [D, F],
     DL: [D, L], DB: [D, B], FR: [F, R], FL: [F, L], BL: [B, L], BR: [B, R]
 }
@@ -52,13 +52,13 @@ class Edge:
             self.o -= 2
 
     def get_coordinates(self, position) -> list:
-        c1, c2 = [EDGE_FACES[self.c][(i + self.o) % 2] for i in range(2)]
+        c1, c2 = [EDGE_SIDES[self.c][(i + self.o) % 2] for i in range(2)]
         return [EDGE_FACES_COORDS[position][0] + [c1],
                 EDGE_FACES_COORDS[position][1] + [c2]]
 
     def set_coordinate(self, position, sides) -> None:
         # получаем лицевые стороны угла, в зависимости от позиции
-        f1, f2 = EDGE_FACES[position]
+        f1, f2 = EDGE_SIDES[position]
         # получаем сслыки на объект Side
         s1, s2 = sides[f1], sides[f2]
 

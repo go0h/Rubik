@@ -3,7 +3,7 @@ from copy import deepcopy
 from rubik.Colors import colors, B, L, U, R, D, F, NONE
 from rubik.Side import Side
 from rubik.Corner import CORNERS_SIDES
-from rubik.Edge import EDGE_FACES
+from rubik.Edge import EDGE_SIDES
 import rubik.CubieCube
 
 
@@ -278,7 +278,7 @@ class FaceletCube:
 
     def set_edge(self, cur_pos, edge) -> None:
         c1, p2 = edge.get_coordinates(cur_pos)
-        s1, s2 = EDGE_FACES[cur_pos]
+        s1, s2 = EDGE_SIDES[cur_pos]
         self.sides[s1].set_face(c1)
         self.sides[s2].set_face(p2)
 

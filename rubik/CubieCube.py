@@ -4,22 +4,22 @@ from rubik.Edge import *
 from rubik.Corner import *
 import rubik.FaceletCube
 
-C = Corner
-E = Edge
+BASIC_CORNER_MOVES = {
+    U: [(UBR, 0), (URF, 0), (UFL, 0), (ULB, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
+    R: [(DFR, 2), (UFL, 0), (ULB, 0), (URF, 1), (DRB, 1), (DLF, 0), (DBL, 0), (UBR, 2)],
+    F: [(UFL, 1), (DLF, 2), (ULB, 0), (UBR, 0), (URF, 2), (DFR, 1), (DBL, 0), (DRB, 0)],
+    D: [(URF, 0), (UFL, 0), (ULB, 0), (UBR, 0), (DLF, 0), (DBL, 0), (DRB, 0), (DFR, 0)],
+    L: [(URF, 0), (ULB, 1), (DBL, 2), (UBR, 0), (DFR, 0), (UFL, 2), (DLF, 1), (DRB, 0)],
+    B: [(URF, 0), (UFL, 0), (UBR, 1), (DRB, 2), (DFR, 0), (DLF, 0), (ULB, 2), (DBL, 1)]
+}
 
-BASIC_CUBE_MOVES = {
-    "U": [(UBR, 0), (URF, 0), (UFL, 0), (ULB, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0),
-          (UB, 0), (UR, 0), (UF, 0), (UL, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)],
-    "R": [(DFR, 2), (UFL, 0), (ULB, 0), (URF, 1), (DRB, 1), (DLF, 0), (DBL, 0), (UBR, 2),
-          (FR, 0), (UF, 0), (UL, 0), (UB, 0), (BR, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FL, 0), (BL, 0), (UR, 0)],
-    "F": [(UFL, 1), (DLF, 2), (ULB, 0), (UBR, 0), (URF, 2), (DFR, 1), (DBL, 0), (DRB, 0),
-          (UR, 0), (FL, 1), (UL, 0), (UB, 0), (DR, 0), (FR, 1), (DL, 0), (DB, 0), (UF, 1), (DF, 1), (BL, 0), (BR, 0)],
-    "D": [(URF, 0), (UFL, 0), (ULB, 0), (UBR, 0), (DLF, 0), (DBL, 0), (DRB, 0), (DFR, 0),
-          (UR, 0), (UF, 0), (UL, 0), (UB, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)],
-    "L": [(URF, 0), (ULB, 1), (DBL, 2), (UBR, 0), (DFR, 0), (UFL, 2), (DLF, 1), (DRB, 0),
-          (UR, 0), (UF, 0), (BL, 0), (UB, 0), (DR, 0), (DF, 0), (FL, 0), (DB, 0), (FR, 0), (UL, 0), (DL, 0), (BR, 0)],
-    "B": [(URF, 0), (UFL, 0), (UBR, 1), (DRB, 2), (DFR, 0), (DLF, 0), (ULB, 2), (DBL, 1),
-          (UR, 0), (UF, 0), (UL, 0), (BR, 1), (DR, 0), (DF, 0), (DL, 0), (BL, 1), (FR, 0), (FL, 0), (UB, 1), (DB, 1)]
+BASIC_EDGE_MOVES = {
+    U: [(UB, 0), (UR, 0), (UF, 0), (UL, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)],
+    R: [(FR, 0), (UF, 0), (UL, 0), (UB, 0), (BR, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FL, 0), (BL, 0), (UR, 0)],
+    F: [(UR, 0), (FL, 1), (UL, 0), (UB, 0), (DR, 0), (FR, 1), (DL, 0), (DB, 0), (UF, 1), (DF, 1), (BL, 0), (BR, 0)],
+    D: [(UR, 0), (UF, 0), (UL, 0), (UB, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)],
+    L: [(UR, 0), (UF, 0), (BL, 0), (UB, 0), (DR, 0), (DF, 0), (FL, 0), (DB, 0), (FR, 0), (UL, 0), (DL, 0), (BR, 0)],
+    B: [(UR, 0), (UF, 0), (UL, 0), (BR, 1), (DR, 0), (DF, 0), (DL, 0), (BL, 1), (FR, 0), (FL, 0), (UB, 1), (DB, 1)]
 }
 
 
@@ -52,107 +52,122 @@ class CubieCube:
     def f(self) -> None:
         """ Notation - F
         Вращение передней (синей) стороны по часовой стрелке"""
-        self.rotate("F")
+        self.rotate(F)
 
     def f_r(self) -> None:
         """ Notation - F'
             Вращение передней (синей) стороны против часовой стрелки"""
-        self.rotate("F", 3)
+        self.rotate(F, 3)
 
     def f2(self) -> None:
         """ Notation - F2
             Вращение передней (синей) стороны на 180 градусов"""
-        self.rotate("F", 2)
+        self.rotate(F, 2)
 
     def b(self) -> None:
         """ Notation - B
             Вращение задней (оранжевой) стороны по часовой стрелке"""
-        self.rotate("B")
+        self.rotate(B)
 
     def b_r(self) -> None:
         """ Notation - B'
             Вращение задней (оранжевой) стороны против часовой стрелки"""
-        self.rotate("B", 3)
+        self.rotate(B, 3)
 
     def b2(self) -> None:
         """ Notation - B2
             Вращение задней (оранжевой) стороны на 180 градусов"""
-        self.rotate("B", 2)
+        self.rotate(B, 2)
 
     def u(self) -> None:
         """ Notation - U
             Вращение верхней (желтой) стороны по часовой стрелке"""
-        self.rotate("U")
+        self.rotate(U)
 
     def u_r(self) -> None:
         """ Notation - U'
             Вращение верхней (желтой) стороны против часовой стрелки"""
-        self.rotate("U", 3)
+        self.rotate(U, 3)
 
     def u2(self) -> None:
         """ Notation - U2
             Вращение верхней (желтой) стороны стороны на 180 градусов"""
-        self.rotate("U", 2)
+        self.rotate(U, 2)
 
     def d(self) -> None:
         """ Notation - D
             Вращение нижней (белой) стороны по часовой стрелке"""
-        self.rotate("D")
+        self.rotate(D)
 
     def d_r(self) -> None:
         """ Notation - D'
             Вращение нижней (белой) стороны против часовой стрелки"""
-        self.rotate("D", 3)
+        self.rotate(D, 3)
 
     def d2(self) -> None:
         """ Notation - D2
             Вращение нижней (белой) стороны стороны на 180 градусов"""
-        self.rotate("D", 2)
+        self.rotate(D, 2)
 
     def r(self) -> None:
         """ Notation - R
         Вращение правой (красной) стороны по часовой стрелке"""
-        self.rotate("R")
+        self.rotate(R)
 
     def r_r(self) -> None:
         """ Notation - R'
         Вращение правой (красной) стороны против часовой стрелки"""
-        self.rotate("R", 3)
+        self.rotate(R, 3)
 
     def r2(self) -> None:
         """ Notation - R2
             Вращение правой (красной) стороны на 180 градусов"""
-        self.rotate("R", 2)
+        self.rotate(R, 2)
 
     def lf(self) -> None:
         """ Notation - L
         Вращение левой (оранжевой) стороны по часовой стрелке"""
-        self.rotate("L")
+        self.rotate(L)
 
     def l_r(self) -> None:
         """ Notation - L'
         Вращение левой (оранжевой) стороны против часовой стрелки"""
-        self.rotate("L", 3)
+        self.rotate(L, 3)
 
     def l2(self) -> None:
         """ Notation - L2
             Вращение левой (оранжевой) стороны на 180 градусов"""
-        self.rotate("L", 2)
+        self.rotate(L, 2)
 
     def rotate(self, move, count=1):
-        m = BASIC_CUBE_MOVES[move]
+        c_m = BASIC_CORNER_MOVES[move]
+        e_m = BASIC_EDGE_MOVES[move]
         for i in range(count):
             c = copy.deepcopy(self.corners)
             e = copy.deepcopy(self.edges)
             for j in range(8):
-                t = c[m[j][0]]
+                t = c[c_m[j][0]]
                 self.corners[j].c = t.c
-                self.corners[j].o = (t.o + m[j][1]) % 3
+                self.corners[j].o = (t.o + c_m[j][1]) % 3
 
             for j in range(12):
-                t = e[m[8 + j][0]]
+                t = e[e_m[j][0]]
                 self.edges[j].c = t.c
-                self.edges[j].o = (t.o + m[8 + j][1]) % 2
+                self.edges[j].o = (t.o + e_m[j][1]) % 2
+
+    def solved(self) -> bool:
+        """Checks if cube is solved"""
+        i = 0
+        for corner in self.corners:
+            if corner.c != i or corner.o != 0:
+                return False
+            i += 1
+        i = 0
+        for edge in self.edges:
+            if edge.c != i or edge.o != 0:
+                return False
+            i += 1
+        return True
 
     def to_facelet_cube(self):
         facelet = rubik.FaceletCube.FaceletCube()
