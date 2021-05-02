@@ -1,5 +1,6 @@
 
 from rubik.Colors import B, L, U, R, D, F
+from collections import deque
 
 # coordinate of Edges
 UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR = range(12)
@@ -11,6 +12,28 @@ EDGES = {UF: "UF", UL: "UL", UB: "UB", UR: "UR",
 EDGE_FACES = {
     UR: [U, R], UF: [U, F], UL: [U, L], UB: [U, B], DR: [D, R], DF: [D, F],
     DL: [D, L], DB: [D, B], FR: [F, R], FL: [F, L], BL: [B, L], BR: [B, R]
+}
+
+EDGE_FACES_COORDS = {
+    UR: [[1, 2], [0, 1]],
+    UF: [[2, 1], [0, 1]],
+    UL: [[1, 0], [0, 1]],
+    UB: [[0, 1], [0, 1]],
+    DR: [[1, 2], [2, 1]],
+    DF: [[0, 1], [2, 1]],
+    DL: [[1, 0], [2, 1]],
+    DB: [[2, 1], [2, 1]],
+    FR: [[1, 2], [1, 0]],
+    FL: [[1, 0], [1, 2]],
+    BL: [[1, 2], [1, 0]],
+    BR: [[1, 0], [1, 2]]
+}
+
+EDGE_BY_SIDES = {
+    U: {R: UR, F: UF, L: UL, B: UB},
+    D: {R: DR, F: DF, L: DL, B: DB},
+    F: {R: FR, L: FL},
+    B: {L: BL, R: BR}
 }
 
 
@@ -29,23 +52,33 @@ class Edge:
             self.o -= 2
 
     def get_coordinates(self, position) -> list:
-        # UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR
         c1, c2 = [EDGE_FACES[self.c][(i + self.o) % 2] for i in range(2)]
-        edges_to_side_pos = {
-            UR: [[1, 2, c1], [0, 1, c2]],
-            UF: [[2, 1, c1], [0, 1, c2]],
-            UL: [[1, 0, c1], [0, 1, c2]],
-            UB: [[0, 1, c1], [0, 1, c2]],
-            DR: [[1, 2, c1], [2, 1, c2]],
-            DF: [[0, 1, c1], [2, 1, c2]],
-            DL: [[1, 0, c1], [2, 1, c2]],
-            DB: [[2, 1, c1], [2, 1, c2]],
-            FR: [[1, 2, c1], [1, 0, c2]],
-            FL: [[1, 0, c1], [1, 2, c2]],
-            BL: [[1, 2, c1], [1, 0, c2]],
-            BR: [[1, 0, c1], [1, 2, c2]]
-        }
-        return edges_to_side_pos[position]
+        return [EDGE_FACES_COORDS[position][0] + [c1],
+                EDGE_FACES_COORDS[position][1] + [c2]]
+
+    def set_coordinate(self, position, sides) -> None:
+        # получаем лицевые стороны угла, в зависимости от позиции
+        f1, f2 = EDGE_FACES[position]
+        # получаем сслыки на объект Side
+        s1, s2 = sides[f1], sides[f2]
+
+        # получаем координаты где располагаются ребра
+        c1, c2 = EDGE_FACES_COORDS[position]
+
+        # получаем текущие стороны которые располжены в углу
+        e_sides = deque([s1.side[c1[0]][c1[1]], s2.side[c2[0]][c2[1]]])
+
+        # вычисляем ориентацию угла
+        while e_sides[0] not in EDGE_BY_SIDES.keys():
+            e_sides.rotate(1)
+            self.o += 1
+
+        while e_sides[1] not in EDGE_BY_SIDES[e_sides[0]].keys():
+            e_sides.rotate(1)
+            self.o += 1
+
+        # получаем реальную координату угла
+        self.c = EDGE_BY_SIDES[e_sides[0]][e_sides[1]]
 
     def __str__(self) -> str:
         return EDGES[self.c] + "," + str(self.o)

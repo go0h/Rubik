@@ -1,18 +1,20 @@
 from rubik.FaceletCube import FaceletCube
 from rubik.CubieCube import CubieCube
-from rubik.Colors import *
+from rubik.Utils import get_random_scramble
 
 
 if __name__ == '__main__':
 
-    # r = FaceletCube()
-    #
-    # res = r.__copy__()
-    # print(r)
-    # r.scramble("U' R U F R' B' F2 L2 B F L2 B' U L R' U B' U2 L D2 R' B F2 U B2 F2 U B' L' B2")
-    # print(r)
-    cubie = CubieCube()
-    print(cubie)
+    scramble = get_random_scramble()
 
-    f = cubie.to_facelet_cube()
-    print(f)
+    f1 = FaceletCube()
+    f1.scramble(scramble)
+
+    c1 = CubieCube()
+    c1.scramble(scramble)
+
+    f2 = c1.to_facelet_cube()
+    c2 = f1.to_cubie_cube()
+    print(f1 == f2)
+    print(c1 == c2)
+

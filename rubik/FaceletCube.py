@@ -2,8 +2,9 @@ from copy import deepcopy
 
 from rubik.Colors import colors, B, L, U, R, D, F, NONE
 from rubik.Side import Side
-from rubik.Corner import CORNERS_FACES
+from rubik.Corner import CORNERS_SIDES
 from rubik.Edge import EDGE_FACES
+import rubik.CubieCube
 
 
 class FaceletCube:
@@ -33,7 +34,7 @@ class FaceletCube:
 
     def scramble(self, scramble: str) -> None:
         allowed_moves = self.__moves__.keys()
-        for move in scramble.split(" "):
+        for move in scramble.strip().split(" "):
             if move in allowed_moves:
                 self.move(move)
             else:
@@ -221,6 +222,7 @@ class FaceletCube:
         self.back.set_col(self.size - 1, line)
 
     def solved(self) -> bool:
+        """Checks if cube is solved"""
         for side in self.sides:
             if not side.solved():
                 return False
@@ -234,7 +236,7 @@ class FaceletCube:
 
     def __str__(self) -> str:
         """
-        Печатает кубик в цвете в развернутом виде
+        Print color Facelet Cube to STDOUT
              |  UP |
         |LEFT|FRONT|RIGHT|BACK|
              |DOWN |
@@ -267,15 +269,23 @@ class FaceletCube:
                 return False
         return True
 
-    def set_corner(self, pos, corner) -> None:
-        p1, p2, p3 = corner.get_coordinates(pos)
-        s1, s2, s3 = CORNERS_FACES[corner.c]
-        self.sides[s1].set_face(p1)
-        self.sides[s2].set_face(p2)
-        self.sides[s3].set_face(p3)
+    def set_corner(self, cur_pos, corner) -> None:
+        c1, c2, c3 = corner.get_coordinates(cur_pos)
+        s1, s2, s3 = CORNERS_SIDES[cur_pos]
+        self.sides[s1].set_face(c1)
+        self.sides[s2].set_face(c2)
+        self.sides[s3].set_face(c3)
 
-    def set_edge(self, pos, edge) -> None:
-        p1, p2 = edge.get_coordinates(edge.c)
-        s1, s2 = EDGE_FACES[pos]
-        self.sides[s1].set_face(p1)
+    def set_edge(self, cur_pos, edge) -> None:
+        c1, p2 = edge.get_coordinates(cur_pos)
+        s1, s2 = EDGE_FACES[cur_pos]
+        self.sides[s1].set_face(c1)
         self.sides[s2].set_face(p2)
+
+    def to_cubie_cube(self):
+        cubie = rubik.CubieCube.CubieCube()
+        for i in range(8):
+            cubie.set_corner(i, self.sides)
+        for i in range(12):
+            cubie.set_edge(i, self.sides)
+        return cubie
