@@ -77,3 +77,23 @@ class CubieCubeTest(unittest.TestCase):
 
             self.assertEqual(f1, f2)
             self.assertEqual(c1, c2)
+
+    def test_inverse_cubie(self):
+
+        c1 = get_random_cubie()
+        c2 = CubieCube()
+        c1.inverse_cubie(c2)
+
+        c3 = CubieCube()
+        c2.inverse_cubie(c3)
+        self.assertEqual(c1, c3)
+
+    def test_ud_slice_coord_1(self):
+        c = CubieCube()
+        self.assertEqual(c.get_ud_slice_coord(), 0)
+
+    def test_ud_slice_coord_2(self):
+        c = CubieCube()
+        c.scramble("R F L")
+        print(c)
+        self.assertEqual(c.get_ud_slice_coord(), 493)

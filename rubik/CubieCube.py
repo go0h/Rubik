@@ -1,8 +1,9 @@
 import copy
 
+import rubik.FaceletCube
+import rubik.Utils
 from rubik.Edge import *
 from rubik.Corner import *
-import rubik.FaceletCube
 
 BASIC_CORNER_MOVES = {
     U: [(UBR, 0), (URF, 0), (UFL, 0), (ULB, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
@@ -25,9 +26,15 @@ BASIC_EDGE_MOVES = {
 
 class CubieCube:
 
-    def __init__(self):
-        self.corners = [Corner(i) for i in range(8)]
-        self.edges = [Edge(i) for i in range(12)]
+    def __init__(self, corners=None, edges=None):
+        if corners is None:
+            self.corners = [Corner(i) for i in range(8)]
+        else:
+            self.corners = copy.deepcopy(corners)
+        if edges is None:
+            self.edges = [Edge(i) for i in range(12)]
+        else:
+            self.edges = copy.deepcopy(edges)
         self.__moves__ = {
             "F": self.f, "F'": self.f_r, "F2": self.f2,
             "B": self.b, "B'": self.b_r, "B2": self.b2,
@@ -182,6 +189,77 @@ class CubieCube:
 
     def set_edge(self, position, sides) -> None:
         self.edges[position].set_coordinate(position, sides)
+
+    def corner_multiply(self, other):
+        corners = [Corner(0) for _ in range(8)]
+        ori = 0
+        for i in range(8):
+            # (A*B)(x).c = A(B(x).c).c
+            corners[i].c = self.corners[other.corners[i].c].c
+            # (A*B)(x).o = A(B(x).c).o + B(x).o
+            ori_a = self.corners[other.corners[i].c].o
+            ori_b = other.corners[i].o
+            if ori_a < 3 and ori_b < 3:
+                ori = (ori_a + ori_b) % 3
+
+            # if we use reflections at the LR-plane in symmetry operations
+            elif ori_a < 3 <= ori_b:  # cube b is in a mirrored state
+                ori = ori_a + ori_b
+                if ori >= 6:
+                    ori -= 3  # the composition also is in a mirrored state
+            elif ori_a >= 3 > ori_b:  # cube a is in a mirrored state
+                ori = ori_a - ori_b
+                if ori < 3:
+                    ori += 3  # the composition is a mirrored cube
+            elif ori_a >= 3 and ori_b >= 3:  # if both cubes are in mirrored states
+                ori = ori_a - ori_b
+                if ori < 0:
+                    ori += 3  # the composition is a regular cube
+            corners[i].o = ori
+        self.corners = corners
+
+    def edge_multiply(self, other):
+        # (A*B)(x).c = A(B(x).c).c
+        edges = [Edge(0) for _ in range(12)]
+        for i in range(12):
+            # (A*B)(x).c = A(B(x).c).c
+            edges[i].c = self.edges[other.edges[i].c].c
+            # (A*B)(x).o = A(B(x).c).o + B(x).o
+            edges[i].o = (self.edges[other.edges[i].c].o + other.edges[i].o) % 2
+        self.edges = edges
+
+    def multiply(self, other):
+        self.corner_multiply(other)
+        self.edge_multiply(other)
+
+    def inverse_cubie(self, other):
+        for i in range(12):
+            other.edges[self.edges[i].c].c = i
+        for i in range(12):
+            other.edges[i].o = self.edges[other.edges[i].c].o
+        for i in range(8):
+            other.corners[self.corners[i].c].c = i
+        for i in range(8):
+            other.corners[i].o = self.corners[other.corners[i].c].o
+            if other.corners[i].o < 3:
+                other.corners[i].o = -other.corners[i].o
+                if other.corners[i].o < 0:
+                    other.corners[i].o += 3
+
+    def get_ud_slice_coord(self):
+        res, n = 0, 0
+        # UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR
+        for i in range(12):
+            if self.edges[i].c in [FR, FL, BL, BR]:
+                n += 1
+            elif n != 0:
+                print(i, n - 1)
+                res += rubik.Utils.binomial(i, n - 1)
+        return res
+
+    def __mul__(self, other):
+        self.corner_multiply(other)
+        self.edge_multiply(other)
 
     def __str__(self) -> str:
         return ", ".join([f"({corner})" for corner in self.corners]) + '\n' + \
