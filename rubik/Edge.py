@@ -1,19 +1,23 @@
 
-from rubik.Colors import B, L, U, R, D, F
 from collections import deque
+from rubik.Colors import B, L, U, R, D, F
 
-# coordinate of Edges
+# Координаты ребер
+# Пример: UR - UP RIGHT (вернее правое ребро)
 UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR = range(12)
 
+# для печати
 EDGES = {UF: "UF", UL: "UL", UB: "UB", UR: "UR",
          DF: "DF", DL: "DL", DB: "DB", DR: "DR",
          FL: "FL", FR: "FR", BL: "BL", BR: "BR"}
 
+# лицевые стороны ребер
 EDGE_SIDES = {
     UR: [U, R], UF: [U, F], UL: [U, L], UB: [U, B], DR: [D, R], DF: [D, F],
     DL: [D, L], DB: [D, B], FR: [F, R], FL: [F, L], BL: [B, L], BR: [B, R]
 }
 
+# координаты ребер на гранях
 EDGE_FACES_COORDS = {
     UR: [[1, 2], [0, 1]],
     UF: [[2, 1], [0, 1]],
@@ -29,6 +33,7 @@ EDGE_FACES_COORDS = {
     BR: [[1, 0], [1, 2]]
 }
 
+# получение координаты ребра по двум сторонам
 EDGE_BY_SIDES = {
     U: {R: UR, F: UF, L: UL, B: UB},
     D: {R: DR, F: DF, L: DL, B: DB},
@@ -40,9 +45,9 @@ EDGE_BY_SIDES = {
 class Edge:
 
     def __init__(self, num, flip=0):
-        # c - coordinate
+        # c - координата
         self.c = num
-        # o - orientation
+        # o - ориентация
         self.o = flip
 
     def rotate(self, coord, flip) -> None:

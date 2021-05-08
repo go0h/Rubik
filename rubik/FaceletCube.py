@@ -4,11 +4,11 @@ from rubik.Colors import colors, B, L, U, R, D, F, NONE
 from rubik.Side import Side
 from rubik.Corner import CORNERS_SIDES
 from rubik.Edge import EDGE_SIDES
-import rubik.CubieCube
+import rubik.CubieCube as cc
 
 
 class FaceletCube:
-
+    """http://kociemba.org/math/faceletlevel.htm"""
     def __init__(self, size=3):
         self.size = size
         self.back = Side(self.size, B)
@@ -283,7 +283,7 @@ class FaceletCube:
         self.sides[s2].set_face(p2)
 
     def to_cubie_cube(self):
-        cubie = rubik.CubieCube.CubieCube()
+        cubie = cc.CubieCube()
         for i in range(8):
             cubie.set_corner(i, self.sides)
         for i in range(12):

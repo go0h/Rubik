@@ -1,18 +1,21 @@
 
-from rubik.Colors import B, L, U, R, D, F
 from collections import deque
+from rubik.Colors import B, L, U, R, D, F
 
-# coordinate of Corners
+# Угловые координаты
+# Пример: URF - UP, RIGHT, FRONT (верхний правый передний угол)
 URF, UFL, ULB, UBR, DFR, DLF, DBL, DRB = range(8)
 
 CORNERS = {URF: "URF", UFL: "UFL", ULB: "ULB", UBR: "UBR",
            DFR: "DFR", DLF: "DLF", DBL: "DBL", DRB: "DRB"}
 
+# лицевые стороны угла
 CORNERS_SIDES = {
     URF: [U, R, F], UFL: [U, F, L], ULB: [U, L, B], UBR: [U, B, R],
     DFR: [D, F, R], DLF: [D, L, F], DBL: [D, B, L], DRB: [D, R, B]
 }
 
+# координаты угла на гранях
 CORNER_FACES_COORDS = {
     URF: [[2, 2], [0, 0], [0, 2]],
     UFL: [[2, 0], [0, 0], [0, 2]],
@@ -24,6 +27,7 @@ CORNER_FACES_COORDS = {
     DRB: [[2, 2], [2, 2], [2, 0]]
 }
 
+# получение координаты угла по двум сторонам
 CORNER_BY_SIDES = {
     U: {R: URF, F: UFL, L: ULB, B: UBR},
     D: {F: DFR, L: DLF, B: DBL, R: DRB}
@@ -32,10 +36,10 @@ CORNER_BY_SIDES = {
 
 class Corner:
 
-    def __init__(self, num, orient=0):
-        # c - coordinate
-        self.c = num
-        # o - orientation
+    def __init__(self, coord, orient=0):
+        # c - координата
+        self.c = coord
+        # o - ориентация
         self.o = orient
 
     def rotate(self, coord, num) -> None:

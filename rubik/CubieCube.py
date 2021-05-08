@@ -1,10 +1,11 @@
-import copy
 
-import rubik.FaceletCube
-import rubik.Utils
+import copy
+import rubik.FaceletCube as fc
 from rubik.Edge import *
 from rubik.Corner import *
+from math import comb  # биномиальный коэффициент
 
+# приращение координаты и ориентации угла путем вращения
 BASIC_CORNER_MOVES = {
     U: [(UBR, 0), (URF, 0), (UFL, 0), (ULB, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
     R: [(DFR, 2), (UFL, 0), (ULB, 0), (URF, 1), (DRB, 1), (DLF, 0), (DBL, 0), (UBR, 2)],
@@ -14,6 +15,7 @@ BASIC_CORNER_MOVES = {
     B: [(URF, 0), (UFL, 0), (UBR, 1), (DRB, 2), (DFR, 0), (DLF, 0), (ULB, 2), (DBL, 1)]
 }
 
+# приращение координаты и ориентации ребра путем вращения
 BASIC_EDGE_MOVES = {
     U: [(UB, 0), (UR, 0), (UF, 0), (UL, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)],
     R: [(FR, 0), (UF, 0), (UL, 0), (UB, 0), (BR, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FL, 0), (BL, 0), (UR, 0)],
@@ -25,7 +27,7 @@ BASIC_EDGE_MOVES = {
 
 
 class CubieCube:
-
+    """http://kociemba.org/math/cubielevel.htm"""
     def __init__(self, corners=None, edges=None):
         if corners is None:
             self.corners = [Corner(i) for i in range(8)]
@@ -163,7 +165,7 @@ class CubieCube:
                 self.edges[j].o = (t.o + e_m[j][1]) % 2
 
     def solved(self) -> bool:
-        """Checks if cube is solved"""
+        """Комментарии излишни"""
         i = 0
         for corner in self.corners:
             if corner.c != i or corner.o != 0:
@@ -177,7 +179,7 @@ class CubieCube:
         return True
 
     def to_facelet_cube(self):
-        facelet = rubik.FaceletCube.FaceletCube()
+        facelet = fc.FaceletCube()
         for i in range(len(self.corners)):
             facelet.set_corner(i, self.corners[i])
         for i in range(len(self.edges)):
@@ -247,14 +249,128 @@ class CubieCube:
                     other.corners[i].o += 3
 
     def get_ud_slice_coord(self):
+        """http://kociemba.org/math/UDSliceCoord.htm
+            Ориентация чертырех средних ребер UD-разреза (FR, FL, BL, BR) без использования их перестановок.
+            Фаза 1: от 0 до 495
+            Фаза 2: 0"""
         res, n = 0, 0
-        # UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR
-        for i in range(12):
-            if self.edges[i].c in [FR, FL, BL, BR]:
+        for i in range(BR, UR - 1, -1):
+            if FR <= self.edges[i].c <= BR:
+                res += comb(11 - i, n + 1)
                 n += 1
-            elif n != 0:
-                print(i, n - 1)
-                res += rubik.Utils.binomial(i, n - 1)
+        return res
+
+    def __edges_coord__(self, start, end):
+        from collections import deque
+        res, n = 0, 0
+        edges = deque(self.edges[:])
+        if start == UR or start == DR:
+            edges.rotate(4)
+        for i in range(BR, UR - 1, -1):
+            if start <= edges[i].c <= end:
+                res += comb(11 - i, n + 1)
+                n += 1
+        return res
+
+    def get_corners_twist(self):
+        """Ориентация углов описывается числом от 0 до 2186 (3^7 - 1)"""
+        res = 0
+        for i in range(7):
+            res = 3 * res + self.corners[i].o
+        return res
+
+    def get_edges_flip(self):
+        """Ориентация ребер описывается числом от 0 до 2047 (2^11 - 1)"""
+        res = 0
+        for i in range(11):
+            res = 2 * res + self.edges[i].o
+        return res
+
+    # ДЛЯ ПРОВЕРКИ
+    # def get_ud_slice_sorted(self):
+    #     j = 0
+    #     pos = [0 for _ in range(4)]
+    #     for i in range(UR, BR + 1):
+    #         if self.edges[i].c in [FR, FL, BL, BR]:
+    #             pos[j] = self.edges[i].c
+    #             j += 1
+    #     c_res = 0
+    #     for j in range(3, 0, -1):
+    #         s = 0
+    #         for k in range(j - 1, -1, -1):
+    #             if pos[k] > pos[j]:
+    #                 s += 1
+    #         c_res = (c_res + s) * j
+    #     return 24 * self.get_ud_slice_coord() + c_res
+
+    def __get_edges__(self, start, end):
+        j = 0
+        pos = [0 for _ in range(4)]
+        edges = [e for e in range(start, end + 1)]
+        for i in range(UR, BR + 1):
+            if self.edges[i].c in edges:
+                pos[j] = self.edges[i].c
+                j += 1
+        c_res = 0
+        for j in range(3, 0, -1):
+            s = 0
+            for k in range(j - 1, -1, -1):
+                if pos[k] > pos[j]:
+                    s += 1
+            c_res = (c_res + s) * j
+        return 24 * self.__edges_coord__(start, end) + c_res
+
+    def get_ud_slice_sorted(self):
+        """http://kociemba.org/math/twophase.htm#phase2udslice
+           Ориентация чертырех средних ребер UD-разреза (FR, FL, BL, BR) c перестановками
+           Фаза 1: от 0 до 11880
+           Фаза 2: от 0 до 24
+           Решенный куб: 0"""
+        return self.__get_edges__(FR, BR)
+
+    def get_u_edges(self):
+        """http://kociemba.org/math/twophase.htm#phase2udslice
+           Ориентация чертырех верних ребер (UR, UF, UL, UB) c перестановками
+           Фаза 1: от 0 до 11880
+           Фаза 2: от 0 до 1680
+           Решенный куб: 1656"""
+        return self.__get_edges__(UR, UB)
+
+    def get_d_edges(self):
+        """http://kociemba.org/math/twophase.htm#phase2udslice
+           Ориентация чертырех верних ребер (UR, UF, UL, UB) c перестановками
+           Фаза 1: от 0 до 11880
+           Фаза 2: от 0 до 1680
+           Решенный куб: 0"""
+        return self.__get_edges__(DR, DB)
+
+    def get_corner(self):
+        """http://kociemba.org/math/coordlevel.htm
+           Перестановки 8 углов
+           Фаза 1,2: от 0 до 40320
+           Решенный куб: 0"""
+        res = 0
+        for i in range(DRB, URF - 1, -1):
+            s = 0
+            for j in range(i - 1, URF - 1, -1):
+                if self.corners[i].c < self.corners[j].c:
+                    s += 1
+            res = s + (i + 1) * res
+        return res
+
+    def get_ud_edges(self):
+        """http://kociemba.org/math/coordlevel.htm
+           Перестановки 8 ребер (верхних и нижних)
+           Фаза 1: не определено
+           Фаза 2: от 0 до 40320
+           Решенный куб: 0"""
+        res = 0
+        for i in range(DB, UR - 1, -1):
+            s = 0
+            for j in range(i - 1, UR - 1, -1):
+                if self.edges[i].c < self.edges[j].c:
+                    s += 1
+            res = s + (i + 1) * res
         return res
 
     def __mul__(self, other):
