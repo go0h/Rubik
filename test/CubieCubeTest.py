@@ -157,7 +157,7 @@ class CubieCubeTest(unittest.TestCase):
         arr = []
         for _ in range(150):
             c = get_random_cubie()
-            arr.append(c.get_corner())
+            arr.append(c.get_corners())
         m = max(arr)
         print(m)
         self.assertTrue(m < 40320)
@@ -166,7 +166,7 @@ class CubieCubeTest(unittest.TestCase):
         arr = []
         for _ in range(150):
             c = get_random_cubie_2()
-            arr.append(c.get_corner())
+            arr.append(c.get_corners())
         m = max(arr)
         print(m)
         self.assertTrue(m < 40320)

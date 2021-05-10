@@ -306,7 +306,7 @@ class CubieCube:
     def __get_edges__(self, start, end):
         j = 0
         pos = [0 for _ in range(4)]
-        edges = [e for e in range(start, end + 1)]
+        edges = list(range(start, end + 1))
         for i in range(UR, BR + 1):
             if self.edges[i].c in edges:
                 pos[j] = self.edges[i].c
@@ -344,7 +344,7 @@ class CubieCube:
            Решенный куб: 0"""
         return self.__get_edges__(DR, DB)
 
-    def get_corner(self):
+    def get_corners(self):
         """http://kociemba.org/math/coordlevel.htm
            Перестановки 8 углов
            Фаза 1,2: от 0 до 40320

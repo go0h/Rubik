@@ -1,7 +1,7 @@
-import unittest
 
-from rubik.Utils import *
-from rubik.Symmetries import BASIC_SYM_CUBE, S_URF3, S_F2, S_U4, S_LR2, SYM_N, SYM_CUBIES, INV_IDX
+import unittest
+import rubik.CubieCube as cc
+from rubik.Symmetries import BASIC_SYM_CUBE, S_URF3, S_F2, S_U4, S_LR2, SYM_CUBIES, INV_IDX
 
 
 class SymmetriesTest(unittest.TestCase):
@@ -41,5 +41,3 @@ class SymmetriesTest(unittest.TestCase):
             c2.multiply(SYM_CUBIES[n])
             c2.multiply(SYM_CUBIES[INV_IDX[n]])
             self.assertEqual(c1, c2)
-
-

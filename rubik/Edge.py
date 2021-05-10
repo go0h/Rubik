@@ -7,9 +7,11 @@ from rubik.Colors import B, L, U, R, D, F
 UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR = range(12)
 
 # для печати
-EDGES = {UF: "UF", UL: "UL", UB: "UB", UR: "UR",
-         DF: "DF", DL: "DL", DB: "DB", DR: "DR",
-         FL: "FL", FR: "FR", BL: "BL", BR: "BR"}
+EDGES = {
+    UF: "UF", UL: "UL", UB: "UB", UR: "UR",
+    DF: "DF", DL: "DL", DB: "DB", DR: "DR",
+    FL: "FL", FR: "FR", BL: "BL", BR: "BR"
+}
 
 # лицевые стороны ребер
 EDGE_SIDES = {
