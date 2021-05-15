@@ -48,7 +48,7 @@ class CubieCubeTest(unittest.TestCase):
 
     def test_all_rotation(self):
 
-        for move in MOVES:
+        for move in MOVES_S:
             f1 = fc.FaceletCube()
             f1.scramble(move)
 
@@ -155,7 +155,7 @@ class CubieCubeTest(unittest.TestCase):
 
     def test_corner_perm(self):
         arr = []
-        for _ in range(150):
+        for _ in range(1):
             c = get_random_cubie()
             arr.append(c.get_corners())
         m = max(arr)
@@ -179,3 +179,10 @@ class CubieCubeTest(unittest.TestCase):
         m = max(arr)
         print(m)
         self.assertTrue(m < 40320)
+
+    def test_random_phase2_cube(self):
+        for _ in range(100):
+            c = get_random_cubie_2()
+            self.assertTrue(c.get_edges_flip() == 0 and \
+                            c.get_corners_twist() == 0 and \
+                            c.get_ud_slice_coord() == 0)

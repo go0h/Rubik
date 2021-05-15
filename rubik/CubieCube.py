@@ -4,6 +4,7 @@ import rubik.FaceletCube as fc
 from rubik.Edge import *
 from rubik.Corner import *
 from math import comb  # биномиальный коэффициент
+from math import factorial
 
 # приращение координаты и ориентации угла путем вращения
 BASIC_CORNER_MOVES = {
@@ -52,7 +53,12 @@ class CubieCube:
 
     def scramble(self, scramble: str) -> None:
         allowed_moves = self.__moves__.keys()
-        for move in scramble.strip().split(" "):
+        if len(scramble.strip()) == 0:
+            return
+        moves = scramble.strip().split(" ")
+        if len(moves) == 0:
+            return
+        for move in moves:
             if move in allowed_moves:
                 self.move(move)
             else:
@@ -286,7 +292,7 @@ class CubieCube:
             res = 2 * res + self.edges[i].o
         return res
 
-    # ДЛЯ ПРОВЕРКИ
+    # # ДЛЯ ПРОВЕРКИ
     # def get_ud_slice_sorted(self):
     #     j = 0
     #     pos = [0 for _ in range(4)]
@@ -350,12 +356,12 @@ class CubieCube:
            Фаза 1,2: от 0 до 40320
            Решенный куб: 0"""
         res = 0
-        for i in range(DRB, URF - 1, -1):
+        for i in range(DRB, URF, -1):
             s = 0
             for j in range(i - 1, URF - 1, -1):
-                if self.corners[i].c < self.corners[j].c:
+                if self.corners[j].c > self.corners[i].c:
                     s += 1
-            res = s + (i + 1) * res
+            res = (res + s) * i
         return res
 
     def get_ud_edges(self):
@@ -365,12 +371,12 @@ class CubieCube:
            Фаза 2: от 0 до 40320
            Решенный куб: 0"""
         res = 0
-        for i in range(DB, UR - 1, -1):
+        for i in range(DB, UR, -1):
             s = 0
             for j in range(i - 1, UR - 1, -1):
-                if self.edges[i].c < self.edges[j].c:
+                if self.edges[j].c > self.edges[i].c:
                     s += 1
-            res = s + (i + 1) * res
+            res = (res + s) * i
         return res
 
     def __mul__(self, other):

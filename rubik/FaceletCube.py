@@ -34,7 +34,12 @@ class FaceletCube:
 
     def scramble(self, scramble: str) -> None:
         allowed_moves = self.__moves__.keys()
-        for move in scramble.strip().split(" "):
+        if len(scramble.strip()) == 0:
+            return
+        moves = scramble.strip().split(" ")
+        if len(moves) == 0:
+            return
+        for move in moves:
             if move in allowed_moves:
                 self.move(move)
             else:
