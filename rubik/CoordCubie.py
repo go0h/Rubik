@@ -11,27 +11,19 @@ class CoordCubie:
         self.corner_twist = cubie.get_corners_twist()
         self.edge_flip = cubie.get_edges_flip()
         self.slice_sorted = cubie.get_ud_slice_sorted()
-        # self.u_edges = cubie.get_u_edges()
-        # self.d_edges = cubie.get_d_edges()
-        self.corners = cubie.get_corners()
-        if self.slice_sorted < 24:
-            self.ud_edges = cubie.get_ud_edges()
-        else:
-            self.ud_edges = -1
+        # только для второй фазы
+        self.corners = 0
+        self.ud_edges = 0
 
         # перестановки и ориентация UD-среза
         self.fs_classidx = tb.fs_classidx[2048 * (self.slice_sorted // 24) + self.edge_flip]
         # номер симметрии
         self.fs_sym = tb.fs_sym[2048 * (self.slice_sorted // 24) + self.edge_flip]
-        # первое вхождение класса эквивалентности
-        self.fs_rep = tb.fs_rep[self.fs_classidx]
 
         # перестановки 8 углов
         self.co_classidx = tb.co_classidx[self.corners]
         # номер симметрии
         self.co_sym = tb.co_sym[self.corners]
-        # первое вхождение класса эквивалентности
-        self.co_rep = tb.co_rep[self.co_classidx]
 
     def get_phase1_depth(self):
         """@:return Миимальное количество ходов требуемое для достижения рандомного кубика фазы 2"""
@@ -94,4 +86,3 @@ class CoordCubie:
                     depth_mod3 = depth_mod3 - 1
                     break
         return depth
-

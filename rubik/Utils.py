@@ -23,9 +23,8 @@ PHASE2_MOVES_S = ["U", "U2", "U'", "R2", "F2", "D", "D2", "D'", "L2", "B2"]
 
 def get_random_scramble():
     random_scramble = ""
-    for i in range(random.randint(1, 5)):
+    for i in range(random.randint(1, 30)):
         random_scramble += random.choice(MOVES_S) + " "
-    # print(random_scramble)
     return random_scramble
 
 

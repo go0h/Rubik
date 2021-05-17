@@ -11,7 +11,6 @@ def load_table(file_name, table_size, elem_size, resource_dir=f"{os.getcwd()}/re
         with open(resource_dir + file_name, "rb") as file:
             table = array.array(elem_size)
             table.fromfile(file, table_size)
-            # print(f"Table {file_name} loaded")
             return table
     except IOError:
         print(f"File {resource_dir}{file_name} not accessible")
@@ -66,7 +65,7 @@ fs_sym = load_table("fs_sym", 2048 * 495, "B")
 # представителя этого класса в массиве размером 64430
 # fs_rep[classidx] - первое вхождение класса эквивалентности
 # fs_rep[64430]
-fs_rep = load_table("fs_rep", 64430, "L")
+# fs_rep = load_table("fs_rep", 64430, "L")
 
 #######################################################################################################################
 
@@ -90,7 +89,7 @@ co_sym = load_table("co_sym", 40320, "B")
 # представителя этого класса в массиве размером 2768
 # fs_rep[classidx] - первое вхождение класса эквивалентности
 # fs_rep[2768]
-co_rep = load_table("co_rep", 2768, "H")
+# co_rep = load_table("co_rep", 2768, "H")
 
 #######################################################################################################################
 
@@ -127,25 +126,6 @@ move_flip = load_table("move_flip", 2048 * 18, "H")
 # move_flip[11880][18]
 move_slice_sorted = load_table("move_slice_sorted", 11880 * 18, "H")
 
-
-# Таблица перестановок 4 Up-ребер для 18 возможных ходов (см. rubik.Utils.MOVES)
-# 12!/8! = 11880 количество возжножных перестановок 4 U-разреза ребер для Фазы 1.
-# Фаза 2 - 1680, для отилчия от `move_slice_sorted`
-# Собранный куб - 1680 - 24 = 1656.
-# 18 - возможные ходы
-# move_u_edges[11880][18]
-move_u_edges = load_table("move_u_edges", 11880 * 18, "H")
-
-
-# Таблица перестановок 4 Down-ребер для 18 возможных ходов (см. rubik.Utils.MOVES)
-# 12!/8! = 11880 количество возжножных перестановок 4 U-разреза ребер для Фазы 1.
-# Фаза 2 - 1680, для отилчия от `move_slice_sorted`
-# Собранный куб - 0.
-# 18 - возможные ходы
-# move_u_edges[11880][18]
-move_d_edges = load_table("move_d_edges", 11880 * 18, "H")
-
-
 # Таблица перестановок 8 Up-Down-ребер для 18 возможных ходов (см. rubik.Utils.MOVES) для Фазы 2.
 # Фаза 1 - не используется
 # 8! = 40320 количество возжножных перестановок 8 Up-Down-ребер для Фазы 2.
@@ -171,10 +151,6 @@ move_corners = load_table("move_corners", 40320 * 18, "H")
 phase1_prun = load_table("phase1_prun", (2187 * 64430) // 16 + 1, "L")
 
 phase2_prun = load_table("phase2_prun", (2768 * 40320) // 16, "L")
-
-phase2_cornsliceprun = load_table("phase2_cornsliceprun", 40320 * 24, "b")
-
-phase2_edgemerge = load_table("phase2_edgemerge", 1680 * 24, "H")
 
 # distance[20][3] = -128..127
 distance = array.array('b', [0 for _ in range(60)])

@@ -1,5 +1,7 @@
 import unittest
-from rubik.Utils import *
+import rubik.Utils as u
+import rubik.CubieCube as cc
+import rubik.FaceletCube as fc
 from rubik.Edge import UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR
 
 
@@ -37,7 +39,7 @@ class CubieCubeTest(unittest.TestCase):
     def test_random_facelet_to_cubie(self):
 
         for _ in range(150):
-            f1 = get_random_facelet()
+            f1 = u.get_random_facelet()
 
             c1 = f1.to_cubie_cube()
             f2 = c1.to_facelet_cube()
@@ -48,7 +50,7 @@ class CubieCubeTest(unittest.TestCase):
 
     def test_all_rotation(self):
 
-        for move in MOVES_S:
+        for move in u.MOVES_S:
             f1 = fc.FaceletCube()
             f1.scramble(move)
 
@@ -64,7 +66,7 @@ class CubieCubeTest(unittest.TestCase):
     def test_random_rotation(self):
 
         for _ in range(150):
-            scramble = get_random_scramble()
+            scramble = u.get_random_scramble()
 
             f1 = fc.FaceletCube()
             f1.scramble(scramble)
@@ -78,16 +80,6 @@ class CubieCubeTest(unittest.TestCase):
             self.assertEqual(f1, f2)
             self.assertEqual(c1, c2)
 
-    def test_inverse_cubie(self):
-
-        c1 = get_random_cubie()
-        c2 = cc.CubieCube()
-        c1.inverse_cubie(c2)
-
-        c3 = cc.CubieCube()
-        c2.inverse_cubie(c3)
-        self.assertEqual(c1, c3)
-
     def test_ud_slice_coord_1(self):
         c = cc.CubieCube()
         self.assertEqual(c.get_ud_slice_coord(), 0)
@@ -98,65 +90,19 @@ class CubieCubeTest(unittest.TestCase):
         print(c)
         self.assertEqual(c.get_ud_slice_coord(), 493)
 
-    def test_edges_coord(self):
-        for _ in range(150):
-            c = get_random_cubie()
-            self.assertEqual(c.get_ud_slice_coord(), c.__edges_coord__(FR, BR))
-            self.assertEqual(c.get_ud_slice_sorted(), c.__get_edges__(FR, BR))
-
-    def test_u_edges_coord(self):
-        c = cc.CubieCube()
-        self.assertEqual(1656, c.get_u_edges())
-        arr = []
-        for _ in range(150):
-            c = get_random_cubie()
-            arr.append(c.get_u_edges())
-        m = max(arr)
-        print(m)
-        self.assertTrue(m < 11880)
-
-    def test_d_edges_coord(self):
-        c = cc.CubieCube()
-        self.assertEqual(0, c.get_d_edges())
-        arr = []
-        for _ in range(150):
-            c = get_random_cubie()
-            arr.append(c.get_d_edges())
-        m = max(arr)
-        print(m)
-        self.assertTrue(m < 11880)
-
     def test_ud_edges_coord_phase2(self):
         arr = []
         for _ in range(150):
-            c = get_random_cubie_2()
+            c = u.get_random_cubie_2()
             arr.append(c.get_ud_slice_sorted())
         m = max(arr)
         print(m)
         self.assertTrue(m < 24)
 
-    def test_u_edges_coord_phase2(self):
-        arr = []
-        for _ in range(150):
-            c = get_random_cubie_2()
-            arr.append(c.get_u_edges())
-        m = max(arr)
-        print(m)
-        self.assertTrue(m < 1680)
-
-    def test_d_edges_coord_phase2(self):
-        arr = []
-        for _ in range(150):
-            c = get_random_cubie_2()
-            arr.append(c.get_d_edges())
-        m = max(arr)
-        print(m)
-        self.assertTrue(m < 1680)
-
     def test_corner_perm(self):
         arr = []
         for _ in range(1):
-            c = get_random_cubie()
+            c = u.get_random_cubie()
             arr.append(c.get_corners())
         m = max(arr)
         print(m)
@@ -165,7 +111,7 @@ class CubieCubeTest(unittest.TestCase):
     def test_corner_perm_phase2(self):
         arr = []
         for _ in range(150):
-            c = get_random_cubie_2()
+            c = u.get_random_cubie_2()
             arr.append(c.get_corners())
         m = max(arr)
         print(m)
@@ -174,7 +120,7 @@ class CubieCubeTest(unittest.TestCase):
     def test_ud_edges_perm_phase2(self):
         arr = []
         for _ in range(150):
-            c = get_random_cubie_2()
+            c = u.get_random_cubie_2()
             arr.append(c.get_ud_edges())
         m = max(arr)
         print(m)
@@ -182,7 +128,7 @@ class CubieCubeTest(unittest.TestCase):
 
     def test_random_phase2_cube(self):
         for _ in range(100):
-            c = get_random_cubie_2()
+            c = u.get_random_cubie_2()
             self.assertTrue(c.get_edges_flip() == 0 and \
                             c.get_corners_twist() == 0 and \
                             c.get_ud_slice_coord() == 0)

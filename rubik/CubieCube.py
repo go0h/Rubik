@@ -1,10 +1,9 @@
-
 import copy
 import rubik.FaceletCube as fc
+import rubik.Utils as u
 from rubik.Edge import *
 from rubik.Corner import *
 from math import comb  # биномиальный коэффициент
-from rubik.Utils import rotate_left, rotate_right
 
 # приращение координаты и ориентации угла путем вращения
 BASIC_CORNER_MOVES = {
@@ -240,20 +239,6 @@ class CubieCube:
         self.corner_multiply(other)
         self.edge_multiply(other)
 
-    def inverse_cubie(self, other):
-        for i in range(12):
-            other.edges[self.edges[i].c].c = i
-        for i in range(12):
-            other.edges[i].o = self.edges[other.edges[i].c].o
-        for i in range(8):
-            other.corners[self.corners[i].c].c = i
-        for i in range(8):
-            other.corners[i].o = self.corners[other.corners[i].c].o
-            if other.corners[i].o < 3:
-                other.corners[i].o = -other.corners[i].o
-                if other.corners[i].o < 0:
-                    other.corners[i].o += 3
-
     def get_ud_slice_coord(self):
         """http://kociemba.org/math/UDSliceCoord.htm
             Ориентация чертырех средних ребер UD-разреза (FR, FL, BL, BR) без использования их перестановок.
@@ -308,7 +293,7 @@ class CubieCube:
         for j in range(3, 0, -1):
             k = 0
             while edge4[j] != j + 8:
-                rotate_left(edge4, 0, j)
+                u.rotate_left(edge4, 0, j)
                 k += 1
             b = (j + 1)*b + k
         return 24*a + b
@@ -330,94 +315,22 @@ class CubieCube:
     #         c_res = (c_res + s) * j
     #     return 24 * self.get_ud_slice_coord() + c_res
 
-    def __get_edges__(self, start, end):
-        j = 0
-        pos = [0 for _ in range(4)]
-        edges = list(range(start, end + 1))
-        for i in range(UR, BR + 1):
-            if self.edges[i].c in edges:
-                pos[j] = self.edges[i].c
-                j += 1
-        c_res = 0
-        for j in range(3, 0, -1):
-            s = 0
-            for k in range(j - 1, -1, -1):
-                if pos[k] > pos[j]:
-                    s += 1
-            c_res = (c_res + s) * j
-        return 24 * self.__edges_coord__(start, end) + c_res
-
-    # def get_ud_slice_sorted(self):
-    #     """http://kociemba.org/math/twophase.htm#phase2udslice
-    #        Ориентация чертырех средних ребер UD-разреза (FR, FL, BL, BR) c перестановками
-    #        Фаза 1: от 0 до 11880
-    #        Фаза 2: от 0 до 24
-    #        Решенный куб: 0"""
-    #     return self.__get_edges__(FR, BR)
-
-    # def get_u_edges(self):
-    #     """http://kociemba.org/math/twophase.htm#phase2udslice
-    #        Ориентация чертырех верних ребер (UR, UF, UL, UB) c перестановками
-    #        Фаза 1: от 0 до 11880
-    #        Фаза 2: от 0 до 1680
-    #        Решенный куб: 1656"""
-    #     return self.__get_edges__(UR, UB)
-    #
-    # def get_d_edges(self):
-    #     """http://kociemba.org/math/twophase.htm#phase2udslice
-    #        Ориентация чертырех верних ребер (UR, UF, UL, UB) c перестановками
-    #        Фаза 1: от 0 до 11880
-    #        Фаза 2: от 0 до 1680
-    #        Решенный куб: 0"""
-    #     return self.__get_edges__(DR, DB)
-
-    def get_u_edges(self):
-        """Get the permutation and location of edges UR, UF, UL and UB.
-            0 <= u_edges < 11880 in phase 1, 0 <= u_edges < 1680 in phase 2, u_edges = 1656 for solved cube."""
-        a = x = 0
-        edge4 = [0]*4
-        ep_mod = [e.c for e in self.edges]
-        for j in range(4):
-            rotate_right(ep_mod, 0, 11)
-        # First compute the index a < (12 choose 4) and the permutation array perm.
-        for j in range(BR, UR - 1, -1):
-            if UR <= ep_mod[j] <= UB:
-                a += comb(11 - j, x + 1)
-                edge4[3 - x] = ep_mod[j]
-                x += 1
-        # Then compute the index b < 4! for the permutation in edge4
-        b = 0
-        for j in range(3, 0, -1):
-            k = 0
-            while edge4[j] != j:
-                rotate_left(edge4, 0, j)
-                k += 1
-            b = (j + 1)*b + k
-        return 24 * a + b
-
-    def get_d_edges(self):
-        """Get the permutation and location of the edges DR, DF, DL and DB.
-            0 <= d_edges < 11880 in phase 1, 0 <= d_edges < 1680 in phase 2, d_edges = 0 for solved cube."""
-        a = x = 0
-        edge4 = [0] * 4
-        ep_mod = [e.c for e in self.edges]
-        for j in range(4):
-            rotate_right(ep_mod, 0, 11)
-        # First compute the index a < (12 choose 4) and the permutation array perm.
-        for j in range(BR, UR - 1, -1):
-            if DR <= ep_mod[j] <= DB:
-                a += comb(11 - j, x + 1)
-                edge4[3 - x] = ep_mod[j]
-                x += 1
-        # Then compute the index b < 4! for the permutation in edge4
-        b = 0
-        for j in range(3, 0, -1):
-            k = 0
-            while edge4[j] != j + 4:
-                rotate_left(edge4, 0, j)
-                k += 1
-            b = (j + 1) * b + k
-        return 24 * a + b
+    # def __get_edges__(self, start, end):
+    #     j = 0
+    #     pos = [0 for _ in range(4)]
+    #     edges = list(range(start, end + 1))
+    #     for i in range(UR, BR + 1):
+    #         if self.edges[i].c in edges:
+    #             pos[j] = self.edges[i].c
+    #             j += 1
+    #     c_res = 0
+    #     for j in range(3, 0, -1):
+    #         s = 0
+    #         for k in range(j - 1, -1, -1):
+    #             if pos[k] > pos[j]:
+    #                 s += 1
+    #         c_res = (c_res + s) * j
+    #     return 24 * self.__edges_coord__(start, end) + c_res
 
     def get_corners(self):
         """http://kociemba.org/math/coordlevel.htm
@@ -437,7 +350,7 @@ class CubieCube:
         for j in range(DRB, URF, -1):
             k = 0
             while perm[j] != j:
-                rotate_left(perm, 0, j)
+                u.rotate_left(perm, 0, j)
                 k += 1
             b = (j + 1) * b + k
         return b
@@ -461,7 +374,7 @@ class CubieCube:
         for j in range(DB, UR, -1):
             k = 0
             while perm[j] != j:
-                rotate_left(perm, 0, j)
+                u.rotate_left(perm, 0, j)
                 k += 1
             b = (j + 1) * b + k
         return b
