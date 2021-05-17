@@ -11,8 +11,8 @@ class CoordCubie:
         self.corner_twist = cubie.get_corners_twist()
         self.edge_flip = cubie.get_edges_flip()
         self.slice_sorted = cubie.get_ud_slice_sorted()
-        self.u_edges = cubie.get_u_edges()
-        self.d_edges = cubie.get_d_edges()
+        # self.u_edges = cubie.get_u_edges()
+        # self.d_edges = cubie.get_d_edges()
         self.corners = cubie.get_corners()
         if self.slice_sorted < 24:
             self.ud_edges = cubie.get_ud_edges()

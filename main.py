@@ -9,16 +9,13 @@ from rubik.Tables import distance
 
 if __name__ == '__main__':
 
-    scramble = "U2" # get_random_scramble()
-
-    print(scramble)
+    scramble = "B F' U' L2 B2 R F D L2 L'" # get_random_scramble()
+    print(f"SCRAMBLE = \"{scramble}\"")
     cubie = cc.CubieCube()
     face = fc.FaceletCube()
 
     cubie.scramble(scramble)
     face.scramble(scramble)
-    print(cubie.get_corners())
-    print(cubie.get_ud_edges())
 
     f1 = cubie.to_facelet_cube()
     print(face)

@@ -4,7 +4,7 @@ import rubik.FaceletCube as fc
 from rubik.Edge import *
 from rubik.Corner import *
 from math import comb  # биномиальный коэффициент
-from math import factorial
+from rubik.Utils import rotate_left, rotate_right
 
 # приращение координаты и ориентации угла путем вращения
 BASIC_CORNER_MOVES = {
@@ -292,6 +292,27 @@ class CubieCube:
             res = 2 * res + self.edges[i].o
         return res
 
+    def get_ud_slice_sorted(self):
+        """Get the permutation and location of the UD-slice edges FR,FL,BL and BR.
+            0 <= slice_sorted < 11880 in phase 1, 0 <= slice_sorted < 24 in phase 2, slice_sorted = 0 for solved cube."""
+        a = x = 0
+        edge4 = [0] * 4
+        # First compute the index a < (12 choose 4) and the permutation array perm.
+        for j in range(BR, UR - 1, -1):
+            if FR <= self.edges[j].c <= BR:
+                a += comb(11 - j, x + 1)
+                edge4[3 - x] = self.edges[j].c
+                x += 1
+        # Then compute the index b < 4! for the permutation in edge4
+        b = 0
+        for j in range(3, 0, -1):
+            k = 0
+            while edge4[j] != j + 8:
+                rotate_left(edge4, 0, j)
+                k += 1
+            b = (j + 1)*b + k
+        return 24*a + b
+
     # # ДЛЯ ПРОВЕРКИ
     # def get_ud_slice_sorted(self):
     #     j = 0
@@ -326,43 +347,100 @@ class CubieCube:
             c_res = (c_res + s) * j
         return 24 * self.__edges_coord__(start, end) + c_res
 
-    def get_ud_slice_sorted(self):
-        """http://kociemba.org/math/twophase.htm#phase2udslice
-           Ориентация чертырех средних ребер UD-разреза (FR, FL, BL, BR) c перестановками
-           Фаза 1: от 0 до 11880
-           Фаза 2: от 0 до 24
-           Решенный куб: 0"""
-        return self.__get_edges__(FR, BR)
+    # def get_ud_slice_sorted(self):
+    #     """http://kociemba.org/math/twophase.htm#phase2udslice
+    #        Ориентация чертырех средних ребер UD-разреза (FR, FL, BL, BR) c перестановками
+    #        Фаза 1: от 0 до 11880
+    #        Фаза 2: от 0 до 24
+    #        Решенный куб: 0"""
+    #     return self.__get_edges__(FR, BR)
+
+    # def get_u_edges(self):
+    #     """http://kociemba.org/math/twophase.htm#phase2udslice
+    #        Ориентация чертырех верних ребер (UR, UF, UL, UB) c перестановками
+    #        Фаза 1: от 0 до 11880
+    #        Фаза 2: от 0 до 1680
+    #        Решенный куб: 1656"""
+    #     return self.__get_edges__(UR, UB)
+    #
+    # def get_d_edges(self):
+    #     """http://kociemba.org/math/twophase.htm#phase2udslice
+    #        Ориентация чертырех верних ребер (UR, UF, UL, UB) c перестановками
+    #        Фаза 1: от 0 до 11880
+    #        Фаза 2: от 0 до 1680
+    #        Решенный куб: 0"""
+    #     return self.__get_edges__(DR, DB)
 
     def get_u_edges(self):
-        """http://kociemba.org/math/twophase.htm#phase2udslice
-           Ориентация чертырех верних ребер (UR, UF, UL, UB) c перестановками
-           Фаза 1: от 0 до 11880
-           Фаза 2: от 0 до 1680
-           Решенный куб: 1656"""
-        return self.__get_edges__(UR, UB)
+        """Get the permutation and location of edges UR, UF, UL and UB.
+            0 <= u_edges < 11880 in phase 1, 0 <= u_edges < 1680 in phase 2, u_edges = 1656 for solved cube."""
+        a = x = 0
+        edge4 = [0]*4
+        ep_mod = [e.c for e in self.edges]
+        for j in range(4):
+            rotate_right(ep_mod, 0, 11)
+        # First compute the index a < (12 choose 4) and the permutation array perm.
+        for j in range(BR, UR - 1, -1):
+            if UR <= ep_mod[j] <= UB:
+                a += comb(11 - j, x + 1)
+                edge4[3 - x] = ep_mod[j]
+                x += 1
+        # Then compute the index b < 4! for the permutation in edge4
+        b = 0
+        for j in range(3, 0, -1):
+            k = 0
+            while edge4[j] != j:
+                rotate_left(edge4, 0, j)
+                k += 1
+            b = (j + 1)*b + k
+        return 24 * a + b
 
     def get_d_edges(self):
-        """http://kociemba.org/math/twophase.htm#phase2udslice
-           Ориентация чертырех верних ребер (UR, UF, UL, UB) c перестановками
-           Фаза 1: от 0 до 11880
-           Фаза 2: от 0 до 1680
-           Решенный куб: 0"""
-        return self.__get_edges__(DR, DB)
+        """Get the permutation and location of the edges DR, DF, DL and DB.
+            0 <= d_edges < 11880 in phase 1, 0 <= d_edges < 1680 in phase 2, d_edges = 0 for solved cube."""
+        a = x = 0
+        edge4 = [0] * 4
+        ep_mod = [e.c for e in self.edges]
+        for j in range(4):
+            rotate_right(ep_mod, 0, 11)
+        # First compute the index a < (12 choose 4) and the permutation array perm.
+        for j in range(BR, UR - 1, -1):
+            if DR <= ep_mod[j] <= DB:
+                a += comb(11 - j, x + 1)
+                edge4[3 - x] = ep_mod[j]
+                x += 1
+        # Then compute the index b < 4! for the permutation in edge4
+        b = 0
+        for j in range(3, 0, -1):
+            k = 0
+            while edge4[j] != j + 4:
+                rotate_left(edge4, 0, j)
+                k += 1
+            b = (j + 1) * b + k
+        return 24 * a + b
 
     def get_corners(self):
         """http://kociemba.org/math/coordlevel.htm
            Перестановки 8 углов
            Фаза 1,2: от 0 до 40320
            Решенный куб: 0"""
-        res = 0
-        for i in range(DRB, URF, -1):
-            s = 0
-            for j in range(i - 1, URF - 1, -1):
-                if self.corners[j].c > self.corners[i].c:
-                    s += 1
-            res = (res + s) * i
-        return res
+        # res = 0
+        # for i in range(DRB, URF, -1):
+        #     s = 0
+        #     for j in range(i - 1, URF - 1, -1):
+        #         if self.corners[j].c > self.corners[i].c:
+        #             s += 1
+        #     res = (res + s) * i
+        # return res
+        perm = list([corner.c for corner in self.corners])  # duplicate cp
+        b = 0
+        for j in range(DRB, URF, -1):
+            k = 0
+            while perm[j] != j:
+                rotate_left(perm, 0, j)
+                k += 1
+            b = (j + 1) * b + k
+        return b
 
     def get_ud_edges(self):
         """http://kociemba.org/math/coordlevel.htm
@@ -370,14 +448,23 @@ class CubieCube:
            Фаза 1: не определено
            Фаза 2: от 0 до 40320
            Решенный куб: 0"""
-        res = 0
-        for i in range(DB, UR, -1):
-            s = 0
-            for j in range(i - 1, UR - 1, -1):
-                if self.edges[j].c > self.edges[i].c:
-                    s += 1
-            res = (res + s) * i
-        return res
+        # res = 0
+        # for i in range(DB, UR, -1):
+        #     s = 0
+        #     for j in range(i - 1, UR - 1, -1):
+        #         if self.edges[j].c > self.edges[i].c:
+        #             s += 1
+        #     res = (res + s) * i
+        # return res
+        perm = list([edge.c for edge in self.edges[0:8]])  # duplicate first 8 elements of ep
+        b = 0
+        for j in range(DB, UR, -1):
+            k = 0
+            while perm[j] != j:
+                rotate_left(perm, 0, j)
+                k += 1
+            b = (j + 1) * b + k
+        return b
 
     def __mul__(self, other):
         self.corner_multiply(other)

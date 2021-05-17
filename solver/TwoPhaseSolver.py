@@ -6,7 +6,6 @@ import rubik.Tables as tb
 from copy import deepcopy
 
 
-
 class TwoPhaseSolver:
 
     def __init__(self, cubie: cc.CubieCube):
@@ -38,7 +37,7 @@ class TwoPhaseSolver:
 
     def search_phase1(self, twist, flip, slice_sorted, phase1_dist, togo1):
 
-        if twist == 0 and flip == 0 and slice_sorted < 24:
+        if twist == 0 and flip == 0 and slice_sorted < 24 and togo1 == 0:
 
             last_move = 0
             if self.moves_p1:
@@ -53,27 +52,29 @@ class TwoPhaseSolver:
                     corners = tb.move_corners[18 * corners + move]
                 self.corner_save = corners
 
-            # print("BEFORE")
-            # print(tb.phase2_cornsliceprun[24 * corners + slice_sorted], phase1_dist)
-            # if tb.phase2_cornsliceprun[24 * corners + slice_sorted] > togo1:
-            #     return
-            # print("AFTER")
-
-            u_edges = self.coord_cubie.u_edges
-            d_edges = self.coord_cubie.d_edges
+            print(u.moves_to_scramble(self.moves_p1))
+            temp = deepcopy(self.cubie)
             for move in self.moves_p1:
-                u_edges = tb.move_u_edges[18 * u_edges + move]
-                d_edges = tb.move_d_edges[18 * d_edges + move]
-            ud_edges = tb.phase2_edgemerge[24 * u_edges + d_edges % 24]
+                temp.move(u.MOVES_S[move])
+            print("PHASE 2 PREPARE")
+            print(temp.to_facelet_cube())
+            # print(temp.get_ud_edges())
+            ud_edges = temp.get_ud_edges()
+            corners = temp.get_corners()
+
+            # print(f"24 * {temp.get_u_edges()} + {temp.get_d_edges()} % 24 = {24 * temp.get_u_edges() + temp.get_d_edges() % 24}")
+            # print(f"24 * {u_edges} + {d_edges} % 24 = {24 * u_edges + d_edges % 24}")
+            # ud_edges = tb.phase2_edgemerge[24 * u_edges + d_edges % 24]
+            # print(ud_edges)
 
             dist2 = self.coord_cubie.get_phase2_depth(corners, ud_edges)
             print(f"phase1 is {u.check_cubie_in_phase2(self.cubie, self.moves_p1)}")
+            print(u.moves_to_scramble(self.moves_p1))
             print(f"phase2_dist = {dist2}")
             self.search_phase2(corners, ud_edges, slice_sorted, dist2, dist2)
 
         else:
             for move in u.MOVES:
-
                 if phase1_dist == 0 and togo1 < 5 and move in u.PHASE2_MOVES:
                     continue
 
@@ -111,11 +112,8 @@ class TwoPhaseSolver:
             print(u.moves_to_scramble(self.moves_p2))
             return
 
-        # print(f"corners = {corners}, ud_edges = {ud_edges}, slice_sorted = {slice_sorted}")
-        # print("PHASE 2")
         for move in u.PHASE2_MOVES:
-            if move == 1:
-                print("U2")
+            print(u.MOVES_S[move])
 
             if len(self.moves_p2) > 0:
                 last = self.moves_p2[-1] // 3 - move // 3
@@ -136,10 +134,13 @@ class TwoPhaseSolver:
             dist_mod3 = tb.get_co_ud_edges_depth3(40320 * classidx + tb.conj_ud_edges[(ud_edges1 << 4) + sym])
 
             dist2_new = tb.distance[3 * dist2 + dist_mod3]
-            if max(dist2_new, tb.phase2_cornsliceprun[24 * corners1 + slice_sorted1]) >= togo2:
+            # if max(dist2_new, tb.phase2_cornsliceprun[24 * corners1 + slice_sorted1]) >= togo2:
+            if dist2_new >= togo2:
+                print(dist2_new, dist2)
                 continue
 
             self.moves_p2.append(move)
+            print(u.moves_to_scramble(self.moves_p2))
             self.search_phase2(corners1, ud_edges1, slice_sorted1, dist2_new, togo2 - 1)
             if not self.solved:
                 self.moves_p2.pop(-1)

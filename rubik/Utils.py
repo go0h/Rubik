@@ -23,7 +23,7 @@ PHASE2_MOVES_S = ["U", "U2", "U'", "R2", "F2", "D", "D2", "D'", "L2", "B2"]
 
 def get_random_scramble():
     random_scramble = ""
-    for i in range(random.randint(1, 30)):
+    for i in range(random.randint(5, 10)):
         random_scramble += random.choice(MOVES_S) + " "
     # print(random_scramble)
     return random_scramble
@@ -73,3 +73,19 @@ def check_cubie_in_phase2(cubie, moves):
     # print(c.get_corners_twist())
     # print(c.get_ud_slice_coord())
     return c.get_edges_flip() == 0 and c.get_corners_twist() == 0 and c.get_ud_slice_coord() == 0
+
+
+def rotate_left(arr, l, r):
+    """"Rotate array arr left between l and r. r is included."""
+    temp = arr[l]
+    for i in range(l, r):
+        arr[i] = arr[i + 1]
+    arr[r] = temp
+
+
+def rotate_right(arr, l, r):
+    """"Rotate array arr right between l and r. r is included."""
+    temp = arr[r]
+    for i in range(r, l, -1):
+        arr[i] = arr[i-1]
+    arr[l] = temp
