@@ -25,12 +25,14 @@ class CubieCubeTest(unittest.TestCase):
 
     def test_solve(self):
 
-        cubie = get_random_cubie()
-        solver = tfs.TwoPhaseSolver(cubie)
+        for _ in range(300):
 
-        scramble = moves_to_scramble(solver.solve())
+            cubie = get_random_cubie()
+            solver = tfs.TwoPhaseSolver(cubie)
 
-        print(scramble)
-        # cubie.scramble(scramble)
+            moves = solver.solve()
+            scramble = ' '.join([i for i in moves])
 
-        # self.assertTrue(cubie.solved())
+            cubie.scramble(scramble)
+
+            self.assertTrue(cubie.solved())

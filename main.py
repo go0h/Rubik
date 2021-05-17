@@ -9,7 +9,7 @@ from rubik.Tables import distance
 
 if __name__ == '__main__':
 
-    scramble = "B F' U' L2 B2 R F D L2 L'" # get_random_scramble()
+    scramble = get_random_scramble()
     print(f"SCRAMBLE = \"{scramble}\"")
     cubie = cc.CubieCube()
     face = fc.FaceletCube()
@@ -24,5 +24,7 @@ if __name__ == '__main__':
 
     moves = solver.solve()
     scramble = ' '.join([i for i in moves])
+    print(scramble)
+    print(len(moves))
     f1.scramble(scramble)
     print(f1)
