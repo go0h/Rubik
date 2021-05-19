@@ -5,6 +5,7 @@ from rubik.Side import Side
 from rubik.Corner import CORNERS_SIDES
 from rubik.Edge import EDGE_SIDES
 import rubik.CubieCube as cc
+import rubik.Utils as u
 
 
 class FaceletCube:
@@ -19,21 +20,40 @@ class FaceletCube:
         self.front = Side(self.size, F)
 
         self.sides = [self.back, self.left, self.up, self.right, self.down, self.front]
-        self.__moves__ = {
-            "F": self.f, "F'": self.f_r, "F2": self.f2,
-            "B": self.b, "B'": self.b_r, "B2": self.b2,
-            "U": self.u, "U'": self.u_r, "U2": self.u2,
-            "D": self.d, "D'": self.d_r, "D2": self.d2,
-            "R": self.r, "R'": self.r_r, "R2": self.r2,
-            "L": self.lf, "L'": self.l_r, "L2": self.l2
+        self.__str_moves__ = {
+            "U": self.u, "U2": self.u2, "U'": self.u_r,
+            "R": self.r, "R2": self.r2, "R'": self.r_r,
+            "F": self.f, "F2": self.f2, "F'": self.f_r,
+            "D": self.d, "D2": self.d2, "D'": self.d_r,
+            "L": self.lf, "L2": self.l2, "L'": self.l_r,
+            "B": self.b, "B2": self.b2, "B'": self.b_r,
         }
+        self.__moves__ = [
+            self.u, self.u2, self.u_r,
+            self.r, self.r2, self.r_r,
+            self.f, self.f2, self.f_r,
+            self.d, self.d2, self.d_r,
+            self.lf, self.l2, self.l_r,
+            self.b, self.b2, self.b_r
+        ]
 
-    def move(self, move: str) -> None:
+    def str_move(self, move: str) -> None:
         """Разрешенные действия F R U B L D - F' R' U' B' L' D'"""
+        self.__str_moves__[move]()
+
+    def move(self, move: int) -> None:
+        """Разрешенные действия 0-17"""
         self.__moves__[move]()
 
+    def apply_moves(self, moves) -> None:
+        for move in moves:
+            if move in u.MOVES:
+                self.move(move)
+            else:
+                raise ValueError(f"Can't recognize move {move}. Allowed moves in range 0-17")
+
     def scramble(self, scramble: str) -> None:
-        allowed_moves = self.__moves__.keys()
+        allowed_moves = self.__str_moves__.keys()
         if len(scramble.strip()) == 0:
             return
         moves = scramble.strip().split(" ")
@@ -41,7 +61,7 @@ class FaceletCube:
             return
         for move in moves:
             if move in allowed_moves:
-                self.move(move)
+                self.str_move(move)
             else:
                 raise ValueError(f"Can't recognize move {move}")
 

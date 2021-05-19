@@ -12,13 +12,11 @@ if __name__ == '__main__':
     scramble = get_random_scramble()
     print(f"SCRAMBLE = \"{scramble}\"")
     cubie = cc.CubieCube()
-    face = fc.FaceletCube()
 
     cubie.scramble(scramble)
-    face.scramble(scramble)
 
     f1 = cubie.to_facelet_cube()
-    print(face)
+    print(f1)
 
     solver = ss.TwoPhaseSolver(cubie)
 

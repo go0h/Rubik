@@ -38,7 +38,7 @@ class TwoPhaseSolver:
 
             temp = deepcopy(self.cubie)
             for move in self.moves_p1:
-                temp.move(u.MOVES_S[move])
+                temp.move(move)
 
             ud_edges = temp.get_ud_edges()
             corners = temp.get_corners()

@@ -61,7 +61,7 @@ class RotationTest(unittest.TestCase):
 
         res = r.__copy__()
         for _ in range(4):
-            r.move("F")
+            r.str_move("F")
 
         self.assertEqual(r, res)
 
@@ -77,7 +77,7 @@ class RotationTest(unittest.TestCase):
 
         res = r.__copy__()
         for _ in range(4):
-            r.move("F'")
+            r.str_move("F'")
 
         self.assertEqual(r, res)
 
@@ -99,7 +99,7 @@ class RotationTest(unittest.TestCase):
 
         res = r.__copy__()
         for _ in range(2):
-            r.move("F2")
+            r.str_move("F2")
 
         self.assertEqual(r, res)
 
@@ -112,12 +112,12 @@ class RotationTest(unittest.TestCase):
         r.down.side[2][2] = FRONT
 
         r2 = r.__copy__()
-        r.move("F")
-        r.move("F'")
+        r.str_move("F")
+        r.str_move("F'")
         self.assertEqual(r, r2)
-        r.move("F")
-        r.move("F")
-        r2.move("F2")
+        r.str_move("F")
+        r.str_move("F")
+        r2.str_move("F2")
         self.assertEqual(r, r2)
 
     def test_back_rotation(self):
@@ -129,14 +129,14 @@ class RotationTest(unittest.TestCase):
         r.down.side[2][2] = FRONT
 
         res = r.__copy__()
-        r.move("B")
+        r.str_move("B")
         self.assertEqual(r.left.side[0][0], RIGHT)
         self.assertEqual(r.up.side[0][2], RIGHT)
         self.assertEqual(r.right.side[0][2], FRONT)
         self.assertEqual(r.down.side[2][2], FRONT)
 
         for _ in range(3):
-            r.move("B")
+            r.str_move("B")
 
         self.assertEqual(r, res)
 
@@ -149,14 +149,14 @@ class RotationTest(unittest.TestCase):
         r.down.side[2][2] = FRONT
 
         res = r.__copy__()
-        r.move("B'")
+        r.str_move("B'")
         self.assertEqual(r.left.side[2][0], FRONT)
         self.assertEqual(r.up.side[0][0], FRONT)
         self.assertEqual(r.right.side[2][2], RIGHT)
         self.assertEqual(r.down.side[2][0], RIGHT)
 
         for _ in range(3):
-            r.move("B'")
+            r.str_move("B'")
 
         self.assertEqual(r, res)
 
@@ -169,13 +169,13 @@ class RotationTest(unittest.TestCase):
         r.down.side[2][2] = FRONT
 
         res = r.__copy__()
-        r.move("B2")
+        r.str_move("B2")
         self.assertEqual(r.left.side[0][0], LEFT)
         self.assertEqual(r.up.side[0][0], FRONT)
         self.assertEqual(r.right.side[0][2], FRONT)
         self.assertEqual(r.down.side[2][0], RIGHT)
 
-        r.move("B2")
+        r.str_move("B2")
 
         self.assertEqual(r, res)
 
@@ -188,14 +188,14 @@ class RotationTest(unittest.TestCase):
         r.back.side[0][2] = FRONT
 
         res = r.__copy__()
-        r.move("U")
+        r.str_move("U")
         self.assertEqual(r.left.side[0][2], BACK)
         self.assertEqual(r.front.side[0][2], RIGHT)
         self.assertEqual(r.right.side[0][2], FRONT)
         self.assertEqual(r.back.side[0][0], LEFT)
 
         for i in range(3):
-            r.move("U")
+            r.str_move("U")
 
         self.assertEqual(r, res)
 
@@ -208,14 +208,14 @@ class RotationTest(unittest.TestCase):
         r.back.side[0][2] = FRONT
 
         res = r.__copy__()
-        r.move("U'")
+        r.str_move("U'")
         self.assertEqual(r.left.side[0][2], FRONT)
         self.assertEqual(r.front.side[0][0], LEFT)
         self.assertEqual(r.right.side[0][2], BACK)
         self.assertEqual(r.back.side[0][2], RIGHT)
 
         for i in range(3):
-            r.move("U'")
+            r.str_move("U'")
 
         self.assertEqual(r, res)
 
@@ -228,13 +228,13 @@ class RotationTest(unittest.TestCase):
         r.back.side[0][2] = FRONT
 
         res = r.__copy__()
-        r.move("U2")
+        r.str_move("U2")
         self.assertEqual(r.left.side[0][2], RIGHT)
         self.assertEqual(r.front.side[0][2], FRONT)
         self.assertEqual(r.right.side[0][2], LEFT)
         self.assertEqual(r.back.side[0][2], BACK)
 
-        r.move("U2")
+        r.str_move("U2")
 
         self.assertEqual(r, res)
 
@@ -247,14 +247,14 @@ class RotationTest(unittest.TestCase):
         r.back.side[2][2] = FRONT
 
         res = r.__copy__()
-        r.move("D")
+        r.str_move("D")
         self.assertEqual(r.left.side[2][2], FRONT)
         self.assertEqual(r.front.side[2][2], LEFT)
         self.assertEqual(r.right.side[2][2], BACK)
         self.assertEqual(r.back.side[2][2], RIGHT)
 
         for i in range(3):
-            r.move("D")
+            r.str_move("D")
 
         self.assertEqual(r, res)
 
@@ -267,14 +267,14 @@ class RotationTest(unittest.TestCase):
         r.back.side[2][2] = FRONT
 
         res = r.__copy__()
-        r.move("D'")
+        r.str_move("D'")
         self.assertEqual(r.left.side[2][2], BACK)
         self.assertEqual(r.front.side[2][2], RIGHT)
         self.assertEqual(r.right.side[2][2], FRONT)
         self.assertEqual(r.back.side[2][2], LEFT)
 
         for i in range(3):
-            r.move("D'")
+            r.str_move("D'")
 
         self.assertEqual(r, res)
 
@@ -287,13 +287,13 @@ class RotationTest(unittest.TestCase):
         r.back.side[2][2] = FRONT
 
         res = r.__copy__()
-        r.move("D2")
+        r.str_move("D2")
         self.assertEqual(r.left.side[2][2], RIGHT)
         self.assertEqual(r.front.side[2][2], FRONT)
         self.assertEqual(r.right.side[2][2], LEFT)
         self.assertEqual(r.back.side[2][2], BACK)
 
-        r.move("D2")
+        r.str_move("D2")
 
         self.assertEqual(r, res)
 
@@ -306,14 +306,14 @@ class RotationTest(unittest.TestCase):
         r.back.side[2][0] = FRONT
 
         res = r.__copy__()
-        r.move("R")
+        r.str_move("R")
         self.assertEqual(r.up.side[2][2], BACK)
         self.assertEqual(r.front.side[2][2], RIGHT)
         self.assertEqual(r.down.side[0][2], FRONT)
         self.assertEqual(r.back.side[0][0], LEFT)
 
         for i in range(3):
-            r.move("R")
+            r.str_move("R")
 
         self.assertEqual(r, res)
 
@@ -326,14 +326,14 @@ class RotationTest(unittest.TestCase):
         r.back.side[2][0] = FRONT
 
         res = r.__copy__()
-        r.move("R'")
+        r.str_move("R'")
         self.assertEqual(r.up.side[0][2], FRONT)
         self.assertEqual(r.front.side[2][2], LEFT)
         self.assertEqual(r.down.side[2][2], BACK)
         self.assertEqual(r.back.side[0][0], RIGHT)
 
         for i in range(3):
-            r.move("R'")
+            r.str_move("R'")
 
         self.assertEqual(r, res)
 
@@ -346,13 +346,13 @@ class RotationTest(unittest.TestCase):
         r.back.side[2][0] = FRONT
 
         res = r.__copy__()
-        r.move("R2")
+        r.str_move("R2")
         self.assertEqual(r.up.side[2][2], RIGHT)
         self.assertEqual(r.front.side[0][2], FRONT)
         self.assertEqual(r.down.side[2][2], LEFT)
         self.assertEqual(r.back.side[0][0], BACK)
 
-        r.move("R2")
+        r.str_move("R2")
 
         self.assertEqual(r, res)
 
@@ -366,14 +366,14 @@ class RotationTest(unittest.TestCase):
         r.back.side[2][2] = FRONT
 
         res = r.__copy__()
-        r.move("L")
+        r.str_move("L")
         self.assertEqual(r.up.side[0][0], FRONT)
         self.assertEqual(r.front.side[2][0], LEFT)
         self.assertEqual(r.down.side[2][0], BACK)
         self.assertEqual(r.back.side[0][2], RIGHT)
 
         for i in range(3):
-            r.move("L")
+            r.str_move("L")
 
         self.assertEqual(r, res)
 
@@ -386,14 +386,14 @@ class RotationTest(unittest.TestCase):
         r.back.side[2][2] = FRONT
 
         res = r.__copy__()
-        r.move("L'")
+        r.str_move("L'")
         self.assertEqual(r.up.side[2][0], BACK)
         self.assertEqual(r.front.side[2][0], RIGHT)
         self.assertEqual(r.down.side[0][0], FRONT)
         self.assertEqual(r.back.side[0][2], LEFT)
 
         for i in range(3):
-            r.move("L'")
+            r.str_move("L'")
 
         self.assertEqual(r, res)
 
@@ -407,13 +407,13 @@ class RotationTest(unittest.TestCase):
         r.back.side[2][2] = FRONT
 
         res = r.__copy__()
-        r.move("L2")
+        r.str_move("L2")
         self.assertEqual(r.up.side[2][0], RIGHT)
         self.assertEqual(r.front.side[0][0], FRONT)
         self.assertEqual(r.down.side[2][0], LEFT)
         self.assertEqual(r.back.side[0][2], BACK)
 
-        r.move("L2")
+        r.str_move("L2")
 
         self.assertEqual(r, res)
 
@@ -422,10 +422,10 @@ class RotationTest(unittest.TestCase):
 
         res = r.__copy__()
         for _ in range(6):
-            r.move("R")
-            r.move("U")
-            r.move("R'")
-            r.move("U'")
+            r.str_move("R")
+            r.str_move("U")
+            r.str_move("R'")
+            r.str_move("U'")
 
         self.assertEqual(res, r)
 
@@ -434,10 +434,10 @@ class RotationTest(unittest.TestCase):
 
         res = r.__copy__()
         for _ in range(6):
-            r.move("L'")
-            r.move("U'")
-            r.move("L")
-            r.move("U")
+            r.str_move("L'")
+            r.str_move("U'")
+            r.str_move("L")
+            r.str_move("U")
 
         self.assertEqual(res, r)
 
