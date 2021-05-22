@@ -80,7 +80,7 @@ class Corner:
         self.c = CORNER_BY_SIDES[corner_sides[0]][corner_sides[1]]
 
     def __str__(self) -> str:
-        return CORNERS[self.c] + "," + str(self.o)
+        return CORNERS[self.c] + ", " + str(self.o)
 
     def __eq__(self, other) -> bool:
         return self.o == other.o and self.c == other.c

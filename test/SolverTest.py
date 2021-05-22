@@ -2,6 +2,7 @@ import unittest
 import rubik.CubieCube as cc
 import rubik.CoordCubie as coord
 import solver.TwoPhaseSolver as tfs
+import solver.TwoPhaseSolverSlow as tfss
 from rubik.Utils import *
 from rubik.Edge import UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR
 
@@ -59,6 +60,35 @@ class CubieCubeTest(unittest.TestCase):
             cubie.scramble(scramble)
 
             solver = tfs.TwoPhaseSolver(cubie)
+            moves = solver.solve()
+            scramble = ' '.join([i for i in moves])
+
+            cubie.scramble(scramble)
+
+            self.assertTrue(cubie.solved())
+
+    def test_slow_solve(self):
+
+        for i in range(50):
+            print(f"TEST #{i}")
+
+            cubie = get_random_cubie()
+            solver = tfss.TwoPhaseSolverSlow(cubie)
+
+            moves = solver.solve()
+            scramble = ' '.join([i for i in moves])
+
+            cubie.scramble(scramble)
+
+            self.assertTrue(cubie.solved())
+
+    def test_special_slow_cases_1(self):
+
+        for scramble in [SUPER_FLIP, PONS_ASINORUM_SUPER_FLIP, PONS_ASINORUM]:
+            cubie = cc.CubieCube()
+            cubie.scramble(scramble)
+
+            solver = tfss.TwoPhaseSolverSlow(cubie)
             moves = solver.solve()
             scramble = ' '.join([i for i in moves])
 

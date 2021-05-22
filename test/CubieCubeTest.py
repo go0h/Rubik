@@ -2,7 +2,6 @@ import unittest
 import rubik.Utils as u
 import rubik.CubieCube as cc
 import rubik.FaceletCube as fc
-from rubik.Edge import UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR
 
 
 class CubieCubeTest(unittest.TestCase):

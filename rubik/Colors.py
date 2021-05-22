@@ -1,6 +1,6 @@
 
-NONE, BACK, LEFT, UP, RIGHT, DOWN, FRONT = range(-1, 6)
-B, L, U, R, D, F = range(6)
+NONE, UP, RIGHT, FRONT, DOWN, LEFT, BACK = range(-1, 6)
+U, R, F, D, L, B = range(6)
 
 SIDE = {R: "R", L: "L", B: "B", F: "F", U: "U", D: "D"}
 

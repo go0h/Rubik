@@ -19,7 +19,7 @@ class FaceletCube:
         self.down = Side(self.size, D)
         self.front = Side(self.size, F)
 
-        self.sides = [self.back, self.left, self.up, self.right, self.down, self.front]
+        self.sides = [self.up, self.right, self.front, self.down, self.left, self.back]
         self.__str_moves__ = {
             "U": self.u, "U2": self.u2, "U'": self.u_r,
             "R": self.r, "R2": self.r2, "R'": self.r_r,

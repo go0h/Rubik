@@ -88,7 +88,7 @@ class Edge:
         self.c = EDGE_BY_SIDES[e_sides[0]][e_sides[1]]
 
     def __str__(self) -> str:
-        return EDGES[self.c] + "," + str(self.o)
+        return EDGES[self.c] + ", " + str(self.o)
 
     def __eq__(self, other) -> bool:
         return self.o == other.o and self.c == other.c

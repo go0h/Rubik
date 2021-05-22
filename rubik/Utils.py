@@ -1,7 +1,6 @@
 import random
 import rubik.FaceletCube as fc
 import rubik.CubieCube as cc
-from copy import deepcopy
 
 SUPER_FLIP = "D' R2 F' D2 F2 U2 L' R D' R2 B F R' U2 L' F2 R' U2 R' U'"
 PONS_ASINORUM = "B2 F2 L2 R2 D2 U2"
@@ -15,6 +14,8 @@ MOVES_S = ["U", "U2", "U'",
            "D", "D2", "D'",
            "L", "L2", "L'",
            "B", "B2", "B'"]
+
+INV_MOVE = [2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 17, 16, 15]
 
 PHASE2_MOVES = [0, 1, 2, 4, 7, 9, 10, 11, 13, 16]
 
@@ -66,11 +67,8 @@ def moves_to_scramble(moves):
 
 
 def check_cubie_in_phase2(cubie, moves):
-    c = deepcopy(cubie)
-    c.scramble(moves_to_scramble(moves))
-    # print(c.get_edges_flip())
-    # print(c.get_corners_twist())
-    # print(c.get_ud_slice_coord())
+    c = cc.CubieCube(cubie.corners, cubie.edges)
+    c.apply_moves(moves)
     return c.get_edges_flip() == 0 and c.get_corners_twist() == 0 and c.get_ud_slice_coord() == 0
 
 

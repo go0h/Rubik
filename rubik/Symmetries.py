@@ -1,5 +1,6 @@
 
 import rubik.CubieCube as cc
+import rubik.Utils as u
 from rubik.Corner import URF, UFL, ULB, UBR, DFR, DLF, DBL, DRB, Corner
 from rubik.Edge import UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR, Edge
 
@@ -73,16 +74,16 @@ for j in range(SYM_N):
             break
 
 
-def get_symmetries(cub: cc.CubieCube):
-    symmetries = []
-    inv = cc.CubieCube()
-    for s in range(SYM_N):
-        c = cc.CubieCube(SYM_CUBIES[s].corners, SYM_CUBIES[s].edges)
-        c.multiply(cub)
-        c.multiply(SYM_CUBIES[INV_IDX[s]])
-        if cub == c:
-            symmetries.append(s)
-        c.inverse_cubie(inv)
-        if cub == c:
-            symmetries.append(s + SYM_N)
-    return symmetries
+# def get_symmetries(cub: cc.CubieCube):
+#     symmetries = []
+#     inv = cc.CubieCube()
+#     for s in range(SYM_N):
+#         c = cc.CubieCube(SYM_CUBIES[s].corners, SYM_CUBIES[s].edges)
+#         c.multiply(cub)
+#         c.multiply(SYM_CUBIES[INV_IDX[s]])
+#         if cub == c:
+#             symmetries.append(s)
+#         c.inverse_cubie(inv)
+#         if cub == c:
+#             symmetries.append(s + SYM_N)
+#     return symmetries

@@ -5,25 +5,63 @@ from rubik.Edge import *
 from rubik.Corner import *
 from math import comb  # биномиальный коэффициент
 
-# приращение координаты и ориентации угла путем вращения
-BASIC_CORNER_MOVES = {
-    U: [(UBR, 0), (URF, 0), (UFL, 0), (ULB, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
-    R: [(DFR, 2), (UFL, 0), (ULB, 0), (URF, 1), (DRB, 1), (DLF, 0), (DBL, 0), (UBR, 2)],
-    F: [(UFL, 1), (DLF, 2), (ULB, 0), (UBR, 0), (URF, 2), (DFR, 1), (DBL, 0), (DRB, 0)],
-    D: [(URF, 0), (UFL, 0), (ULB, 0), (UBR, 0), (DLF, 0), (DBL, 0), (DRB, 0), (DFR, 0)],
-    L: [(URF, 0), (ULB, 1), (DBL, 2), (UBR, 0), (DFR, 0), (UFL, 2), (DLF, 1), (DRB, 0)],
-    B: [(URF, 0), (UFL, 0), (UBR, 1), (DRB, 2), (DFR, 0), (DLF, 0), (ULB, 2), (DBL, 1)]
-}
-
-# приращение координаты и ориентации ребра путем вращения
-BASIC_EDGE_MOVES = {
-    U: [(UB, 0), (UR, 0), (UF, 0), (UL, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)],
-    R: [(FR, 0), (UF, 0), (UL, 0), (UB, 0), (BR, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FL, 0), (BL, 0), (UR, 0)],
-    F: [(UR, 0), (FL, 1), (UL, 0), (UB, 0), (DR, 0), (FR, 1), (DL, 0), (DB, 0), (UF, 1), (DF, 1), (BL, 0), (BR, 0)],
-    D: [(UR, 0), (UF, 0), (UL, 0), (UB, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)],
-    L: [(UR, 0), (UF, 0), (BL, 0), (UB, 0), (DR, 0), (DF, 0), (FL, 0), (DB, 0), (FR, 0), (UL, 0), (DL, 0), (BR, 0)],
-    B: [(UR, 0), (UF, 0), (UL, 0), (BR, 1), (DR, 0), (DF, 0), (DL, 0), (BL, 1), (FR, 0), (FL, 0), (UB, 1), (DB, 1)]
-}
+# приращение координаты и ориентации углов и ребер путем вращения
+CUBIE_MOVE = [
+    # U
+    [[(UBR, 0), (URF, 0), (UFL, 0), (ULB, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
+     [(UB, 0), (UR, 0), (UF, 0), (UL, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    # U2
+    [[(ULB, 0), (UBR, 0), (URF, 0), (UFL, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
+     [(UL, 0), (UB, 0), (UR, 0), (UF, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    # U'
+    [[(UFL, 0), (ULB, 0), (UBR, 0), (URF, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
+     [(UF, 0), (UL, 0), (UB, 0), (UR, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    # R
+    [[(DFR, 2), (UFL, 0), (ULB, 0), (URF, 1), (DRB, 1), (DLF, 0), (DBL, 0), (UBR, 2)],
+     [(FR, 0), (UF, 0), (UL, 0), (UB, 0), (BR, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FL, 0), (BL, 0), (UR, 0)]],
+    # R2
+    [[(DRB, 0), (UFL, 0), (ULB, 0), (DFR, 0), (UBR, 0), (DLF, 0), (DBL, 0), (URF, 0)],
+     [(DR, 0), (UF, 0), (UL, 0), (UB, 0), (UR, 0), (DF, 0), (DL, 0), (DB, 0), (BR, 0), (FL, 0), (BL, 0), (FR, 0)]],
+    # R'
+    [[(UBR, 2), (UFL, 0), (ULB, 0), (DRB, 1), (URF, 1), (DLF, 0), (DBL, 0), (DFR, 2)],
+     [(BR, 0), (UF, 0), (UL, 0), (UB, 0), (FR, 0), (DF, 0), (DL, 0), (DB, 0), (UR, 0), (FL, 0), (BL, 0), (DR, 0)]],
+    # F
+    [[(UFL, 1), (DLF, 2), (ULB, 0), (UBR, 0), (URF, 2), (DFR, 1), (DBL, 0), (DRB, 0)],
+     [(UR, 0), (FL, 1), (UL, 0), (UB, 0), (DR, 0), (FR, 1), (DL, 0), (DB, 0), (UF, 1), (DF, 1), (BL, 0), (BR, 0)]],
+    # F2
+    [[(DLF, 0), (DFR, 0), (ULB, 0), (UBR, 0), (UFL, 0), (URF, 0), (DBL, 0), (DRB, 0)],
+     [(UR, 0), (DF, 0), (UL, 0), (UB, 0), (DR, 0), (UF, 0), (DL, 0), (DB, 0), (FL, 0), (FR, 0), (BL, 0), (BR, 0)]],
+    # F'
+    [[(DFR, 1), (URF, 2), (ULB, 0), (UBR, 0), (DLF, 2), (UFL, 1), (DBL, 0), (DRB, 0)],
+     [(UR, 0), (FR, 1), (UL, 0), (UB, 0), (DR, 0), (FL, 1), (DL, 0), (DB, 0), (DF, 1), (UF, 1), (BL, 0), (BR, 0)]],
+    # D
+    [[(URF, 0), (UFL, 0), (ULB, 0), (UBR, 0), (DLF, 0), (DBL, 0), (DRB, 0), (DFR, 0)],
+     [(UR, 0), (UF, 0), (UL, 0), (UB, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    # D2
+    [[(URF, 0), (UFL, 0), (ULB, 0), (UBR, 0), (DBL, 0), (DRB, 0), (DFR, 0), (DLF, 0)],
+     [(UR, 0), (UF, 0), (UL, 0), (UB, 0), (DL, 0), (DB, 0), (DR, 0), (DF, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    # D'
+    [[(URF, 0), (UFL, 0), (ULB, 0), (UBR, 0), (DRB, 0), (DFR, 0), (DLF, 0), (DBL, 0)],
+     [(UR, 0), (UF, 0), (UL, 0), (UB, 0), (DB, 0), (DR, 0), (DF, 0), (DL, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    # L
+    [[(URF, 0), (ULB, 1), (DBL, 2), (UBR, 0), (DFR, 0), (UFL, 2), (DLF, 1), (DRB, 0)],
+     [(UR, 0), (UF, 0), (BL, 0), (UB, 0), (DR, 0), (DF, 0), (FL, 0), (DB, 0), (FR, 0), (UL, 0), (DL, 0), (BR, 0)]],
+    # L2
+    [[(URF, 0), (DBL, 0), (DLF, 0), (UBR, 0), (DFR, 0), (ULB, 0), (UFL, 0), (DRB, 0)],
+     [(UR, 0), (UF, 0), (DL, 0), (UB, 0), (DR, 0), (DF, 0), (UL, 0), (DB, 0), (FR, 0), (BL, 0), (FL, 0), (BR, 0)]],
+    # L'
+    [[(URF, 0), (DLF, 1), (UFL, 2), (UBR, 0), (DFR, 0), (DBL, 2), (ULB, 1), (DRB, 0)],
+     [(UR, 0), (UF, 0), (FL, 0), (UB, 0), (DR, 0), (DF, 0), (BL, 0), (DB, 0), (FR, 0), (DL, 0), (UL, 0), (BR, 0)]],
+    # B
+    [[(URF, 0), (UFL, 0), (UBR, 1), (DRB, 2), (DFR, 0), (DLF, 0), (ULB, 2), (DBL, 1)],
+     [(UR, 0), (UF, 0), (UL, 0), (BR, 1), (DR, 0), (DF, 0), (DL, 0), (BL, 1), (FR, 0), (FL, 0), (UB, 1), (DB, 1)]],
+    # B2
+    [[(URF, 0), (UFL, 0), (DRB, 0), (DBL, 0), (DFR, 0), (DLF, 0), (UBR, 0), (ULB, 0)],
+     [(UR, 0), (UF, 0), (UL, 0), (DB, 0), (DR, 0), (DF, 0), (DL, 0), (UB, 0), (FR, 0), (FL, 0), (BR, 0), (BL, 0)]],
+    # B'
+    [[(URF, 0), (UFL, 0), (DBL, 1), (ULB, 2), (DFR, 0), (DLF, 0), (DRB, 2), (UBR, 1)],
+     [(UR, 0), (UF, 0), (UL, 0), (BL, 1), (DR, 0), (DF, 0), (DL, 0), (BR, 1), (FR, 0), (FL, 0), (DB, 1), (UB, 1)]]
+]
 
 
 class CubieCube:
@@ -32,35 +70,11 @@ class CubieCube:
         if corners is None:
             self.corners = [Corner(i) for i in range(8)]
         else:
-            self.corners = copy.deepcopy(corners)
+            self.corners = list(map(lambda c: Corner(c.c, c.o), corners))
         if edges is None:
             self.edges = [Edge(i) for i in range(12)]
         else:
-            self.edges = copy.deepcopy(edges)
-        self.__str_moves__ = {
-            "U": self.u, "U2": self.u2, "U'": self.u_r,
-            "R": self.r, "R2": self.r2, "R'": self.r_r,
-            "F": self.f, "F2": self.f2, "F'": self.f_r,
-            "D": self.d, "D2": self.d2, "D'": self.d_r,
-            "L": self.lf, "L2": self.l2, "L'": self.l_r,
-            "B": self.b, "B2": self.b2, "B'": self.b_r,
-        }
-        self.__moves__ = [
-            self.u, self.u2, self.u_r,
-            self.r, self.r2, self.r_r,
-            self.f, self.f2, self.f_r,
-            self.d, self.d2, self.d_r,
-            self.lf, self.l2, self.l_r,
-            self.b, self.b2, self.b_r
-        ]
-
-    def str_move(self, move: str) -> None:
-        """Разрешенные действия F R U B L D - F' R' U' B' L' D'"""
-        self.__str_moves__[move]()
-
-    def move(self, move: int) -> None:
-        """Разрешенные действия 0-17"""
-        self.__moves__[move]()
+            self.edges = list(map(lambda c: Edge(c.c, c.o), edges))
 
     def apply_moves(self, moves) -> None:
         for move in moves:
@@ -70,123 +84,33 @@ class CubieCube:
                 raise ValueError(f"Can't recognize move {move}. Allowed moves in range 0-17")
 
     def scramble(self, scramble: str) -> None:
-        allowed_moves = self.__str_moves__.keys()
+        """Разрешенные действия F R U B L D - F' R' U' B' L' D'"""
         if len(scramble.strip()) == 0:
             return
         moves = scramble.strip().split(" ")
         if len(moves) == 0:
             return
         for move in moves:
-            if move in allowed_moves:
-                self.str_move(move)
+            if move in u.MOVES_S:
+                self.move(u.MOVES_S.index(move.upper()))
             else:
                 raise ValueError(f"Can't recognize move {move}")
 
-    def f(self) -> None:
-        """ Notation - F
-        Вращение передней (синей) стороны по часовой стрелке"""
-        self.rotate(F)
+    def move(self, move):
+        """Разрешенные действия 0-17"""
+        c_m = CUBIE_MOVE[move][0]
+        e_m = CUBIE_MOVE[move][1]
+        c = list(map(lambda x: (x.c, x.o), self.corners))
+        e = list(map(lambda x: (x.c, x.o), self.edges))
+        for j in range(8):
+            t = c[c_m[j][0]]
+            self.corners[j].c = t[0]
+            self.corners[j].o = (t[1] + c_m[j][1]) % 3
 
-    def f_r(self) -> None:
-        """ Notation - F'
-            Вращение передней (синей) стороны против часовой стрелки"""
-        self.rotate(F, 3)
-
-    def f2(self) -> None:
-        """ Notation - F2
-            Вращение передней (синей) стороны на 180 градусов"""
-        self.rotate(F, 2)
-
-    def b(self) -> None:
-        """ Notation - B
-            Вращение задней (оранжевой) стороны по часовой стрелке"""
-        self.rotate(B)
-
-    def b_r(self) -> None:
-        """ Notation - B'
-            Вращение задней (оранжевой) стороны против часовой стрелки"""
-        self.rotate(B, 3)
-
-    def b2(self) -> None:
-        """ Notation - B2
-            Вращение задней (оранжевой) стороны на 180 градусов"""
-        self.rotate(B, 2)
-
-    def u(self) -> None:
-        """ Notation - U
-            Вращение верхней (желтой) стороны по часовой стрелке"""
-        self.rotate(U)
-
-    def u_r(self) -> None:
-        """ Notation - U'
-            Вращение верхней (желтой) стороны против часовой стрелки"""
-        self.rotate(U, 3)
-
-    def u2(self) -> None:
-        """ Notation - U2
-            Вращение верхней (желтой) стороны стороны на 180 градусов"""
-        self.rotate(U, 2)
-
-    def d(self) -> None:
-        """ Notation - D
-            Вращение нижней (белой) стороны по часовой стрелке"""
-        self.rotate(D)
-
-    def d_r(self) -> None:
-        """ Notation - D'
-            Вращение нижней (белой) стороны против часовой стрелки"""
-        self.rotate(D, 3)
-
-    def d2(self) -> None:
-        """ Notation - D2
-            Вращение нижней (белой) стороны стороны на 180 градусов"""
-        self.rotate(D, 2)
-
-    def r(self) -> None:
-        """ Notation - R
-        Вращение правой (красной) стороны по часовой стрелке"""
-        self.rotate(R)
-
-    def r_r(self) -> None:
-        """ Notation - R'
-        Вращение правой (красной) стороны против часовой стрелки"""
-        self.rotate(R, 3)
-
-    def r2(self) -> None:
-        """ Notation - R2
-            Вращение правой (красной) стороны на 180 градусов"""
-        self.rotate(R, 2)
-
-    def lf(self) -> None:
-        """ Notation - L
-        Вращение левой (оранжевой) стороны по часовой стрелке"""
-        self.rotate(L)
-
-    def l_r(self) -> None:
-        """ Notation - L'
-        Вращение левой (оранжевой) стороны против часовой стрелки"""
-        self.rotate(L, 3)
-
-    def l2(self) -> None:
-        """ Notation - L2
-            Вращение левой (оранжевой) стороны на 180 градусов"""
-        self.rotate(L, 2)
-
-    def rotate(self, move, count=1):
-        c_m = BASIC_CORNER_MOVES[move]
-        e_m = BASIC_EDGE_MOVES[move]
-        for i in range(count):
-            c = copy.deepcopy(self.corners)
-            e = copy.deepcopy(self.edges)
-            for j in range(8):
-                t = c[c_m[j][0]]
-                self.corners[j].c = t.c
-                self.corners[j].o = (t.o + c_m[j][1]) % 3
-
-            for j in range(12):
-                t = e[e_m[j][0]]
-                self.edges[j].c = t.c
-                self.edges[j].o = (t.o + e_m[j][1]) % 2
+        for j in range(12):
+            t = e[e_m[j][0]]
+            self.edges[j].c = t[0]
+            self.edges[j].o = (t[1] + e_m[j][1]) % 2
 
     def solved(self) -> bool:
         """Комментарии излишни"""
@@ -270,17 +194,17 @@ class CubieCube:
                 n += 1
         return res
 
-    def __edges_coord__(self, start, end):
-        from collections import deque
-        res, n = 0, 0
-        edges = deque(self.edges[:])
-        if start == UR or start == DR:
-            edges.rotate(4)
-        for i in range(BR, UR - 1, -1):
-            if start <= edges[i].c <= end:
-                res += comb(11 - i, n + 1)
-                n += 1
-        return res
+    # def __edges_coord__(self, start, end):
+    #     from collections import deque
+    #     res, n = 0, 0
+    #     edges = deque(self.edges[:])
+    #     if start == UR or start == DR:
+    #         edges.rotate(4)
+    #     for i in range(BR, UR - 1, -1):
+    #         if start <= edges[i].c <= end:
+    #             res += comb(11 - i, n + 1)
+    #             n += 1
+    #     return res
 
     def get_corners_twist(self):
         """Ориентация углов описывается числом от 0 до 2186 (3^7 - 1)"""
