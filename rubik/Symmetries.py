@@ -1,6 +1,5 @@
 
 import rubik.CubieCube as cc
-import rubik.Utils as u
 from rubik.Corner import URF, UFL, ULB, UBR, DFR, DLF, DBL, DRB, Corner
 from rubik.Edge import UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR, Edge
 

@@ -5,14 +5,6 @@ from rubik.Tables import *
 
 class LoadTablesTest(unittest.TestCase):
 
-    def test_load_move_tables(self):
-
-        self.assertTrue(len(move_twist) == 2187 * 18)
-        self.assertTrue(len(move_flip) == 2048 * 18)
-        self.assertTrue(len(move_slice_sorted) == 11880 * 18)
-        self.assertTrue(len(move_ud_edges) == 40320 * 18)
-        self.assertTrue(len(move_corners) == 40320 * 18)
-
     def test_load_sym_tables(self):
 
         self.assertTrue(len(twist_conj) == 2187 * 16)

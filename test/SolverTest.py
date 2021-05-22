@@ -2,9 +2,7 @@ import unittest
 import rubik.CubieCube as cc
 import rubik.CoordCubie as coord
 import solver.TwoPhaseSolver as tfs
-import solver.TwoPhaseSolverSlow as tfss
 from rubik.Utils import *
-from rubik.Edge import UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR
 
 
 class CubieCubeTest(unittest.TestCase):
@@ -12,38 +10,37 @@ class CubieCubeTest(unittest.TestCase):
     def test_get_depth_p1_1(self):
 
         for _ in range(150):
-            cubie = get_random_cubie()
-            coord_cubie = coord.CoordCubie(cubie)
-            self.assertTrue(coord_cubie.get_phase1_depth() <= 12)
+            cubie = cc.get_random_cubie()
+            self.assertTrue(coord.get_phase1_depth(cubie) <= 12)
 
     def test_get_depth_p1_2(self):
 
         for _ in range(150):
-            cubie = get_random_cubie_2()
-            coord_cubie = coord.CoordCubie(cubie)
-            self.assertTrue(coord_cubie.get_phase1_depth() == 0)
+            cubie = cc.get_random_cubie_2()
+            self.assertTrue(coord.get_phase1_depth(cubie) == 0)
 
     def test_phase_1(self):
 
-        for _ in range(100):
-            cubie = get_random_cubie()
+        for i in range(15):
+            print(f"TEST #{i}")
+            cubie = cc.get_random_cubie()
             solver = tfs.TwoPhaseSolver(cubie)
 
-            phase1_dist = solver.coord_cubie.get_phase1_depth()
+            phase1_dist = coord.get_phase1_depth(cubie)
 
-            solver.search_phase1(solver.coord_cubie.corner_twist,
-                                 solver.coord_cubie.edge_flip,
-                                 solver.coord_cubie.slice_sorted,
-                                 phase1_dist,
-                                 phase1_dist)
+            cubie2 = cc.CubieCube(cubie.corners, cubie.edges)
+            solver.search_phase1(cubie, phase1_dist, phase1_dist)
 
-            self.assertTrue(check_cubie_in_phase2(cubie, solver.moves_p1))
+            cubie2.apply_moves(solver.moves_p1)
+
+            self.assertTrue(cubie.check_in_phase2())
 
     def test_solve(self):
 
-        for _ in range(300):
+        for i in range(15):
+            print(f"TEST #{i}")
 
-            cubie = get_random_cubie()
+            cubie = cc.get_random_cubie()
             solver = tfs.TwoPhaseSolver(cubie)
 
             moves = solver.solve()
@@ -60,35 +57,6 @@ class CubieCubeTest(unittest.TestCase):
             cubie.scramble(scramble)
 
             solver = tfs.TwoPhaseSolver(cubie)
-            moves = solver.solve()
-            scramble = ' '.join([i for i in moves])
-
-            cubie.scramble(scramble)
-
-            self.assertTrue(cubie.solved())
-
-    def test_slow_solve(self):
-
-        for i in range(50):
-            print(f"TEST #{i}")
-
-            cubie = get_random_cubie()
-            solver = tfss.TwoPhaseSolverSlow(cubie)
-
-            moves = solver.solve()
-            scramble = ' '.join([i for i in moves])
-
-            cubie.scramble(scramble)
-
-            self.assertTrue(cubie.solved())
-
-    def test_special_slow_cases_1(self):
-
-        for scramble in [SUPER_FLIP, PONS_ASINORUM_SUPER_FLIP, PONS_ASINORUM]:
-            cubie = cc.CubieCube()
-            cubie.scramble(scramble)
-
-            solver = tfss.TwoPhaseSolverSlow(cubie)
             moves = solver.solve()
             scramble = ' '.join([i for i in moves])
 

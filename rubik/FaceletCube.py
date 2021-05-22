@@ -5,7 +5,7 @@ from rubik.Side import Side
 from rubik.Corner import CORNERS_SIDES
 from rubik.Edge import EDGE_SIDES
 import rubik.CubieCube as cc
-import rubik.Utils as u
+from rubik.Utils import MOVES, get_random_moves, get_random_moves_2
 
 
 class FaceletCube:
@@ -47,7 +47,7 @@ class FaceletCube:
 
     def apply_moves(self, moves) -> None:
         for move in moves:
-            if move in u.MOVES:
+            if move in MOVES:
                 self.move(move)
             else:
                 raise ValueError(f"Can't recognize move {move}. Allowed moves in range 0-17")
@@ -314,3 +314,15 @@ class FaceletCube:
         for i in range(12):
             cubie.set_edge(i, self.sides)
         return cubie
+
+
+def get_random_facelet():
+    facelet = FaceletCube()
+    facelet.apply_moves(get_random_moves())
+    return facelet
+
+
+def get_random_facelet_2():
+    facelet = FaceletCube()
+    facelet.apply_moves(get_random_moves_2())
+    return facelet

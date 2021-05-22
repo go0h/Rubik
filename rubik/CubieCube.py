@@ -1,6 +1,6 @@
-import copy
+
 import rubik.FaceletCube as fc
-import rubik.Utils as u
+from rubik.Utils import rotate_left, MOVES, MOVES_S, get_random_moves, get_random_moves_2
 from rubik.Edge import *
 from rubik.Corner import *
 from math import comb  # биномиальный коэффициент
@@ -70,15 +70,15 @@ class CubieCube:
         if corners is None:
             self.corners = [Corner(i) for i in range(8)]
         else:
-            self.corners = list(map(lambda c: Corner(c.c, c.o), corners))
+            self.corners = [Corner(c.c, c.o) for c in corners]
         if edges is None:
             self.edges = [Edge(i) for i in range(12)]
         else:
-            self.edges = list(map(lambda c: Edge(c.c, c.o), edges))
+            self.edges = [Edge(e.c, e.o) for e in edges]
 
     def apply_moves(self, moves) -> None:
         for move in moves:
-            if move in u.MOVES:
+            if move in MOVES:
                 self.move(move)
             else:
                 raise ValueError(f"Can't recognize move {move}. Allowed moves in range 0-17")
@@ -91,8 +91,8 @@ class CubieCube:
         if len(moves) == 0:
             return
         for move in moves:
-            if move in u.MOVES_S:
-                self.move(u.MOVES_S.index(move.upper()))
+            if move in MOVES_S:
+                self.move(MOVES_S.index(move.upper()))
             else:
                 raise ValueError(f"Can't recognize move {move}")
 
@@ -100,17 +100,22 @@ class CubieCube:
         """Разрешенные действия 0-17"""
         c_m = CUBIE_MOVE[move][0]
         e_m = CUBIE_MOVE[move][1]
-        c = list(map(lambda x: (x.c, x.o), self.corners))
-        e = list(map(lambda x: (x.c, x.o), self.edges))
-        for j in range(8):
-            t = c[c_m[j][0]]
-            self.corners[j].c = t[0]
-            self.corners[j].o = (t[1] + c_m[j][1]) % 3
+        c = [(c.c, c.o) for c in self.corners]
+        e = [(e.c, e.o) for e in self.edges]
 
-        for j in range(12):
-            t = e[e_m[j][0]]
-            self.edges[j].c = t[0]
-            self.edges[j].o = (t[1] + e_m[j][1]) % 2
+        i = 0
+        while i < 8:
+            t = c[c_m[i][0]]
+            self.corners[i].c = t[0]
+            self.corners[i].o = (t[1] + c_m[i][1]) % 3
+            i += 1
+
+        i = 0
+        while i < 12:
+            t = e[e_m[i][0]]
+            self.edges[i].c = t[0]
+            self.edges[i].o = (t[1] + e_m[i][1]) % 2
+            i += 1
 
     def solved(self) -> bool:
         """Комментарии излишни"""
@@ -125,6 +130,11 @@ class CubieCube:
                 return False
             i += 1
         return True
+
+    def check_in_phase2(self):
+        return self.get_edges_flip() == 0 and \
+               self.get_corners_twist() == 0 and \
+               self.get_ud_slice_coord() == 0
 
     def to_facelet_cube(self):
         facelet = fc.FaceletCube()
@@ -236,10 +246,10 @@ class CubieCube:
         for j in range(3, 0, -1):
             k = 0
             while edge4[j] != j + 8:
-                u.rotate_left(edge4, 0, j)
+                rotate_left(edge4, 0, j)
                 k += 1
-            b = (j + 1)*b + k
-        return 24*a + b
+            b = (j + 1) * b + k
+        return 24 * a + b
 
     # # ДЛЯ ПРОВЕРКИ
     # def get_ud_slice_sorted(self):
@@ -288,14 +298,15 @@ class CubieCube:
         #             s += 1
         #     res = (res + s) * i
         # return res
-        perm = list([corner.c for corner in self.corners])  # duplicate cp
-        b = 0
-        for j in range(DRB, URF, -1):
+        perm = list([corner.c for corner in self.corners])
+        b, j = 0, DRB
+        while j > -1:
             k = 0
             while perm[j] != j:
-                u.rotate_left(perm, 0, j)
+                rotate_left(perm, 0, j)
                 k += 1
             b = (j + 1) * b + k
+            j -= 1
         return b
 
     def get_ud_edges(self):
@@ -312,14 +323,24 @@ class CubieCube:
         #             s += 1
         #     res = (res + s) * i
         # return res
-        perm = list([edge.c for edge in self.edges[0:8]])  # duplicate first 8 elements of ep
-        b = 0
-        for j in range(DB, UR, -1):
+
+        # res = 0
+        # for i in range(DB, UR - 1, -1):
+        #     s = 0
+        #     for j in range(i - 1, UR - 1, -1):
+        #         if self.edges[j].c > self.edges[i].c:
+        #             s += 1
+        #     res = (res + s) * i
+        # return res
+        perm = list([edge.c for edge in self.edges[0:8]])
+        b, j = 0, DB
+        while j > -1:
             k = 0
             while perm[j] != j:
-                u.rotate_left(perm, 0, j)
+                rotate_left(perm, 0, j)
                 k += 1
             b = (j + 1) * b + k
+            j -= 1
         return b
 
     def __mul__(self, other):
@@ -332,3 +353,15 @@ class CubieCube:
 
     def __eq__(self, other) -> bool:
         return self.edges == other.edges and self.corners == other.corners
+
+
+def get_random_cubie():
+    cubie = CubieCube()
+    cubie.apply_moves(get_random_moves())
+    return cubie
+
+
+def get_random_cubie_2():
+    cubie = CubieCube()
+    cubie.apply_moves(get_random_moves_2())
+    return cubie

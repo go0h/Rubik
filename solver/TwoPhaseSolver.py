@@ -1,59 +1,59 @@
 import rubik.CubieCube as cc
-import rubik.FaceletCube as fc
-import rubik.CoordCubie as crd
-import rubik.Utils as u
+from rubik.CoordCubie import get_phase1_depth, get_phase2_depth
+from rubik.Utils import MOVES, PHASE2_MOVES, MOVES_S, INV_MOVE
 import rubik.Tables as tb
-from copy import deepcopy
+from datetime import datetime
 
 
 class TwoPhaseSolver:
 
     def __init__(self, cubie: cc.CubieCube):
-        self.cubie = deepcopy(cubie)
-        self.coord_cubie = crd.CoordCubie(self.cubie)
-        self.corner_save = 0
+        self.cubie = cubie
         self.moves_p1 = []
         self.moves_p2 = []
         self.solved = False
 
+        self.start_phase1_time = None
+        self.end_phase1_time = None
+        self.end_phase2_time = None
+
     def solve(self) -> list:
 
-        phase1_dist = self.coord_cubie.get_phase1_depth()
+        phase1_dist = get_phase1_depth(self.cubie)
 
-        self.search_phase1(self.coord_cubie.corner_twist,
-                           self.coord_cubie.edge_flip,
-                           self.coord_cubie.slice_sorted,
-                           phase1_dist,
-                           phase1_dist)
+        self.start_phase1_time = datetime.now()
 
-        # s1 = u.moves_to_scramble(self.moves_p1)
-        # s2 = u.moves_to_scramble(self.moves_p2)
+        cubie = cc.CubieCube(self.cubie.corners, self.cubie.edges)
+        self.search_phase1(cubie, phase1_dist, phase1_dist)
 
-        return list(map(lambda x: u.MOVES_S[x], self.moves_p1)) + \
-               list(map(lambda x: u.MOVES_S[x], self.moves_p2))
+        p1 = self.end_phase1_time - self.start_phase1_time
+        p2 = self.end_phase2_time - self.end_phase1_time
+        all = p1 + p2
+        print(f"PHASE_1 = {p1}s")
+        print(f"PHASE_2 = {p2}s")
+        print(f"ALL = {all}")
 
-    def search_phase1(self, twist, flip, slice_sorted, phase1_dist, left):
+        return [MOVES_S[x] for x in self.moves_p1 + self.moves_p2]
 
-        if twist == 0 and flip == 0 and slice_sorted < 24 and left == 0:
+    def search_phase1(self, cubie, phase1_dist, left):
 
-            temp = deepcopy(self.cubie)
-            for move in self.moves_p1:
-                temp.move(move)
+        if cubie.get_corners_twist() == 0 and \
+                cubie.get_edges_flip() == 0 and \
+                cubie.get_ud_slice_sorted() < 24 and left == 0:
 
-            ud_edges = temp.get_ud_edges()
-            corners = temp.get_corners()
-
-            dist2 = self.coord_cubie.get_phase2_depth(corners, ud_edges)
+            dist2 = get_phase2_depth(cubie)
+            self.end_phase1_time = datetime.now()
             for left in range(dist2, 30 - phase1_dist):
-                self.search_phase2(corners, ud_edges, slice_sorted, dist2, left)
+                self.search_phase2(cubie, dist2, left)
                 if self.solved:
+                    self.end_phase2_time = datetime.now()
                     break
                 else:
                     self.moves_p2 = []
 
         else:
-            for move in u.MOVES:
-                if phase1_dist == 0 and left < 5 and move in u.PHASE2_MOVES:
+            for move in MOVES:
+                if phase1_dist == 0 and left < 5 and move in PHASE2_MOVES:
                     continue
 
                 # исключаем из последовательности взаимоисклюдающие действия
@@ -63,10 +63,11 @@ class TwoPhaseSolver:
                     last = self.moves_p1[-1] // 3 - move // 3
                     if last == 0 or last == 3:
                         continue
+                cubie.move(move)
 
-                twist1 = tb.move_twist[18 * twist + move]
-                flip1 = tb.move_flip[18 * flip + move]
-                slice_sorted1 = tb.move_slice_sorted[18 * slice_sorted + move]
+                twist1 = cubie.get_corners_twist()
+                flip1 = cubie.get_edges_flip()
+                slice_sorted1 = cubie.get_ud_slice_sorted()
 
                 fs = 2048 * (slice_sorted1 // 24) + flip1
                 classidx1 = tb.fs_classidx[fs]
@@ -75,22 +76,25 @@ class TwoPhaseSolver:
                 dist1 = tb.distance[3 * phase1_dist + dist_mod3]
 
                 if dist1 >= left:
+                    cubie.move(INV_MOVE[move])
                     continue
 
                 self.moves_p1.append(move)
-                self.search_phase1(twist1, flip1, slice_sorted1, dist1, left - 1)
-                if not u.check_cubie_in_phase2(self.cubie, self.moves_p1):
+                self.search_phase1(cubie, dist1, left - 1)
+
+                if not cubie.check_in_phase2():
                     self.moves_p1.pop(-1)
+                    cubie.move(INV_MOVE[move])
                 if self.solved:
                     break
 
-    def search_phase2(self, corners, ud_edges, slice_sorted, dist2, left):
+    def search_phase2(self, cubie, dist2, left):
 
-        if corners == 0 and ud_edges == 0 and slice_sorted == 0 and not self.solved:
+        if cubie.solved():
             self.solved = True
             return
 
-        for move in u.PHASE2_MOVES:
+        for move in PHASE2_MOVES:
 
             if len(self.moves_p2) > 0:
                 last = self.moves_p2[-1] // 3 - move // 3
@@ -101,23 +105,24 @@ class TwoPhaseSolver:
                     last = self.moves_p1[-1] // 3 - move // 3
                     if last == 0 or last == 3:
                         continue
+            cubie.move(move)
 
-            corners1 = tb.move_corners[18 * corners + move]
-            ud_edges1 = tb.move_ud_edges[18 * ud_edges + move]
-            slice_sorted1 = tb.move_slice_sorted[18 * slice_sorted + move]
+            ud_edges = cubie.get_ud_edges()
+            corners = cubie.get_corners()
 
-            classidx = tb.co_classidx[corners1]
-            sym = tb.co_sym[corners1]
-            dist_mod3 = tb.get_co_ud_edges_depth3(40320 * classidx + tb.conj_ud_edges[(ud_edges1 << 4) + sym])
+            classidx = tb.co_classidx[corners]
+            sym = tb.co_sym[corners]
+            dist_mod3 = tb.get_co_ud_edges_depth3(40320 * classidx + tb.conj_ud_edges[(ud_edges << 4) + sym])
 
             dist2_new = tb.distance[3 * dist2 + dist_mod3]
             if dist2_new >= left:
+                cubie.move(INV_MOVE[move])
                 continue
 
             self.moves_p2.append(move)
-            self.search_phase2(corners1, ud_edges1, slice_sorted1, dist2_new, left - 1)
+            self.search_phase2(cubie, dist2_new, left - 1)
             if not self.solved:
                 self.moves_p2.pop(-1)
+                cubie.move(INV_MOVE[move])
             else:
                 break
-
