@@ -70,9 +70,9 @@ class TwoPhaseSolver:
                 slice_sorted1 = cubie.get_ud_slice_sorted()
 
                 fs = 2048 * (slice_sorted1 // 24) + flip1
-                classidx1 = tb.fs_classidx[fs]
-                sym = tb.fs_sym[fs]
-                dist_mod3 = tb.get_fs_twist_depth3(2187 * classidx1 + tb.conj_twist[(twist1 << 4) + sym])
+                classidx1 = tb.fs_classidx[fs][0]
+                sym = tb.fs_classidx[fs][1]
+                dist_mod3 = tb.get_fs_twist_depth3(2187 * classidx1 + tb.conj_twist[twist1][sym])
                 dist1 = tb.distance[3 * phase1_dist + dist_mod3]
 
                 if dist1 >= left:
@@ -110,9 +110,9 @@ class TwoPhaseSolver:
             ud_edges = cubie.get_ud_edges()
             corners = cubie.get_corners()
 
-            classidx = tb.co_classidx[corners]
-            sym = tb.co_sym[corners]
-            dist_mod3 = tb.get_co_ud_edges_depth3(40320 * classidx + tb.conj_ud_edges[(ud_edges << 4) + sym])
+            classidx = tb.co_classidx[corners][0]
+            sym = tb.co_classidx[corners][1]
+            dist_mod3 = tb.get_co_ud_edges_depth3(40320 * classidx + tb.conj_ud_edges[ud_edges][sym])
 
             dist2_new = tb.distance[3 * dist2 + dist_mod3]
             if dist2_new >= left:

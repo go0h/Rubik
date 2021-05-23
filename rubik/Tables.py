@@ -2,7 +2,7 @@ import os
 import sys
 import array
 from rubik.Symmetries import create_conj_twist, create_conj_ud_edges, create_fs_classidx, create_co_classidx
-from datetime import datetime
+import numpy as np
 
 
 def load_table(file_name, table_size, size):
@@ -26,149 +26,129 @@ def save_table(file_name, arr, size):
         sys.exit(-1)
 
 
-# array:
-#   H - unsigned short (2 байта) 0..65535
-#   B - unsigned char (1 байт) 0..255
-#   L - unsigned long (8 байта)
-#   b - signed char (1 байт) -128..127
+def load_table_np(file_name):
+    try:
+        with open(file_name, "rb") as file:
+            table = np.loadtxt(file, dtype="int").tolist()
+    except IOError:
+        print(f"File {file_name} not accessible")
+        sys.exit(-1)
+    return table
+
+
+def save_table_np(file_name, arr):
+    try:
+        with open(file_name, "wb") as file:
+            np.savetxt(file, np.array(arr), fmt="%d")
+    except IOError:
+        print(f"File {file_name} not accessible")
+        sys.exit(-1)
+
+
+def get_table(table_name, create_table_func):
+
+    dir = os.getcwd() + "/resources/"
+    if os.getcwd().endswith("test"):
+        dir = dir.replace("/test", "")
+    table_name = dir + table_name
+
+    if os.path.exists(table_name):
+        try:
+            with open(table_name, "rb") as file:
+                table = np.loadtxt(file, dtype="int").tolist()
+        except IOError:
+            print(f"File {table_name} not accessible")
+            sys.exit(-1)
+    else:
+        table = create_table_func()
+        try:
+            with open(table_name, "wb") as file:
+                np.savetxt(file, np.array(table), fmt="%d")
+        except IOError:
+            print(f"File {table_name} not accessible")
+            sys.exit(-1)
+    return table
+
 
 #######################################################################################################################
-
-resource_dir = os.getcwd() + "/resources/"
-if os.getcwd().endswith("test"):
-    resource_dir = resource_dir.replace("/test", "")
 
 # http://kociemba.org/math/symcord.htm
 
 # загружаем таблицу ориентаций углов для Фазы 1
 # 3^7 = 2187 возможных ориентаций углов в Фазе 1
 # 16 - количество симметрий подгруппы Dh4 - http://kociemba.org/math/d4h.htm
-# twist_conj[2187][16]
-# conj_twist = load_table("conj_twist", 2187 * 16, "H")
-table_name = "conj_twist"
-elem_size = "H"
-if os.path.exists(resource_dir + table_name):
-    conj_twist = load_table(resource_dir + table_name, 2187 * 16, elem_size)
-else:
-    conj_twist = create_conj_twist()
-    save_table(resource_dir + table_name, conj_twist, elem_size)
+# conj_twist[2187][16]
+conj_twist = get_table("conj_twist", create_conj_twist)
 
 # загружаем таблицу перестановок верхних и нижних ребер для Фазы 2 (UR - DB)
 # 8! = 40320 возможных перестановок 8 ребер в фазе 1
 # 16 - количество симметрий подгруппы Dh4 - http://kociemba.org/math/d4h.htm
-# twist_conj[40320][16]
-# conj_ud_edges = load_table("conj_ud_edges", 40320 * 16, "H")
-table_name = "conj_ud_edges"
-elem_size = "H"
-if os.path.exists(resource_dir + table_name):
-    conj_ud_edges = load_table(resource_dir + table_name, 40320 * 16, elem_size)
-else:
-    conj_ud_edges = create_conj_ud_edges()
-    save_table(resource_dir + table_name, conj_ud_edges, elem_size)
+# conj_ud_edges[40320][16]
+conj_ud_edges = get_table("conj_ud_edges", create_conj_ud_edges)
+
 
 #######################################################################################################################
 
 # http://kociemba.org/math/twophase.htm
-# загружаем таблицу перестановок + ориентаций UD-среза для фазы 1
+# загружаем таблицу перестановок + ориентаций UD-среза для фазы 1, c их симметриями
 # 2^11 = 2048 возможных ориентаций 12 ребер
 # 11880 / 24 = 495 - количество перестановок 4 средних ребер, порядок при этом игнорируется
 # где:
 #   - 12*11*10*9 = 11800 количество позиций 4 средних ребер в фазе 1
 #   - 4! = 24 - количество перестановок 4 средних ребер в фазе 2
-# fs_classidx[idx] -> classidx - класс эквивалентных значений
-# fs_classidx[495][2048]
-
-# получение по индексу индекс из 16 симметрий
-# fs_sym[idx] -> symmetry num для fs_classidx[idx]
-# fs_classidx[495][2048]
+# fs_classidx[idx][0] -> classidx - класс эквивалентных значений
+# получение по индексу номер симметрии из 16 симметрий группы D4h
+# fs_classidx[idx][1] -> номер симметрии для fs_classidx[idx][0]
 
 # За счет симметрий это количество перестановок 1013760 «редуцируется» до 64430 классов эквивалентности.
 # Каждому классу эквивалентности принадлежит до 16 координат - 16, а не 48, потому что мы используем только симметрии,
 # которые сохраняют ось UD (тип группы симметрий - D4h).
-# fs_rep[classidx] - первое вхождение класса эквивалентности
-# fs_rep[64430]
+# fs_classidx[idx][2] - первое вхождение класса эквивалентности fs_classidx[idx][0]
 
-table_name1 = "fs_classidx"
-table_name2 = "fs_sym"
-table_name3 = "fs_rep"
-if os.path.exists(resource_dir + table_name1) and \
-        os.path.exists(resource_dir + table_name2) and \
-        os.path.exists(resource_dir + table_name3):
-    fs_classidx = load_table(resource_dir + table_name1, 495 * 2048, "H")
-    fs_sym = load_table(resource_dir + table_name2, 2048 * 495, "B")
-    fs_rep = load_table(resource_dir + table_name3, 64430, "L")
-else:
-    tables = create_fs_classidx()
-    fs_classidx, fs_sym, fs_rep = tables
-    save_table(resource_dir + table_name1, fs_classidx, "H")
-    save_table(resource_dir + table_name2, fs_sym, "B")
-    save_table(resource_dir + table_name3, fs_rep, "L")
+fs_classidx = get_table("fs_classidx", create_fs_classidx)
 
 #######################################################################################################################
 
 # http://kociemba.org/math/twophase.htm
-# загружаем таблицу перестановок 8 углов для фазы 2
+# загружаем таблицу перестановок 8 углов для фазы 2 c их симметриями
 # 8! = 40320 возможных перестановок 8 углов
-# co_classidx[idx] -> classidx - класс эквивалентных значений
-# co_classidx[40320]
-# co_classidx = load_table(resource_dir + "co_classidx", 40320, "H")
+# co_classidx[idx][0] -> classidx - класс эквивалентных значений
 
-# загружаем таблицу номеров симметрий для перестановок углов
-# получение по индексу индекс из 16 симметрий
-# co_sym[idx] -> symmetry num для co_classidx[idx]
-# co_sym[40320]
-# co_sym = load_table(resource_dir + "co_sym", 40320, "B")
+# получение по индексу номера симметрии из 16 симметрий
+# co_classidx[idx][1] -> номер симметрии для co_classidx[idx][0]
 
 # За счет симметрий это количество перестановок 40320 «редуцируется» до 2768 классов эквивалентности.
 # Каждому классу эквивалентности принадлежит до 16 координат - 16, а не 48, потому что мы используем только симметрии,
 # которые сохраняют ось UD, соответственно не меняют ориентацию углов (тип группы симметрий - D4h).
 # Для каждого класса эквивалентности мы сохраняем наименьшую координату в качестве
 # представителя этого класса в массиве размером 2768
-# fs_rep[classidx] - первое вхождение класса эквивалентности
-# fs_rep[2768]
-# co_rep = load_table("co_rep", 2768, "H")
+# co_classidx[idx][2] - первое вхождение класса эквивалентности co_classidx[idx][0]
 
-table_name1 = "co_classidx"
-table_name2 = "co_sym"
-table_name3 = "co_rep"
-if os.path.exists(resource_dir + table_name1) and \
-        os.path.exists(resource_dir + table_name2) and \
-        os.path.exists(resource_dir + table_name3):
-    co_classidx = load_table(resource_dir + table_name1, 40320, "H")
-    co_sym = load_table(resource_dir + table_name2, 40320, "B")
-    co_rep = load_table(resource_dir + table_name3, 2768, "H")
-else:
-    tables = create_co_classidx()
-    co_classidx, co_sym, co_rep = tables
-    save_table(resource_dir + table_name1, co_classidx, "H")
-    save_table(resource_dir + table_name2, co_sym, "B")
-    save_table(resource_dir + table_name3, co_rep, "H")
+co_classidx = get_table("co_classidx", create_co_classidx)
 
 #######################################################################################################################
 # http://kociemba.org/math/pruning.htm
 # http://kociemba.org/math/distribution.htm
 
-# таблица обрезка для фазы 1
+# array:
+#   H - unsigned short (2 байта) 0..65535
+#   B - unsigned char (1 байт) 0..255
+#   L - unsigned long (8 байта)
+#   b - signed char (1 байт) -128..127
+
+resource_dir = os.getcwd() + "/resources/"
+if os.getcwd().endswith("test"):
+    resource_dir = resource_dir.replace("/test", "")
+
+# таблица обрезки для фазы 1
 table_name = "phase1_prun"
 phase1_prun = load_table(resource_dir + table_name, (2187 * 64430) // 16 + 1, "L")
 
-# t1 = datetime.now()
-# table_name = "phase1_prun"
-# elem_size = "L"
-# if os.path.exists(resource_dir + table_name):
-#     phase1_prun = load_table(resource_dir + table_name, (2187 * 64430) // 16 + 1, elem_size)
-# else:
-#     phase1_prun = create_pruning1_table(fs_classidx,fs_rep, fs_sym, conj_twist)
-#     save_table(resource_dir + table_name, phase1_prun, elem_size)
-#     print(f"Create {table_name} for {datetime.now() - t1}")
-
-
-# phase1_prun = load_table(resource_dir + "phase1_prun", (2187 * 64430) // 16 + 1, "L")
 table_name = "phase2_prun"
 phase2_prun = load_table(resource_dir + table_name, (2768 * 40320) // 16, "L")
 
-# distance[20][3] = -128..127
-distance = array.array('b', [0 for _ in range(60)])
+# distance[20][3] = -1 .. 19
+distance = [0 for _ in range(60)]
 for i in range(20):
     for j in range(3):
         distance[3 * i + j] = (i // 3) * 3 + j

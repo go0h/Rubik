@@ -11,10 +11,10 @@ def get_phase1_depth(cubie):
     twist = cub.get_corners_twist()
 
     fs_ = 2048 * slice + flip
-    classidx_ = tb.fs_classidx[fs_]
-    sym = tb.fs_sym[fs_]
+    classidx_ = tb.fs_classidx[fs_][0]
+    sym = tb.fs_classidx[fs_][1]
     # 3^7 * класс экв + ориентация 8 углов
-    depth_mod3 = tb.get_fs_twist_depth3(2187 * classidx_ + tb.conj_twist[(twist << 4) + sym])
+    depth_mod3 = tb.get_fs_twist_depth3(2187 * classidx_ + tb.conj_twist[twist][sym])
 
     depth = 0
     # первая фаза, считается законченой, когда ориентации всех углов и ребер равны 0
@@ -30,9 +30,9 @@ def get_phase1_depth(cubie):
             flip1 = cub.get_edges_flip()
             slice1 = cub.get_ud_slice_sorted() // 24
             fs1 = 2048 * slice1 + flip1
-            classidx1 = tb.fs_classidx[fs1]
-            sym = tb.fs_sym[fs1]
-            if tb.get_fs_twist_depth3(2187 * classidx1 + tb.conj_twist[(twist1 << 4) + sym]) == depth_mod3 - 1:
+            classidx1 = tb.fs_classidx[fs1][0]
+            sym = tb.fs_classidx[fs1][1]
+            if tb.get_fs_twist_depth3(2187 * classidx1 + tb.conj_twist[twist1][sym]) == depth_mod3 - 1:
                 depth += 1
                 twist = twist1
                 flip = flip1
@@ -48,9 +48,9 @@ def get_phase2_depth(cubie):
     cub = cc.CubieCube(cubie.corners, cubie.edges)
     corners = cub.get_corners()
     ud_edges = cub.get_ud_edges()
-    classidx = tb.co_classidx[corners]
-    sym = tb.co_sym[corners]
-    depth_mod3 = tb.get_co_ud_edges_depth3(40320 * classidx + tb.conj_ud_edges[(ud_edges << 4) + sym])
+    classidx = tb.co_classidx[corners][0]
+    sym = tb.co_classidx[corners][1]
+    depth_mod3 = tb.get_co_ud_edges_depth3(40320 * classidx + tb.conj_ud_edges[ud_edges][sym])
 
     if depth_mod3 == 3:
         return 11
@@ -63,10 +63,10 @@ def get_phase2_depth(cubie):
             cub.move(move)
             corners1 = cub.get_corners()
             ud_edges1 = cub.get_ud_edges()
-            classidx1 = tb.co_classidx[corners1]
-            sym = tb.co_sym[corners1]
+            classidx1 = tb.co_classidx[corners1][0]
+            sym = tb.co_classidx[corners1][1]
 
-            if tb.get_co_ud_edges_depth3(40320 * classidx1 + tb.conj_ud_edges[(ud_edges1 << 4) + sym]) == depth_mod3 - 1:
+            if tb.get_co_ud_edges_depth3(40320 * classidx1 + tb.conj_ud_edges[ud_edges][sym]) == depth_mod3 - 1:
                 depth += 1
                 corners = corners1
                 ud_edges = ud_edges1
