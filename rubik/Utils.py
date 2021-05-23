@@ -55,16 +55,16 @@ def moves_to_scramble(moves):
 
 
 def rotate_left(arr, left, right):
-    """"Rotate array arr left between l and r. r is included."""
+    """"Вращение массива влево между [left, right]"""
     temp = arr[left]
     for i in range(left, right):
         arr[i] = arr[i + 1]
     arr[right] = temp
 
 
-# def rotate_right(arr, l, r):
-#     """"Rotate array arr right between l and r. r is included."""
-#     temp = arr[r]
-#     for i in range(r, l, -1):
-#         arr[i] = arr[i-1]
-#     arr[l] = temp
+def rotate_right(arr, left, right):
+    """"Вращение массива вправо межу [left, right]"""
+    temp = arr[right]
+    for i in range(right, left, -1):
+        arr[i] = arr[i - 1]
+    arr[left] = temp

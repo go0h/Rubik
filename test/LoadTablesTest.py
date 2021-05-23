@@ -7,7 +7,7 @@ class LoadTablesTest(unittest.TestCase):
 
     def test_load_sym_tables(self):
 
-        self.assertTrue(len(twist_conj) == 2187 * 16)
+        self.assertTrue(len(conj_twist) == 2187 * 16)
         self.assertTrue(len(conj_ud_edges) == 40320 * 16)
 
         self.assertTrue(len(fs_classidx) == 2048 * 495)

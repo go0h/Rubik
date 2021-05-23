@@ -6,9 +6,9 @@ import solver.TwoPhaseSolver as tfs
 
 if __name__ == '__main__':
 
-    # scramble = "B' U2 R' U2 U F2 R D F2 "
+    scramble = "B' U2 R' U2 U F2 R D F2 "
     # scramble = get_random_scramble()
-    scramble = SUPER_FLIP
+    # scramble = SUPER_FLIP
     print(f"SCRAMBLE = \"{scramble}\"")
     cubie = cc.CubieCube()
 

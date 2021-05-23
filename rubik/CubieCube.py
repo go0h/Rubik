@@ -1,6 +1,6 @@
 
 import rubik.FaceletCube as fc
-from rubik.Utils import rotate_left, MOVES, MOVES_S, get_random_moves, get_random_moves_2
+from rubik.Utils import rotate_left, rotate_right, MOVES, MOVES_S, get_random_moves, get_random_moves_2
 from rubik.Edge import *
 from rubik.Corner import *
 from math import comb  # биномиальный коэффициент
@@ -204,6 +204,26 @@ class CubieCube:
                 n += 1
         return res
 
+    def set_ud_slice_coord(self, idx):
+        slice_edge = list(range(FR, BR + 1))
+        other_edge = [UR, UF, UL, UB, DR, DF, DL, DB]
+        a = idx
+        for e in self.edges:
+            e.c = -1  # Invalidate all edge positions
+
+        x = 4  # set slice edges
+        for j in range(12):
+            if a - comb(11 - j, x) >= 0:
+                self.edges[j].c = slice_edge[4 - x]
+                a -= comb(11 - j, x)
+                x -= 1
+
+        x = 0  # set the remaining edges UR..DB
+        for j in range(12):
+            if self.edges[j].c == -1:
+                self.edges[j].c = other_edge[x]
+                x += 1
+
     # def __edges_coord__(self, start, end):
     #     from collections import deque
     #     res, n = 0, 0
@@ -223,12 +243,28 @@ class CubieCube:
             res = 3 * res + self.corners[i].o
         return res
 
+    def set_corners_twist(self, twist):
+        parity = 0
+        for i in range(DRB - 1, URF - 1, -1):
+            self.corners[i].o = twist % 3
+            parity += self.corners[i].o
+            twist //= 3
+        self.corners[DRB].o = ((3 - parity % 3) % 3)
+
     def get_edges_flip(self):
         """Ориентация ребер описывается числом от 0 до 2047 (2^11 - 1)"""
         res = 0
         for i in range(11):
             res = 2 * res + self.edges[i].o
         return res
+
+    def set_edges_flip(self, flip):
+        parity = 0
+        for i in range(BR - 1, UR - 1, -1):
+            self.edges[i].o = flip % 2
+            parity += self.edges[i].o
+            flip //= 2
+        self.edges[BR].o = ((2 - parity % 2) % 2)
 
     def get_ud_slice_sorted(self):
         """Get the permutation and location of the UD-slice edges FR,FL,BL and BR.
@@ -309,6 +345,17 @@ class CubieCube:
             j -= 1
         return b
 
+    def set_corners(self, idx):
+        for i in range(8):
+            self.corners[i].c = i
+
+        for j in range(8):
+            k = idx % (j + 1)
+            idx //= j + 1
+            while k > 0:
+                rotate_right(self.corners, 0, j)
+                k -= 1
+
     def get_ud_edges(self):
         """http://kociemba.org/math/coordlevel.htm
            Перестановки 8 ребер (верхних и нижних)
@@ -342,6 +389,17 @@ class CubieCube:
             b = (j + 1) * b + k
             j -= 1
         return b
+
+    def set_ud_edges(self, ud_edge):
+        # ребра FR FL BL BR не учитываются
+        for i in range(0, 8):
+            self.edges[i].c = i
+        for j in range(0, 8):
+            k = ud_edge % (j + 1)
+            ud_edge //= j + 1
+            while k > 0:
+                rotate_right(self.edges, 0, j)
+                k -= 1
 
     def __mul__(self, other):
         self.corner_multiply(other)

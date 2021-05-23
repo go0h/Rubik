@@ -2,7 +2,6 @@ import rubik.Tables as tb
 import rubik.Utils as u
 import rubik.CubieCube as cc
 
-
 def get_phase1_depth(cubie):
     """@:return Минимальное количество ходов требуемое для достижения рандомного кубика фазы 2"""
 
@@ -15,7 +14,7 @@ def get_phase1_depth(cubie):
     classidx_ = tb.fs_classidx[fs_]
     sym = tb.fs_sym[fs_]
     # 3^7 * класс экв + ориентация 8 углов
-    depth_mod3 = tb.get_fs_twist_depth3(2187 * classidx_ + tb.twist_conj[(twist << 4) + sym])
+    depth_mod3 = tb.get_fs_twist_depth3(2187 * classidx_ + tb.conj_twist[(twist << 4) + sym])
 
     depth = 0
     # первая фаза, считается законченой, когда ориентации всех углов и ребер равны 0
@@ -33,7 +32,7 @@ def get_phase1_depth(cubie):
             fs1 = 2048 * slice1 + flip1
             classidx1 = tb.fs_classidx[fs1]
             sym = tb.fs_sym[fs1]
-            if tb.get_fs_twist_depth3(2187 * classidx1 + tb.twist_conj[(twist1 << 4) + sym]) == depth_mod3 - 1:
+            if tb.get_fs_twist_depth3(2187 * classidx1 + tb.conj_twist[(twist1 << 4) + sym]) == depth_mod3 - 1:
                 depth += 1
                 twist = twist1
                 flip = flip1

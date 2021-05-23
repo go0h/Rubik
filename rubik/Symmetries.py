@@ -86,3 +86,106 @@ for j in range(SYM_N):
 #         if cub == c:
 #             symmetries.append(s + SYM_N)
 #     return symmetries
+
+def create_conj_twist():
+    conj_twist = [0 for _ in range(2187 * 16)]
+    for twist in range(2187):
+        cub = cc.CubieCube()
+        cub.set_corners_twist(twist)
+        for s in range(16):
+            sym_cubie = cc.CubieCube(SYM_CUBIES[s].corners, SYM_CUBIES[s].edges)
+            sym_cubie.corner_multiply(cub)                      # s * t
+            sym_cubie.corner_multiply(SYM_CUBIES[INV_IDX[s]])   # s * t * s^-1
+            conj_twist[16 * twist + s] = sym_cubie.get_corners_twist()
+    return conj_twist
+
+
+def create_conj_ud_edges():
+    conj_ud_edges = [0 for _ in range(40320 * 16)]
+    for ud_edge in range(40320):
+        cub = cc.CubieCube()
+        cub.set_ud_edges(ud_edge)
+        for s in range(16):
+            sym_cubie = cc.CubieCube(SYM_CUBIES[s].corners, SYM_CUBIES[s].edges)
+            sym_cubie.edge_multiply(cub)                      # s * t
+            sym_cubie.edge_multiply(SYM_CUBIES[INV_IDX[s]])   # s * t * s^-1
+            conj_ud_edges[16 * ud_edge + s] = sym_cubie.get_ud_edges()
+    return conj_ud_edges
+
+
+def create_fs_classidx():
+    fs_classidx = [65535 for _ in range(2048 * 495)]
+    fs_sym = [0 for _ in range(2048 * 495)]
+    fs_rep = [0 for _ in range(64430)]
+    classidx = 0
+    cub = cc.CubieCube()
+    # для каждой перестановки UD-разреза
+    for sl in range(495):
+        # выставляем перестановку
+        cub.set_ud_slice_coord(sl)
+        # для каждой ориентации ребер из 2048
+        for flip in range(2048):
+            # выставляем ориентацию
+            cub.set_edges_flip(flip)
+
+            # получаем индекс
+            idx = 2048 * sl + flip
+            # если класс эквивалентноти еще не занят
+            if fs_classidx[idx] == 65535:
+                # выставляем порядковый номер класса
+                fs_classidx[idx] = classidx
+                # номер симметрии
+                fs_sym[idx] = 0
+                # сохраняем первый индекс класса эквивалентности
+                fs_rep[classidx] = idx
+            else:
+                continue
+
+            # генерируем 16 симметрий для каждого класса эквивалентности
+            for s in range(16):
+                sym = cc.CubieCube(SYM_CUBIES[INV_IDX[s]].corners, SYM_CUBIES[INV_IDX[s]].edges)
+                sym.edge_multiply(cub)
+                sym.edge_multiply(SYM_CUBIES[s])
+
+                new_idx = 2048 * sym.get_ud_slice_coord() + sym.get_edges_flip()
+                if fs_classidx[new_idx] == 65535:
+                    fs_classidx[new_idx] = classidx
+                    fs_sym[new_idx] = s
+
+            classidx += 1
+
+    return [fs_classidx, fs_sym, fs_rep]
+
+
+def create_co_classidx():
+    co_classidx = [65535 for _ in range(40320)]
+    co_sym = [0 for _ in range(40320)]
+    co_rep = [0 for _ in range(2768)]
+
+    cub = cc.CubieCube()
+    classidx = 0
+    for idx in range(40320):
+
+        cub.set_corners(idx)
+
+        if co_classidx[idx] == 65535:
+            co_classidx[idx] = classidx
+            co_sym[idx] = 0
+            co_rep[classidx] = idx
+        else:
+            continue
+
+        for s in range(16):
+            sym = cc.CubieCube(SYM_CUBIES[INV_IDX[s]].corners, SYM_CUBIES[INV_IDX[s]].edges)
+
+            sym.corner_multiply(cub)
+            sym.corner_multiply(SYM_CUBIES[s])
+
+            idx_new = sym.get_corners()
+            if co_classidx[idx_new] == 65535:
+                co_classidx[idx_new] = classidx
+                co_sym[idx_new] = s
+
+        classidx += 1
+
+    return [co_classidx, co_sym, co_rep]

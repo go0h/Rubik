@@ -72,7 +72,7 @@ class TwoPhaseSolver:
                 fs = 2048 * (slice_sorted1 // 24) + flip1
                 classidx1 = tb.fs_classidx[fs]
                 sym = tb.fs_sym[fs]
-                dist_mod3 = tb.get_fs_twist_depth3(2187 * classidx1 + tb.twist_conj[(twist1 << 4) + sym])
+                dist_mod3 = tb.get_fs_twist_depth3(2187 * classidx1 + tb.conj_twist[(twist1 << 4) + sym])
                 dist1 = tb.distance[3 * phase1_dist + dist_mod3]
 
                 if dist1 >= left:
