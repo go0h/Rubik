@@ -17,7 +17,7 @@ def set_fs_twist_depth3(table, ix, value):
     table[base] |= value << shift
 
 
-def create_pruning1_table(fs_classidx, fs_rep, conj_twist, twist_move, flip_move, slice_sorted_move):
+def create_pruning1_table(fs_classidx, conj_twist, twist_move, flip_move, slice_sorted_move):
 
     total = 64430 * 2187  # 140.689.710
     fs_twist_depth = [0xffffffff for _ in range(total // 16 + 1)]
@@ -25,6 +25,7 @@ def create_pruning1_table(fs_classidx, fs_rep, conj_twist, twist_move, flip_move
     # #################### создаем таблицу ссиметрий fs_class  ###############################
     cub = cc.CubieCube()
     fs_sym_t = [0 for _ in range(64430)]
+    fs_rep = list(dict.fromkeys([fs_classidx[i][2] for i in range(len(fs_classidx))]))
     for i in range(64430):
 
         rep = fs_rep[i]
@@ -32,10 +33,10 @@ def create_pruning1_table(fs_classidx, fs_rep, conj_twist, twist_move, flip_move
         cub.set_edges_flip(rep % 2048)
 
         for s in range(16):
-            ss = cc.CubieCube(SYM_CUBIES[s].corners, SYM_CUBIES[s].edges)
-            ss.edge_multiply(cub)  # s*cc
-            ss.edge_multiply(SYM_CUBIES[INV_IDX[s]])  # s*cc*s^-1
-            if ss.get_ud_slice_coord() == rep // 2048 and ss.get_edges_flip() == rep % 2048:
+            symCubie = cc.CubieCube(SYM_CUBIES[s].corners, SYM_CUBIES[s].edges)
+            symCubie.edge_multiply(cub)  # s*cc
+            symCubie.edge_multiply(SYM_CUBIES[INV_IDX[s]])  # s*cc*s^-1
+            if symCubie.get_ud_slice_coord() == rep // 2048 and symCubie.get_edges_flip() == rep % 2048:
                 fs_sym_t[i] |= 1 << s
     # ##################################################################################################################
 

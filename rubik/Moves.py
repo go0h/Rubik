@@ -1,5 +1,5 @@
 from rubik.CubieCube import CubieCube
-from rubik.Utils import MOVES, INV_MOVE
+from rubik.Utils import MOVES, INV_MOVE, PHASE2_MOVES
 
 
 def get_move_twist():
@@ -30,7 +30,7 @@ def get_move_slice_sorted():
     move_slice = [[0 for _ in range(18)] for _ in range(11880)]
     cub = CubieCube()
     for slice in range(11880):
-        cub.set_ud_slice_coord(slice)
+        cub.set_ud_slice_sorted(slice)
         for move in MOVES:
             cub.move(move)
             move_slice[slice][move] = cub.get_ud_slice_sorted()
@@ -43,7 +43,7 @@ def get_move_ud_edges():
     cub = CubieCube()
     for ud_edge in range(40320):
         cub.set_ud_edges(ud_edge)
-        for move in MOVES:
+        for move in PHASE2_MOVES:
             cub.move(move)
             move_ud_edges[ud_edge][move] = cub.get_ud_edges()
             cub.move(INV_MOVE[move])

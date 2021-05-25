@@ -287,6 +287,36 @@ class CubieCube:
             b = (j + 1) * b + k
         return 24 * a + b
 
+    def set_ud_slice_sorted(self, idx):
+        slice_edge = [FR, FL, BL, BR]
+        other_edge = [UR, UF, UL, UB, DR, DF, DL, DB]
+        b = idx % 24  # Permutation
+        a = idx // 24  # Location
+        for e in self.edges:
+            e.c = -1  # Invalidate all edge positions
+
+        j = 1  # generate permutation from index b
+        while j < 4:
+            k = b % (j + 1)
+            b //= j + 1
+            while k > 0:
+                rotate_right(slice_edge, 0, j)
+                k -= 1
+            j += 1
+
+        x = 4  # set slice edges
+        for j in range(12):
+            if a - comb(11 - j, x) >= 0:
+                self.edges[j].c = slice_edge[4 - x]
+                a -= comb(11 - j, x)
+                x -= 1
+
+        x = 0  # set the remaining edges UR..DB
+        for j in range(12):
+            if self.edges[j].c == -1:
+                self.edges[j].c = other_edge[x]
+                x += 1
+
     # # ДЛЯ ПРОВЕРКИ
     # def get_ud_slice_sorted(self):
     #     j = 0

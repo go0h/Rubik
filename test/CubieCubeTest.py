@@ -131,3 +131,39 @@ class CubieCubeTest(unittest.TestCase):
             self.assertTrue(c.get_edges_flip() == 0 and \
                             c.get_corners_twist() == 0 and \
                             c.get_ud_slice_coord() == 0)
+
+    def test_re_twist(self):
+        cubie = cc.CubieCube()
+        for twist in range(2187):
+            cubie.set_corners_twist(twist)
+            self.assertEqual(twist, cubie.get_corners_twist())
+
+    def test_re_flip(self):
+        cubie = cc.CubieCube()
+        for flip in range(2048):
+            cubie.set_edges_flip(flip)
+            self.assertEqual(flip, cubie.get_edges_flip())
+
+    def test_re_ud_slice_coord(self):
+        cubie = cc.CubieCube()
+        for ud_slice in range(495):
+            cubie.set_ud_slice_coord(ud_slice)
+            self.assertEqual(ud_slice, cubie.get_ud_slice_coord())
+
+    def test_re_ud_slice_sorted(self):
+        cubie = cc.CubieCube()
+        for ud_slice in range(11880):
+            cubie.set_ud_slice_sorted(ud_slice)
+            self.assertEqual(ud_slice, cubie.get_ud_slice_sorted())
+
+    def test_re_corners(self):
+        cubie = cc.CubieCube()
+        for corner in range(40320):
+            cubie.set_corners(corner)
+            self.assertEqual(corner, cubie.get_corners())
+
+    def test_re_ud_edge(self):
+        cubie = cc.CubieCube()
+        for ud_edge in range(40320):
+            cubie.set_ud_edges(ud_edge)
+            self.assertEqual(ud_edge, cubie.get_ud_edges())

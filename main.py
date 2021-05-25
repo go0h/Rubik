@@ -1,6 +1,7 @@
 import rubik.CubieCube as cc
 from rubik.Utils import get_random_scramble, SUPER_FLIP
 import solver.TwoPhaseSolver as tfs
+from rubik.Tables import fs_classidx
 
 # HARD - "B' U2 R' U2 U F2 R D F2 " 1:43, 0:19, 0:14, 0:12
 
@@ -25,3 +26,4 @@ if __name__ == '__main__':
     print(len(moves))
     f1.scramble(scramble)
     print(f1)
+
