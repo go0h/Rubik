@@ -1,3 +1,4 @@
+import copy
 import random
 
 SUPER_FLIP = "D' R2 F' D2 F2 U2 L' R D' R2 B F R' U2 L' F2 R' U2 R' U'"
@@ -68,3 +69,9 @@ def rotate_right(arr, left, right):
     for i in range(right, left, -1):
         arr[i] = arr[i - 1]
     arr[left] = temp
+
+
+def check_cubie_in_phase2(cubie, moves):
+    c = copy.deepcopy(cubie)
+    c.apply_moves(moves)
+    return c.get_edges_flip() == 0 and c.get_corners_twist() == 0 and c.get_ud_slice_coord() == 0

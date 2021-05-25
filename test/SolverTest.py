@@ -37,7 +37,7 @@ class CubieCubeTest(unittest.TestCase):
 
     def test_solve(self):
 
-        for i in range(15):
+        for i in range(250):
             print(f"TEST #{i}")
 
             cubie = cc.get_random_cubie()

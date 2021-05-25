@@ -1,5 +1,6 @@
 
 import rubik.FaceletCube as fc
+import rubik.Utils
 from rubik.Utils import rotate_left, rotate_right, MOVES, MOVES_S, get_random_moves, get_random_moves_2
 from rubik.Edge import *
 from rubik.Corner import *
@@ -445,7 +446,9 @@ class CubieCube:
 
 def get_random_cubie():
     cubie = CubieCube()
-    cubie.apply_moves(get_random_moves())
+    moves = get_random_moves()
+    print(rubik.Utils.moves_to_scramble(moves))
+    cubie.apply_moves(moves)
     return cubie
 
 

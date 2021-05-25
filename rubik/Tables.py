@@ -150,7 +150,7 @@ move_flip = get_table("move_flip", m.get_move_flip)
 
 # перестановки 4 ребер UD-среза
 # move_slice[11880][18]
-move_slice = get_table("move_slice", m.get_move_slice_sorted)
+move_slice_sorted = get_table("move_ud_slice", m.get_move_slice_sorted)
 
 # перестановки 8 углов
 # move_corners[40320][18]
@@ -158,7 +158,7 @@ move_corners = get_table("move_corners", m.get_move_corners)
 
 # перестановки 8 ребер верхних и нижних
 # move_ud_edges[40320][18]
-move_edges = get_table("move_ud_edges", m.get_move_ud_edges)
+move_ud_edges = get_table("move_ud_edges", m.get_move_ud_edges)
 
 
 #######################################################################################################################

@@ -2,6 +2,7 @@ import rubik.Tables as tb
 import rubik.Utils as u
 import rubik.CubieCube as cc
 
+
 def get_phase1_depth(cubie):
     """@:return Минимальное количество ходов требуемое для достижения рандомного кубика фазы 2"""
 
@@ -45,9 +46,9 @@ def get_phase1_depth(cubie):
 
 def get_phase2_depth(cubie):
 
-    cub = cc.CubieCube(cubie.corners, cubie.edges)
-    corners = cub.get_corners()
-    ud_edges = cub.get_ud_edges()
+    corners = cubie.get_corners()
+    ud_edges = cubie.get_ud_edges()
+
     classidx = tb.co_classidx[corners][0]
     sym = tb.co_classidx[corners][1]
     depth_mod3 = tb.get_co_ud_edges_depth3(40320 * classidx + tb.conj_ud_edges[ud_edges][sym])
@@ -57,20 +58,22 @@ def get_phase2_depth(cubie):
 
     depth = 0
     while corners != 0 or ud_edges != 0:
+
         if depth_mod3 == 0:
             depth_mod3 = 3
+
         for move in u.PHASE2_MOVES:
-            cub.move(move)
-            corners1 = cub.get_corners()
-            ud_edges1 = cub.get_ud_edges()
+
+            corners1 = tb.move_corners[corners][move]
+            ud_edges1 = tb.move_ud_edges[ud_edges][move]
+
             classidx1 = tb.co_classidx[corners1][0]
             sym = tb.co_classidx[corners1][1]
 
-            if tb.get_co_ud_edges_depth3(40320 * classidx1 + tb.conj_ud_edges[ud_edges][sym]) == depth_mod3 - 1:
+            if tb.get_co_ud_edges_depth3(40320 * classidx1 + tb.conj_ud_edges[ud_edges1][sym]) == depth_mod3 - 1:
                 depth += 1
                 corners = corners1
                 ud_edges = ud_edges1
                 depth_mod3 = depth_mod3 - 1
                 break
-            cub.move(u.INV_MOVE[move])
     return depth

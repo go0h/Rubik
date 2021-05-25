@@ -1,13 +1,15 @@
 import rubik.CubieCube as cc
 from rubik.Utils import get_random_scramble, SUPER_FLIP
 import solver.TwoPhaseSolver as tfs
+import solver.TwoPhaseSolverSlow as tfss
 from rubik.Tables import fs_classidx
 
 # HARD - "B' U2 R' U2 U F2 R D F2 " 1:43, 0:19, 0:14, 0:12
 
 if __name__ == '__main__':
 
-    scramble = "B' U2 R' U2 U F2 R D F2 "
+    scramble = "D"
+    # scramble = "B R' B B2 U2 R' D2 F R' U' "
     # scramble = get_random_scramble()
     # scramble = SUPER_FLIP
     print(f"SCRAMBLE = \"{scramble}\"")
