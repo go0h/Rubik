@@ -117,9 +117,8 @@ class TwoPhaseSolver:
 
             classidx = tb.co_classidx[corners1][0]
             sym = tb.co_classidx[corners1][1]
-            dist_mod3 = tb.get_co_ud_edges_depth3(40320 * classidx + tb.conj_ud_edges[ud_edges1][sym])
+            dist2_new = tb.phase2_prun[classidx][tb.conj_ud_edges[ud_edges1][sym]]
 
-            dist2_new = tb.distance[3 * dist2 + dist_mod3]
             if dist2_new >= left:
                 continue
 

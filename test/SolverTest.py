@@ -9,19 +9,19 @@ class CubieCubeTest(unittest.TestCase):
 
     def test_get_depth_p1_1(self):
 
-        for _ in range(150):
+        for _ in range(1000):
             cubie = cc.get_random_cubie()
             self.assertTrue(coord.get_phase1_depth(cubie) <= 12)
 
     def test_get_depth_p1_2(self):
 
-        for _ in range(150):
+        for _ in range(1000):
             cubie = cc.get_random_cubie_2()
             self.assertTrue(coord.get_phase1_depth(cubie) == 0)
 
     def test_phase_1(self):
 
-        for i in range(15):
+        for i in range(1000):
             print(f"TEST #{i}")
             cubie = cc.get_random_cubie()
             solver = tfs.TwoPhaseSolver(cubie)
@@ -29,15 +29,19 @@ class CubieCubeTest(unittest.TestCase):
             phase1_dist = coord.get_phase1_depth(cubie)
 
             cubie2 = cc.CubieCube(cubie.corners, cubie.edges)
-            solver.search_phase1(cubie, phase1_dist, phase1_dist)
+            solver.search_phase1(cubie.get_corners_twist(),
+                                 cubie.get_edges_flip(),
+                                 cubie.get_ud_slice_sorted(),
+                                 phase1_dist,
+                                 phase1_dist)
 
             cubie2.apply_moves(solver.moves_p1)
 
-            self.assertTrue(cubie.check_in_phase2())
+            self.assertTrue(cubie2.check_in_phase2())
 
     def test_solve(self):
 
-        for i in range(250):
+        for i in range(1000):
             print(f"TEST #{i}")
 
             cubie = cc.get_random_cubie()

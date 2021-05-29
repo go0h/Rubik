@@ -18,20 +18,6 @@ def set_fs_twist_depth3(table, ix, value):
     table[base] |= value << shift
 
 
-def get_co_ud_edges_depth3(table, ix):
-    """Возвращает количество ходов по модулю 3 для решения фазы 2 для куба с индексом index"""
-    y = table[ix // 16]
-    y >>= (ix % 16) * 2
-    return y & 3
-
-
-def set_co_ud_edges_depth3(table, ix, value):
-    shift = (ix % 16) * 2
-    base = ix >> 4
-    table[base] &= ~(3 << shift) & 0xffffffff
-    table[base] |= value << shift
-
-
 def create_pruning1_table():
 
     total = 64430 * 2187  # 140.689.710
@@ -132,8 +118,7 @@ def create_pruning1_table():
 
 def create_pruning2_table():
 
-    total = 2768 * 40320  # 111.605.760
-    co_ud_edges_depth3 = [0xffffffff for _ in range(total // 16)]
+    co_ud_edges_depth = [[20 for _ in range(40320)] for _ in range(2768)]  # 111605760
 
     # создаем таблицу ссиметрий fs_class
     cub = cc.CubieCube()
@@ -149,55 +134,41 @@ def create_pruning2_table():
             if sym_cubie.get_corners() == rep:
                 co_sym[i] |= 1 << s
 
-    set_co_ud_edges_depth3(co_ud_edges_depth3, 0, 0)
-    done = 1
     depth = 0
+    co_ud_edges_depth[0][0] = 0
     while depth < 10:
-        print(f"Depth - {depth}, done {done}/{total}")
+        print(f"Depth - {depth} done")
 
-        depth3 = depth % 3
-        idx = 0
-        for c_classidx in range(2768):
+        for co_classidx in range(2768):
+
+            corner = co_rep[co_classidx]
             ud_edge = 0
             while ud_edge < 40320:
 
-                # если таблице не заполнены записи, ускоряем
-                if idx % 16 == 0 and co_ud_edges_depth3[idx // 16] == 0xffffffff and ud_edge < 40320 - 16:
-                    ud_edge += 16
-                    idx += 16
-                    continue
-
-                if get_co_ud_edges_depth3(co_ud_edges_depth3, idx) == depth3:
-
-                    corner = co_rep[c_classidx]
+                if co_ud_edges_depth[co_classidx][ud_edge] == depth:
 
                     for move in PHASE2_MOVES:
+
                         ud_edge1 = t.move_ud_edges[ud_edge][move]
                         corner1 = t.move_corners[corner][move]
-
                         c1_classidx = t.co_classidx[corner1][0]
                         c1_sym = t.co_classidx[corner1][1]
 
                         ud_edge1 = t.conj_ud_edges[ud_edge1][c1_sym]
-                        idx1 = 40320 * c1_classidx + ud_edge1  # N_UD_EDGES = 40320
 
-                        if get_co_ud_edges_depth3(co_ud_edges_depth3, idx1) == 3:  # entry not yet filled
-                            set_co_ud_edges_depth3(co_ud_edges_depth3, idx1, (depth + 1) % 3)  # depth + 1 <= 10
-                            done += 1
-                            # ######symmetric position has eventually more than one representation #############
+                        if co_ud_edges_depth[c1_classidx][ud_edge1] == 20:
+
+                            co_ud_edges_depth[c1_classidx][ud_edge1] = depth + 1
+                            # симметрия может иметь несколько представлений
                             sym = co_sym[c1_classidx]
                             if sym != 1:
                                 for j in range(1, 16):
                                     sym >>= 1
                                     if sym % 2 == 1:
                                         ud_edge2 = t.conj_ud_edges[ud_edge1][j]
-                                        idx2 = 40320 * c1_classidx + ud_edge2
-                                        if get_co_ud_edges_depth3(co_ud_edges_depth3, idx2) == 3:
-                                            set_co_ud_edges_depth3(co_ud_edges_depth3, idx2, (depth + 1) % 3)
-                                            done += 1
+                                        if co_ud_edges_depth[c1_classidx][ud_edge2] == 20:
+                                            co_ud_edges_depth[c1_classidx][ud_edge2] = depth + 1
 
                 ud_edge += 1
-                idx += 1  # idx = defs.N_UD_EDGEPERM * corner_classidx + ud_edge
-
         depth += 1
-    return co_ud_edges_depth3
+    return co_ud_edges_depth
