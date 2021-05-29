@@ -1,74 +1,37 @@
 import os
 import sys
-import array
+import numpy as np
 import rubik.Symmetries as sym
 import rubik.Moves as m
-import numpy as np
 import rubik.Pruning as p
+from datetime import datetime
 
 
-def load_table(file_name, table_size, size):
-    try:
-        with open(file_name, "rb") as file:
-            table = array.array(size)
-            table.fromfile(file, table_size)
-    except IOError:
-        print(f"File {file_name} not accessible")
-        sys.exit(-1)
-    return table
+def get_table(table_name, create_table_func, type_=np.int32):
 
-
-def save_table(file_name, arr, size):
-    try:
-        with open(file_name, "wb") as file:
-            table = array.array(size, arr)
-            table.tofile(file)
-    except IOError:
-        print(f"File {file_name} not accessible")
-        sys.exit(-1)
-
-
-def load_table_np(file_name):
-    try:
-        with open(file_name, "rb") as file:
-            table = np.loadtxt(file, dtype="int").tolist()
-    except IOError:
-        print(f"File {file_name} not accessible")
-        sys.exit(-1)
-    return table
-
-
-def save_table_np(file_name, arr):
-    try:
-        with open(file_name, "wb") as file:
-            np.savetxt(file, np.array(arr), fmt="%d")
-    except IOError:
-        print(f"File {file_name} not accessible")
-        sys.exit(-1)
-
-
-def get_table(table_name, create_table_func):
-
+    print(f"Load table {table_name}", end=" ")
     dir = os.getcwd() + "/resources/"
     if os.getcwd().endswith("test"):
         dir = dir.replace("/test", "")
     table_name = dir + table_name
+    t1 = datetime.now()
 
     if os.path.exists(table_name):
         try:
-            with open(table_name, "rb") as file:
-                table = np.loadtxt(file, dtype="int").tolist()
+            with open(table_name, "r") as file:
+                table = np.loadtxt(file, dtype=type_)
         except IOError:
             print(f"File {table_name} not accessible")
             sys.exit(-1)
     else:
-        table = create_table_func()
+        table = np.array(create_table_func(), dtype=type_)
         try:
-            with open(table_name, "wb") as file:
-                np.savetxt(file, np.array(table), fmt="%d")
+            with open(table_name, "w") as file:
+                np.savetxt(file, table, fmt="%d")
         except IOError:
             print(f"File {table_name} not accessible")
             sys.exit(-1)
+    print(datetime.now() - t1)
     return table
 
 
@@ -164,45 +127,12 @@ move_ud_edges = get_table("move_ud_edges", m.get_move_ud_edges)
 
 #######################################################################################################################
 
-
 # http://kociemba.org/math/pruning.htm
 # http://kociemba.org/math/distribution.htm
 
-resource_dir = os.getcwd() + "/resources/"
-if os.getcwd().endswith("test"):
-    resource_dir = resource_dir.replace("/test", "")
-
 # таблица обрезки для фазы 1
-phase1_prun = get_table("phase1_prun", p.create_pruning1_table)
-# table_name = "phase1_prun"
-# phase1_prun = load_table(resource_dir + table_name, (2187 * 64430) // 16 + 1, "L")
+phase1_prun = get_table("phase1_prun", p.create_pruning1_table, np.int8)
 
-# table_name = "phase2_prun"
-# phase2_prun = load_table(resource_dir + table_name, (2768 * 40320) // 16, "L")
-phase2_prun = get_table("phase2_prun", p.create_pruning2_table)
-
-# distance[20][3] = -1 .. 19
-distance = [0 for _ in range(60)]
-for i in range(20):
-    for j in range(3):
-        distance[3 * i + j] = (i // 3) * 3 + j
-        if i % 3 == 2 and j == 0:
-            distance[3 * i + j] += 3
-        elif i % 3 == 0 and j == 2:
-            distance[3 * i + j] -= 3
+phase2_prun = get_table("phase2_prun", p.create_pruning2_table, np.int8)
 
 #######################################################################################################################
-
-
-def get_fs_twist_depth3(index):
-    """Возвращает количество ходов по модулю 3 для решения фазы 1 для куба с индексом index"""
-    y = phase1_prun[index // 16]
-    y >>= (index % 16) * 2
-    return y & 3
-
-
-def get_co_ud_edges_depth3(index):
-    """Возвращает количество ходов по модулю 3 для решения фазы 2 для куба с индексом index"""
-    y = phase2_prun[index // 16]
-    y >>= (index % 16) * 2
-    return y & 3

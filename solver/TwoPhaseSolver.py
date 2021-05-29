@@ -1,7 +1,6 @@
 import rubik.CubieCube as cc
-import rubik.CoordCubie as crd
 import rubik.Utils as u
-import rubik.Tables as tb
+import rubik.Tables as t
 from copy import deepcopy
 from datetime import datetime
 
@@ -22,7 +21,7 @@ class TwoPhaseSolver:
 
         self.start_phase1_time = datetime.now()
 
-        phase1_dist = crd.get_phase1_depth(self.cubie)
+        phase1_dist = get_phase1_depth(self.cubie)
 
         self.search_phase1(self.cubie.get_corners_twist(),
                            self.cubie.get_edges_flip(),
@@ -49,7 +48,7 @@ class TwoPhaseSolver:
             ud_edges = temp.get_ud_edges()
             corners = temp.get_corners()
 
-            dist2 = crd.get_phase2_depth(temp)
+            dist2 = get_phase2_depth(temp)
 
             self.end_phase1_time = datetime.now()
             for left in range(dist2, 30 - phase1_dist):
@@ -73,15 +72,14 @@ class TwoPhaseSolver:
                     if last == 0 or last == 3:
                         continue
 
-                twist1 = tb.move_twist[twist][move]
-                flip1 = tb.move_flip[flip][move]
-                slice_sorted1 = tb.move_slice_sorted[slice_sorted][move]
+                twist1 = t.move_twist[twist][move]
+                flip1 = t.move_flip[flip][move]
+                slice_sorted1 = t.move_slice_sorted[slice_sorted][move]
 
                 fs = 2048 * (slice_sorted1 // 24) + flip1
-                classidx1 = tb.fs_classidx[fs][0]
-                sym = tb.fs_classidx[fs][1]
-                dist_mod3 = tb.get_fs_twist_depth3(2187 * classidx1 + tb.conj_twist[twist1][sym])
-                dist1 = tb.distance[3 * phase1_dist + dist_mod3]
+                classidx1 = t.fs_classidx[fs][0]
+                sym = t.fs_classidx[fs][1]
+                dist1 = t.phase1_prun[classidx1][t.conj_twist[twist1][sym]]
 
                 if dist1 >= left:
                     continue
@@ -111,13 +109,13 @@ class TwoPhaseSolver:
                     if last == 0 or last == 3:
                         continue
 
-            corners1 = tb.move_corners[corners][move]
-            ud_edges1 = tb.move_ud_edges[ud_edges][move]
-            slice_sorted1 = tb.move_slice_sorted[slice_sorted][move]
+            corners1 = t.move_corners[corners][move]
+            ud_edges1 = t.move_ud_edges[ud_edges][move]
+            slice_sorted1 = t.move_slice_sorted[slice_sorted][move]
 
-            classidx = tb.co_classidx[corners1][0]
-            sym = tb.co_classidx[corners1][1]
-            dist2_new = tb.phase2_prun[classidx][tb.conj_ud_edges[ud_edges1][sym]]
+            classidx = t.co_classidx[corners1][0]
+            sym = t.co_classidx[corners1][1]
+            dist2_new = t.phase2_prun[classidx][t.conj_ud_edges[ud_edges1][sym]]
 
             if dist2_new >= left:
                 continue
@@ -128,3 +126,74 @@ class TwoPhaseSolver:
                 self.moves_p2.pop(-1)
             else:
                 break
+
+
+def get_phase1_depth(cubie):
+    """@:return Минимальное количество ходов требуемое для достижения рандомного кубика фазы 2"""
+
+    slice = cubie.get_ud_slice_sorted() // 24
+    flip = cubie.get_edges_flip()
+    twist = cubie.get_corners_twist()
+
+    fs = (slice << 11) + flip
+    classidx = t.fs_classidx[fs][0]
+    sym = t.fs_classidx[fs][1]
+    # 3^7 * класс экв + ориентация 8 углов
+
+    depth = 0
+    depth_end = t.phase1_prun[classidx][t.conj_twist[twist][sym]]
+    # первая фаза, считается законченой, когда ориентации всех углов и ребер равны 0
+    while twist != 0 or flip != 0 or slice != 0:
+
+        # для текущего состояния применяем всех ходы поочередно
+        # и вычисляем количество ходов небходимое для достижения Фазы 2
+        for move in u.MOVES:
+
+            twist1 = t.move_twist[twist][move]
+            flip1 = t.move_flip[flip][move]
+            slice1 = t.move_slice_sorted[24 * slice][move] // 24
+
+            fs1 = (slice1 << 11) + flip1
+            classidx1 = t.fs_classidx[fs1][0]
+            sym = t.fs_classidx[fs1][1]
+
+            if t.phase1_prun[classidx1][t.conj_twist[twist1][sym]] == depth_end - 1:
+                depth += 1
+                twist = twist1
+                flip = flip1
+                slice = slice1
+                depth_end = depth_end - 1
+                break
+    return depth
+
+
+def get_phase2_depth(cubie):
+
+    corners = cubie.get_corners()
+    ud_edges = cubie.get_ud_edges()
+
+    classidx = t.co_classidx[corners][0]
+    sym = t.co_classidx[corners][1]
+    depth_end = t.phase2_prun[classidx][t.conj_ud_edges[ud_edges][sym]]
+
+    if depth_end == 20:
+        return 11
+
+    depth = 0
+    while corners != 0 or ud_edges != 0:
+
+        for move in u.PHASE2_MOVES:
+
+            corners1 = t.move_corners[corners][move]
+            ud_edges1 = t.move_ud_edges[ud_edges][move]
+
+            classidx1 = t.co_classidx[corners1][0]
+            sym = t.co_classidx[corners1][1]
+
+            if t.phase2_prun[classidx1][t.conj_ud_edges[ud_edges1][sym]] == depth_end - 1:
+                depth += 1
+                corners = corners1
+                ud_edges = ud_edges1
+                depth_end = depth_end - 1
+                break
+    return depth

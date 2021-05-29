@@ -114,7 +114,7 @@ def create_fs_classidx():
             cub.set_edges_flip(flip)
 
             # получаем индекс
-            idx = 2048 * sl + flip
+            idx = (sl << 11) + flip  # 2048 * sl + flip
             # если класс эквивалентноти еще не занят
             if fs_classidx[idx][0] == 65535:
                 # выставляем порядковый номер класса
@@ -133,7 +133,7 @@ def create_fs_classidx():
                 sym.edge_multiply(cub)
                 sym.edge_multiply(SYM_CUBIES[s])
 
-                new_idx = 2048 * sym.get_ud_slice_coord() + sym.get_edges_flip()
+                new_idx = (sym.get_ud_slice_coord() << 11) + sym.get_edges_flip()
                 if fs_classidx[new_idx][0] == 65535:
                     fs_classidx[new_idx][0] = classidx
                     fs_classidx[new_idx][1] = s

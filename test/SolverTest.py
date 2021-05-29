@@ -1,6 +1,5 @@
 import unittest
 import rubik.CubieCube as cc
-import rubik.CoordCubie as coord
 import solver.TwoPhaseSolver as tfs
 from rubik.Utils import *
 
@@ -11,13 +10,13 @@ class CubieCubeTest(unittest.TestCase):
 
         for _ in range(1000):
             cubie = cc.get_random_cubie()
-            self.assertTrue(coord.get_phase1_depth(cubie) <= 12)
+            self.assertTrue(tfs.get_phase1_depth(cubie) <= 12)
 
     def test_get_depth_p1_2(self):
 
         for _ in range(1000):
             cubie = cc.get_random_cubie_2()
-            self.assertTrue(coord.get_phase1_depth(cubie) == 0)
+            self.assertTrue(tfs.get_phase1_depth(cubie) == 0)
 
     def test_phase_1(self):
 
@@ -26,7 +25,7 @@ class CubieCubeTest(unittest.TestCase):
             cubie = cc.get_random_cubie()
             solver = tfs.TwoPhaseSolver(cubie)
 
-            phase1_dist = coord.get_phase1_depth(cubie)
+            phase1_dist = tfs.get_phase1_depth(cubie)
 
             cubie2 = cc.CubieCube(cubie.corners, cubie.edges)
             solver.search_phase1(cubie.get_corners_twist(),

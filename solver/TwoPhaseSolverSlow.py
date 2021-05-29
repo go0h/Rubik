@@ -1,8 +1,9 @@
 import rubik.CubieCube as cc
-from rubik.CoordCubie import get_phase1_depth, get_phase2_depth
+# from rubik.CoordCubie import get_phase1_depth, get_phase2_depth
 from rubik.Utils import MOVES, PHASE2_MOVES, MOVES_S, INV_MOVE
 import rubik.Tables as tb
 from datetime import datetime
+import rubik.Pruning as p
 
 
 class TwoPhaseSolver:
@@ -19,7 +20,7 @@ class TwoPhaseSolver:
 
     def solve(self) -> list:
 
-        phase1_dist = get_phase1_depth(self.cubie)
+        phase1_dist = p.get_phase1_depth(self.cubie)
 
         self.start_phase1_time = datetime.now()
 
@@ -41,7 +42,7 @@ class TwoPhaseSolver:
                 cubie.get_edges_flip() == 0 and \
                 cubie.get_ud_slice_sorted() < 24 and left == 0:
 
-            dist2 = get_phase2_depth(cubie)
+            dist2 = p.get_phase2_depth(cubie)
             self.end_phase1_time = datetime.now()
             for left in range(dist2, 30 - phase1_dist):
                 self.search_phase2(cubie, dist2, left)
