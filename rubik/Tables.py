@@ -4,6 +4,7 @@ import array
 import rubik.Symmetries as sym
 import rubik.Moves as m
 import numpy as np
+import rubik.Pruning as p
 
 
 def load_table(file_name, table_size, size):
@@ -178,11 +179,13 @@ if os.getcwd().endswith("test"):
     resource_dir = resource_dir.replace("/test", "")
 
 # таблица обрезки для фазы 1
-table_name = "phase1_prun"
-phase1_prun = load_table(resource_dir + table_name, (2187 * 64430) // 16 + 1, "L")
+# table_name = "phase1_prun"
+phase1_prun = get_table("phase1_prun", p.create_pruning1_table)
+# phase1_prun = load_table(resource_dir + table_name, (2187 * 64430) // 16 + 1, "L")
 
-table_name = "phase2_prun"
-phase2_prun = load_table(resource_dir + table_name, (2768 * 40320) // 16, "L")
+# table_name = "phase2_prun"
+# phase2_prun = load_table(resource_dir + table_name, (2768 * 40320) // 16, "L")
+phase2_prun = get_table("phase2_prun", p.create_pruning2_table)
 
 # distance[20][3] = -1 .. 19
 distance = [0 for _ in range(60)]
