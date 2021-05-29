@@ -168,19 +168,13 @@ move_ud_edges = get_table("move_ud_edges", m.get_move_ud_edges)
 # http://kociemba.org/math/pruning.htm
 # http://kociemba.org/math/distribution.htm
 
-# array:
-#   H - unsigned short (2 байта) 0..65535
-#   B - unsigned char (1 байт) 0..255
-#   L - unsigned long (8 байта)
-#   b - signed char (1 байт) -128..127
-
 resource_dir = os.getcwd() + "/resources/"
 if os.getcwd().endswith("test"):
     resource_dir = resource_dir.replace("/test", "")
 
 # таблица обрезки для фазы 1
-# table_name = "phase1_prun"
 phase1_prun = get_table("phase1_prun", p.create_pruning1_table)
+# table_name = "phase1_prun"
 # phase1_prun = load_table(resource_dir + table_name, (2187 * 64430) // 16 + 1, "L")
 
 # table_name = "phase2_prun"

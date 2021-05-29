@@ -19,6 +19,7 @@ def set_fs_twist_depth3(table, ix, value):
 
 
 def get_co_ud_edges_depth3(table, ix):
+    """Возвращает количество ходов по модулю 3 для решения фазы 2 для куба с индексом index"""
     y = table[ix // 16]
     y >>= (ix % 16) * 2
     return y & 3
@@ -147,7 +148,6 @@ def create_pruning2_table():
             sym_cubie.corner_multiply(SYM_CUBIES[INV_IDX[s]])  # s * cc * s^-1
             if sym_cubie.get_corners() == rep:
                 co_sym[i] |= 1 << s
-    ################################################################################################################
 
     set_co_ud_edges_depth3(co_ud_edges_depth3, 0, 0)
     done = 1
@@ -161,12 +161,11 @@ def create_pruning2_table():
             ud_edge = 0
             while ud_edge < 40320:
 
-                # ################ если таблице не заполнены записи, ускоряем ##########################
+                # если таблице не заполнены записи, ускоряем
                 if idx % 16 == 0 and co_ud_edges_depth3[idx // 16] == 0xffffffff and ud_edge < 40320 - 16:
                     ud_edge += 16
                     idx += 16
                     continue
-                ####################################################################################################
 
                 if get_co_ud_edges_depth3(co_ud_edges_depth3, idx) == depth3:
 
@@ -196,7 +195,6 @@ def create_pruning2_table():
                                         if get_co_ud_edges_depth3(co_ud_edges_depth3, idx2) == 3:
                                             set_co_ud_edges_depth3(co_ud_edges_depth3, idx2, (depth + 1) % 3)
                                             done += 1
-                            ####################################################################################
 
                 ud_edge += 1
                 idx += 1  # idx = defs.N_UD_EDGEPERM * corner_classidx + ud_edge
