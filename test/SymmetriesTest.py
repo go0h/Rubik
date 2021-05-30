@@ -1,17 +1,10 @@
 
 import unittest
 import rubik.CubieCube as cc
-from rubik.Symmetries import BASIC_SYM_CUBE, S_URF3, S_F2, S_U4, S_LR2, SYM_CUBIES, INV_IDX
+from rubik.Symmetries import BASIC_SYM_CUBE, S_F2, S_U4, S_LR2, SYM_CUBIES, INV_IDX, SYM_N
 
 
 class SymmetriesTest(unittest.TestCase):
-
-    def test_URF3(self):
-        c1 = cc.CubieCube()
-        c2 = cc.CubieCube()
-        for _ in range(3):
-            c1.multiply(BASIC_SYM_CUBE[S_URF3])
-        self.assertEqual(c1, c2)
 
     def test_F2(self):
         c1 = cc.CubieCube()
@@ -35,7 +28,7 @@ class SymmetriesTest(unittest.TestCase):
         self.assertEqual(c1, c2)
 
     def test_inverse_symmetry(self):
-        for n in range(48):
+        for n in range(SYM_N):
             c1 = cc.CubieCube()
             c2 = cc.CubieCube()
             c2.multiply(SYM_CUBIES[n])

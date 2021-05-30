@@ -131,8 +131,8 @@ move_ud_edges = get_table("move_ud_edges", m.get_move_ud_edges)
 # http://kociemba.org/math/distribution.htm
 
 # таблица обрезки для фазы 1
-phase1_prun = get_table("phase1_prun", p.create_pruning1_table, np.int8)
+phase1_prun = get_table("phase1_prun", p.create_pruning1_table_c, np.int8)
 
-phase2_prun = get_table("phase2_prun", p.create_pruning2_table, np.int8)
+phase2_prun = get_table("phase2_prun", p.create_pruning2_table_c, np.int8)
 
 #######################################################################################################################
