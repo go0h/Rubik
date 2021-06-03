@@ -96,6 +96,8 @@ class TwoPhaseSolver:
         if corners == 0 and ud_edges == 0 and slice_sorted == 0 and not self.solved:
             self.solved = True
             return
+        elif left == 0:
+            return
 
         for move in u.PHASE2_MOVES:
 

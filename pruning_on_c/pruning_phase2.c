@@ -6,7 +6,7 @@
 /*   By: astripeb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/30 12:59:06 by astripeb          #+#    #+#             */
-/*   Updated: 2021/05/30 23:27:57 by astripeb         ###   ########.fr       */
+/*   Updated: 2021/06/02 22:45:13 by astripeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,10 @@ void	create_phase2_prun(int8_t *co_ud_edges_depth, int32_t *move_ud_edges,
 	int32_t *move_corners, int32_t *co_classidx, int32_t *co_sym_idx,
 	int32_t *co_sym, int32_t *co_rep, int32_t *conj_ud_edges)
 {
-
-    co_ud_edges_depth[0] = 0;
-    for (int depth = 0; depth < 10; ++depth)
+	co_ud_edges_depth[0] = 0;
+	for (int depth = 0; depth < 10; ++depth)
 	{
-        printf("Depth - %d done\n", depth);
+		printf("Depth - %d done\n", depth);
 		for (int classidx = 0; classidx < 2768; classidx++)
 		{
 			for (int ud_edge = 0; ud_edge < 40320; ud_edge++)

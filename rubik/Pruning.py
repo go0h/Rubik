@@ -13,7 +13,7 @@ if os.getcwd().endswith("test"):
 
 lib_prun = CDLL(dir + libname)
 create_phase1_prun_c = lib_prun.create_phase1_prun
-create_phase2_prun_c = lib_prun.create_phase2_prun
+create_phase2_prun_c = lib_prun.create_phase2_prun_norm
 
 
 def create_pruning1_table():
@@ -225,18 +225,19 @@ def create_pruning2_table_c():
 
     # co_ud_edges_depth[2768][40320] = 111605760
     co_ud_edges_depth = np.array([20 for _ in range(2768 * 40320)], dtype=np.int8)
-    move_ud_edges = t.move_ud_edges.flatten()
-    move_corners = t.move_corners.flatten()
     conj_ud_edges = t.conj_ud_edges.flatten()
-    co_classidx = t.co_classidx[:, 0].flatten()
-    co_sym_idx = t.co_classidx[:, 1].flatten()
-    co_sym = np.array(co_sym, dtype=np.int32)
-    co_rep = np.array(co_rep, dtype=np.int32)
 
-    create_phase2_prun_c.argtypes = [t8, t32, t32, t32, t32, t32, t32, t32]
+    moves = np.array(t.move_corners.flatten().tolist() +
+                     t.move_ud_edges.flatten().tolist(),
+                     dtype=np.int32)
+
+    co_classidx = np.array(t.co_classidx[:, 0].flatten().tolist() +
+                           t.co_classidx[:, 1].flatten().tolist() +
+                           co_sym + co_rep,
+                           dtype=np.int32)
+
+    create_phase2_prun_c.argtypes = [t8, t32, t32, t32]
     create_phase2_prun_c.restype = None
 
-    create_phase2_prun_c(co_ud_edges_depth, move_ud_edges, move_corners, co_classidx,
-                         co_sym_idx, co_sym, co_rep, conj_ud_edges)
-
+    create_phase2_prun_c(co_ud_edges_depth, moves, co_classidx, conj_ud_edges)
     return co_ud_edges_depth.reshape((2768, 40320))
