@@ -21,25 +21,15 @@ void	create_phase1_prun(int8_t *fs_twist_depth,
 	fs_twist_depth[0] = 0;
 	int done = 1;
 	int depth = 0;
-	char back_search = 0;
+
 	while (done < 64430 * 2187)
 	{
 		printf("Depth - %d done\n", depth);
-
-		if (depth == 9)
-			back_search = 1;
-
 		for (int classidx = 0; classidx < 64430; ++classidx)
 		{
 			for (int twist = 0; twist < 2187; ++twist)
 			{
-				char match = 0;
-				if (back_search)
-					match = fs_twist_depth[2187 * classidx + twist] == 20;
-				else
-					match = fs_twist_depth[2187 * classidx + twist] == depth;
-
-				if (match)
+				if (fs_twist_depth[2187 * classidx + twist] == depth)
 				{
 					int fs = fs_rep[classidx];
 					int flip = fs & 0x7FF;     // fs % 2048
@@ -58,39 +48,27 @@ void	create_phase1_prun(int8_t *fs_twist_depth,
 
 						twist1 = conj_twist[16 * twist1 + fs_sym1];
 
-						if (!back_search)
+						if (fs_twist_depth[2187 * classidx1 + twist1] == 20)
 						{
-							if (fs_twist_depth[2187 * classidx1 + twist1] == 20)
-							{
-								fs_twist_depth[2187 * classidx1 + twist1] = depth + 1;
-								++done;
+							fs_twist_depth[2187 * classidx1 + twist1] = depth + 1;
+							++done;
 
-								int sym = fs_sym[classidx1];
-								if (sym != 1)
+							int sym = fs_sym[classidx1];
+							if (sym != 1)
+							{
+								for (int j = 1; j < 16; ++j)
 								{
-									for (int j = 1; j < 16; ++j)
+									sym >>= 1;
+									if (sym & 1)
 									{
-										sym >>= 1;
-										if (sym & 1)
+										int twist2 = conj_twist[16 * twist1 + j];
+										if (fs_twist_depth[2187 * classidx1 + twist2] == 20)
 										{
-											int twist2 = conj_twist[16 * twist1 + j];
-											if (fs_twist_depth[2187 * classidx1 + twist2] == 20)
-											{
-												fs_twist_depth[2187 * classidx1 + twist2] = depth + 1;
-												++done;
-											}
+											fs_twist_depth[2187 * classidx1 + twist2] = depth + 1;
+											++done;
 										}
 									}
 								}
-							}
-						}
-						else
-						{
-							if (fs_twist_depth[2187 * classidx1 + twist1] == depth)
-							{
-								fs_twist_depth[2187 * classidx + twist] = depth + 1;
-								++done;
-								break;
 							}
 						}
 					}
@@ -100,4 +78,3 @@ void	create_phase1_prun(int8_t *fs_twist_depth,
 		++depth;
 	}
 }
-

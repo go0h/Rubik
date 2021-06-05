@@ -4,6 +4,8 @@ import rubik.Tables as t
 from copy import deepcopy
 from datetime import datetime
 
+MAX_MOVES = 25
+
 
 class TwoPhaseSolver:
 
@@ -51,7 +53,7 @@ class TwoPhaseSolver:
             dist2 = get_phase2_depth(temp)
 
             self.end_phase1_time = datetime.now()
-            for left in range(dist2, 30 - phase1_dist):
+            for left in range(dist2, MAX_MOVES - len(self.moves_p1)):
                 self.search_phase2(corners, ud_edges, slice_sorted, dist2, left)
                 if self.solved:
                     self.end_phase2_time = datetime.now()

@@ -40,18 +40,22 @@ class CubieCubeTest(unittest.TestCase):
 
     def test_solve(self):
 
-        for i in range(1000):
+        n = 0
+        num_tests = 1000
+        for i in range(num_tests):
             print(f"TEST #{i}")
 
             cubie = cc.get_random_cubie()
             solver = tfs.TwoPhaseSolver(cubie)
 
             moves = solver.solve()
+            n += len(moves)
             scramble = ' '.join([i for i in moves])
 
             cubie.scramble(scramble)
 
             self.assertTrue(cubie.solved())
+        print(n / num_tests)
 
     def test_special_cases_1(self):
 

@@ -37,4 +37,30 @@ typedef struct	s_tables2
 	int32_t		*conj_ud_edges;
 }				t_tables2;
 
+typedef struct	s_phase1
+{
+	int			done;
+	int			depth;
+	int			fs;
+	int			classidx;
+	int			fs_sym;
+	int			twist;
+	int			flip;
+	int			slice;
+}				t_phase1;
+
+
+typedef struct	s_tables1
+{
+	int8_t		*fs_twist_depth;
+	int32_t		*move_twist;
+	int32_t		*move_flip;
+	int32_t		*move_slice_sorted;
+	int32_t		*conj_twist;
+	int32_t		*fs_classidx;
+	int32_t		*fs_sym_idx;
+	int32_t		*fs_sym;
+	int32_t		*fs_rep;
+}				t_tables1;
+
 # endif

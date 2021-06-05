@@ -6,9 +6,9 @@ import rubik.Tables as t
 
 if __name__ == '__main__':
 
-    scramble = "L R' U2"
-    scramble = "B R' B B2 U2 R' D2 F R' U' "
-    scramble = get_random_scramble()
+    # scramble = "R B' L2 L' U R2 R' U U L F B' D F2 U D' U2 D' B2 F2 B2 L2 L' L' R U R D' L U'"
+    # scramble = "B R' B B2 U2 R' D2 F R' U' "
+    # scramble = get_random_scramble()
     scramble = SUPER_FLIP
     print(f"SCRAMBLE = \"{scramble}\"")
     cubie = cc.CubieCube()

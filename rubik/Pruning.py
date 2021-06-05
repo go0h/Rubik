@@ -12,7 +12,7 @@ if os.getcwd().endswith("test"):
     dir = dir.replace("/test", "")
 
 lib_prun = CDLL(dir + libname)
-create_phase1_prun_c = lib_prun.create_phase1_prun
+create_phase1_prun_c = lib_prun.create_phase1_prun_norm
 create_phase2_prun_c = lib_prun.create_phase2_prun_norm
 
 
@@ -42,7 +42,7 @@ def create_pruning1_table():
     fs_twist_depth[0][0] = 0
     done = 1
     depth = 0
-    back_search = False
+
     while done != total:
         print(f"Depth - {depth} done")
 
@@ -53,12 +53,7 @@ def create_pruning1_table():
             twist = 0
             while twist < 2187:
 
-                if back_search:
-                    match = fs_twist_depth[classidx][twist] == 20
-                else:
-                    match = fs_twist_depth[classidx][twist] == depth
-
-                if match:
+                if fs_twist_depth[classidx][twist] == depth:
                     fs = fs_rep[classidx]
                     flip = fs & 0x7FF     # fs % 2048
                     slice = fs >> 11      # fs // 2048
@@ -75,28 +70,20 @@ def create_pruning1_table():
 
                         twist1 = t.conj_twist[twist1][fs_sym1]
 
-                        if not back_search:
+                        if fs_twist_depth[classidx1][twist1] == 20:
+                            fs_twist_depth[classidx1][twist1] = depth + 1
+                            done += 1
+                            # симметрия может иметь несколько представлений
+                            sym = fs_sym[classidx1]
+                            if sym != 1:
+                                for j in range(1, 16):
+                                    sym >>= 1
+                                    if sym & 1 == 1:
+                                        twist2 = t.conj_twist[twist1][j]
 
-                            if fs_twist_depth[classidx1][twist1] == 20:
-                                fs_twist_depth[classidx1][twist1] = depth + 1
-                                done += 1
-                                # симметрия может иметь несколько представлений
-                                sym = fs_sym[classidx1]
-                                if sym != 1:
-                                    for j in range(1, 16):
-                                        sym >>= 1
-                                        if sym & 1 == 1:
-                                            twist2 = t.conj_twist[twist1][j]
-
-                                            if fs_twist_depth[classidx1][twist2] == 20:
-                                                fs_twist_depth[classidx1][twist2] = depth + 1
-                                                done += 1
-
-                        else:
-                            if fs_twist_depth[classidx1][twist1] == depth:
-                                fs_twist_depth[classidx][twist] = depth + 1
-                                done += 1
-                                break
+                                        if fs_twist_depth[classidx1][twist2] == 20:
+                                            fs_twist_depth[classidx1][twist2] = depth + 1
+                                            done += 1
                 twist += 1
         depth += 1
     return fs_twist_depth
@@ -183,23 +170,23 @@ def create_pruning1_table_c():
     t8 = np.ctypeslib.ndpointer(dtype=np.int8, ndim=1)
     t32 = np.ctypeslib.ndpointer(dtype=np.int32, ndim=1)
 
-    # fs_twist_depth[64430][2187] = 140689710
     fs_twist_depth = np.array([20 for _ in range(2187 * 64430)], dtype=np.int8)
-    move_twist = t.move_twist.flatten()
-    move_flip = t.move_flip.flatten()
-    move_slice_sorted = t.move_slice_sorted.flatten()
     conj_twist = t.conj_twist.flatten()
-    fs_classidx = t.fs_classidx[:, 0].flatten()
-    fs_sym_idx = t.fs_classidx[:, 1].flatten()
-    fs_sym = np.array(fs_sym, dtype=np.int32)
-    fs_rep = np.array(fs_rep, dtype=np.int32)
 
-    create_phase1_prun_c.argtypes = [t8, t32, t32, t32, t32, t32, t32, t32, t32]
+    moves = np.array(t.move_twist.flatten().tolist() +
+                     t.move_flip.flatten().tolist() +
+                     t.move_slice_sorted.flatten().tolist(),
+                     dtype=np.int32)
+
+    fs_classidx = np.array(t.fs_classidx[:, 0].flatten().tolist() +
+                           t.fs_classidx[:, 1].flatten().tolist() +
+                           fs_sym + fs_rep,
+                           dtype=np.int32)
+
+    create_phase1_prun_c.argtypes = [t8, t32, t32, t32]
     create_phase1_prun_c.restype = None
 
-    create_phase1_prun_c(fs_twist_depth,
-                         move_twist, move_flip, move_slice_sorted,
-                         conj_twist, fs_classidx, fs_sym_idx, fs_sym, fs_rep)
+    create_phase1_prun_c(fs_twist_depth, moves, conj_twist, fs_classidx)
 
     return fs_twist_depth.reshape((64430, 2187))
 
