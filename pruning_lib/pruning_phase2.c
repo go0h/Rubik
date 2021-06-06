@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   prune_phase2_norm.c                                :+:      :+:    :+:   */
+/*   pruning_phase2.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: astripeb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 22:42:09 by astripeb          #+#    #+#             */
-/*   Updated: 2021/06/03 23:08:36 by astripeb         ###   ########.fr       */
+/*   Updated: 2021/06/06 11:51:35 by astripeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "prune.h"
+#include "prune.h"
 
 static t_tables2	get_tables(int8_t *co_ud_edges_depth, int32_t *moves,
 					int32_t *co_classidx, int32_t *conj_ud_edges)
@@ -25,16 +25,15 @@ static t_tables2	get_tables(int8_t *co_ud_edges_depth, int32_t *moves,
 	tables.co_sym_idx = &co_classidx[40320];
 	tables.co_sym = &co_classidx[2 * 40320];
 	tables.co_rep = &co_classidx[2 * 40320 + 2768];
-
 	return (tables);
 }
 
-static void			check_symmetries(t_tables2 *tables, t_phase2 *vars)
+static void	check_symmetries(t_tables2 *tables, t_phase2 *vars)
 {
-	int i;
-	int sym;
-	int ud_edge;
-	int idx;
+	int	i;
+	int	sym;
+	int	ud_edge;
+	int	idx;
 
 	idx = 40320 * vars->classidx + vars->ud_edge;
 	tables->co_depth[idx] = vars->depth + 1;
@@ -57,7 +56,7 @@ static void			check_symmetries(t_tables2 *tables, t_phase2 *vars)
 	}
 }
 
-static void 		check_depth(t_tables2 *tables, t_phase2 *vars)
+static void	check_depth(t_tables2 *tables, t_phase2 *vars)
 {
 	int			m;
 	int			corner;
@@ -72,7 +71,7 @@ static void 		check_depth(t_tables2 *tables, t_phase2 *vars)
 			|| m == 14 || m == 15 || m == 17)
 		{
 			++m;
-			continue;
+			continue ;
 		}
 		v2.ud_edge = tables->move_ud_edges[18 * vars->ud_edge + m];
 		v2.corner = tables->move_corners[18 * corner + m];
@@ -85,7 +84,7 @@ static void 		check_depth(t_tables2 *tables, t_phase2 *vars)
 	}
 }
 
-void				create_phase2_prun_norm(int8_t *co_ud_edges_depth,
+void	create_phase2_prun(int8_t *co_ud_edges_depth,
 	int32_t *moves, int32_t *co_classidx, int32_t *conj_ud_edges)
 {
 	t_phase2	v1;

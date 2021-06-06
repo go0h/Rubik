@@ -6,11 +6,11 @@
 /*   By: astripeb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/30 22:34:56 by astripeb          #+#    #+#             */
-/*   Updated: 2021/05/30 23:26:24 by astripeb         ###   ########.fr       */
+/*   Updated: 2021/06/06 11:42:47 by astripeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "prune.h"
+#include "prune.h"
 
 static t_tables1	get_tables(int8_t *fs_twist_depth, int32_t *moves,
 					int32_t *conj_twist, int32_t *fs_classidx)
@@ -29,7 +29,7 @@ static t_tables1	get_tables(int8_t *fs_twist_depth, int32_t *moves,
 	return (tables);
 }
 
-static void			check_symmetries(t_tables1 *t, t_phase1 *v, int *done)
+static void	check_symmetries(t_tables1 *t, t_phase1 *v, int *done)
 {
 	int		i;
 	int		sym;
@@ -58,7 +58,7 @@ static void			check_symmetries(t_tables1 *t, t_phase1 *v, int *done)
 	}
 }
 
-static void 		check_depth(t_tables1 *t, t_phase1 *v1)
+static void	check_depth(t_tables1 *t, t_phase1 *v1)
 {
 	int			move;
 	t_phase1	v2;
@@ -83,7 +83,7 @@ static void 		check_depth(t_tables1 *t, t_phase1 *v1)
 	}
 }
 
-void	create_phase1_prun_norm(int8_t *fs_twist_depth, int32_t *moves, 
+void	create_phase1_prun(int8_t *fs_twist_depth, int32_t *moves,
 		int32_t *conj_twist, int32_t *fs_classidx)
 {
 	t_phase1	v1;
@@ -101,7 +101,7 @@ void	create_phase1_prun_norm(int8_t *fs_twist_depth, int32_t *moves,
 			v1.twist = 0;
 			while (v1.twist < 2187)
 			{
-				if (t.fs_twist_depth[2187 * v1.classidx + v1.twist] 
+				if (t.fs_twist_depth[2187 * v1.classidx + v1.twist]
 					== v1.depth)
 					check_depth(&t, &v1);
 				v1.twist += 1;

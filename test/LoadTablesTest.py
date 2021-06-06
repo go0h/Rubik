@@ -12,7 +12,7 @@ class LoadTablesTest(unittest.TestCase):
         self.assertTrue(len(co_classidx) == factorial(8))
 
     def test_load_pruning_tables(self):
-        self.assertTrue(len(phase1_prun) == 64430 + 1)
+        self.assertTrue(len(phase1_prun) == 64430)
         self.assertTrue(len(phase2_prun) == 2768)
 
     def test_load_moves_tables(self):

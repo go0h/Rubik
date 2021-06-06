@@ -6,7 +6,7 @@
 /*   By: astripeb <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/02 22:36:54 by astripeb          #+#    #+#             */
-/*   Updated: 2021/06/03 22:18:42 by astripeb         ###   ########.fr       */
+/*   Updated: 2021/06/06 10:20:23 by astripeb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <stdint.h>
 # include <stdio.h>
 
-typedef struct	s_phase2
+typedef struct s_phase2
 {
 	int			classidx;
 	int			co_sym;
@@ -25,7 +25,7 @@ typedef struct	s_phase2
 	int			depth;
 }				t_phase2;
 
-typedef struct	s_tables2
+typedef struct s_tables2
 {
 	int8_t		*co_depth;
 	int32_t		*move_ud_edges;
@@ -37,7 +37,7 @@ typedef struct	s_tables2
 	int32_t		*conj_ud_edges;
 }				t_tables2;
 
-typedef struct	s_phase1
+typedef struct s_phase1
 {
 	int			done;
 	int			depth;
@@ -49,8 +49,7 @@ typedef struct	s_phase1
 	int			slice;
 }				t_phase1;
 
-
-typedef struct	s_tables1
+typedef struct s_tables1
 {
 	int8_t		*fs_twist_depth;
 	int32_t		*move_twist;
@@ -63,4 +62,4 @@ typedef struct	s_tables1
 	int32_t		*fs_rep;
 }				t_tables1;
 
-# endif
+#endif

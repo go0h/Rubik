@@ -1,5 +1,6 @@
 import unittest
 import rubik.CubieCube as cc
+import rubik.FaceletCube as fc
 import solver.TwoPhaseSolver as tfs
 from rubik.Utils import *
 
@@ -39,23 +40,37 @@ class CubieCubeTest(unittest.TestCase):
             self.assertTrue(cubie2.check_in_phase2())
 
     def test_solve(self):
-
-        n = 0
         num_tests = 1000
+        max_moves = 0
+        avg_scramble = 0
+        avg_solution = 0
         for i in range(num_tests):
             print(f"TEST #{i}")
+            scramble = cc.get_random_moves()
 
-            cubie = cc.get_random_cubie()
+            cubie = cc.CubieCube()
+            cubie.apply_moves(scramble)
+
+            face = fc.FaceletCube()
+            face.apply_moves(scramble)
+
             solver = tfs.TwoPhaseSolver(cubie)
-
             moves = solver.solve()
-            n += len(moves)
-            scramble = ' '.join([i for i in moves])
 
+            max_moves = max(len(moves), max_moves)
+            avg_scramble += len(scramble)
+            avg_solution += len(moves)
+
+            scramble = ' '.join([i for i in moves])
             cubie.scramble(scramble)
+            face.scramble(scramble)
 
             self.assertTrue(cubie.solved())
-        print(n / num_tests)
+            self.assertTrue(face.solved())
+
+        print(f"AVG scramble = {round(avg_scramble / num_tests)}")
+        print(f"AVG solution = {round(avg_solution / num_tests)}")
+        print(f"MAX moves    = {max_moves}")
 
     def test_special_cases_1(self):
 

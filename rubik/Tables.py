@@ -7,31 +7,35 @@ import rubik.Pruning as p
 from datetime import datetime
 
 
-def get_table(table_name, create_table_func, type_=np.int32):
+def get_table(table_name, create_table_func, shape, type_=np.int32):
 
-    print(f"Load table {table_name}", end=" ")
     dir = os.getcwd() + "/resources/"
     if os.getcwd().endswith("test"):
         dir = dir.replace("/test", "")
+    if not os.path.exists(dir):
+        os.mkdir(dir)
     table_name = dir + table_name
     t1 = datetime.now()
 
     if os.path.exists(table_name):
         try:
-            with open(table_name, "r") as file:
-                table = np.loadtxt(file, dtype=type_)
+            with open(table_name, "rb") as file:
+                table = np.fromfile(file, dtype=type_)
+                table = table.reshape(shape)
         except IOError:
             print(f"File {table_name} not accessible")
             sys.exit(-1)
     else:
+        print(f"Create table {table_name}", end=" ")
         table = np.array(create_table_func(), dtype=type_)
         try:
-            with open(table_name, "w") as file:
-                np.savetxt(file, table, fmt="%d")
+            with open(table_name, "wb") as file:
+                table.tofile(file, format="%d")
+            print(datetime.now() - t1)
         except IOError:
             print(f"File {table_name} not accessible")
             sys.exit(-1)
-    print(datetime.now() - t1)
+
     return table
 
 
@@ -44,13 +48,13 @@ def get_table(table_name, create_table_func, type_=np.int32):
 # 3^7 = 2187 возможных ориентаций углов в Фазе 1
 # 16 - количество симметрий подгруппы Dh4 - http://kociemba.org/math/d4h.htm
 # conj_twist[2187][16]
-conj_twist = get_table("conj_twist", sym.create_conj_twist)
+conj_twist = get_table("conj_twist", sym.create_conj_twist, shape=(2187, 16))
 
 # загружаем таблицу перестановок верхних и нижних ребер для Фазы 2 (UR - DB)
 # 8! = 40320 возможных перестановок 8 ребер в фазе 1
 # 16 - количество симметрий подгруппы Dh4 - http://kociemba.org/math/d4h.htm
 # conj_ud_edges[40320][16]
-conj_ud_edges = get_table("conj_ud_edges", sym.create_conj_ud_edges)
+conj_ud_edges = get_table("conj_ud_edges", sym.create_conj_ud_edges, shape=(40320, 16))
 
 
 #######################################################################################################################
@@ -72,7 +76,7 @@ conj_ud_edges = get_table("conj_ud_edges", sym.create_conj_ud_edges)
 # которые сохраняют ось UD (тип группы симметрий - D4h).
 # fs_classidx[idx][2] - первое вхождение класса эквивалентности fs_classidx[idx][0]
 
-fs_classidx = get_table("fs_classidx", sym.create_fs_classidx)
+fs_classidx = get_table("fs_classidx", sym.create_fs_classidx, shape=(495 * 2048, 3))
 
 
 #######################################################################################################################
@@ -93,7 +97,7 @@ fs_classidx = get_table("fs_classidx", sym.create_fs_classidx)
 # представителя этого класса в массиве размером 2768
 # co_classidx[idx][2] - первое вхождение класса эквивалентности co_classidx[idx][0]
 
-co_classidx = get_table("co_classidx", sym.create_co_classidx)
+co_classidx = get_table("co_classidx", sym.create_co_classidx, shape=(40320, 3))
 
 
 #######################################################################################################################
@@ -106,23 +110,23 @@ co_classidx = get_table("co_classidx", sym.create_co_classidx)
 
 # ориентация 8 углов
 # move_twist[2187][18]
-move_twist = get_table("move_twist", m.get_move_twist)
+move_twist = get_table("move_twist", m.get_move_twist, shape=(2187, 18))
 
 # ориетация 12 ребер
 # move_twist[2048][18]
-move_flip = get_table("move_flip", m.get_move_flip)
+move_flip = get_table("move_flip", m.get_move_flip, shape=(2048, 18))
 
 # перестановки 4 ребер UD-среза
 # move_slice[11880][18]
-move_slice_sorted = get_table("move_ud_slice", m.get_move_slice_sorted)
+move_slice_sorted = get_table("move_ud_slice", m.get_move_slice_sorted, shape=(11880, 18))
 
 # перестановки 8 углов
 # move_corners[40320][18]
-move_corners = get_table("move_corners", m.get_move_corners)
+move_corners = get_table("move_corners", m.get_move_corners, shape=(40320, 18))
 
 # перестановки 8 ребер верхних и нижних
 # move_ud_edges[40320][18]
-move_ud_edges = get_table("move_ud_edges", m.get_move_ud_edges)
+move_ud_edges = get_table("move_ud_edges", m.get_move_ud_edges, shape=(40320, 18))
 
 
 #######################################################################################################################
@@ -130,9 +134,8 @@ move_ud_edges = get_table("move_ud_edges", m.get_move_ud_edges)
 # http://kociemba.org/math/pruning.htm
 # http://kociemba.org/math/distribution.htm
 
-# таблица обрезки для фазы 1
-phase1_prun = get_table("phase1_prun", p.create_pruning1_table_c, np.int8)
+phase1_prun = get_table("phase1_prun", p.create_pruning1_table, shape=(64430, 2187), type_=np.int8)
 
-phase2_prun = get_table("phase2_prun", p.create_pruning2_table_c, np.int8)
+phase2_prun = get_table("phase2_prun", p.create_pruning2_table, shape=(2768, 40320), type_=np.int8)
 
 #######################################################################################################################

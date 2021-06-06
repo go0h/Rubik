@@ -1,28 +1,57 @@
+import sys
+import argparse
+import rubik.Utils as u
 import rubik.CubieCube as cc
-from rubik.Utils import get_random_scramble, SUPER_FLIP
 import solver.TwoPhaseSolver as tfs
-import solver.TwoPhaseSolverSlow as tfss
-import rubik.Tables as t
+
+
+def solve(scramble_str, debug_mode, print_move):
+    try:
+        cubie = cc.CubieCube()
+        cubie.scramble(scramble_str)
+        solver = tfs.TwoPhaseSolver(cubie)
+        moves = solver.solve(debug_mode, print_move)
+        if len(moves) == 0:
+            print(f"The cubie is already solved")
+        else:
+            print(' '.join([i for i in moves]))
+    except ValueError as err:
+        print(err)
+
 
 if __name__ == '__main__':
 
-    # scramble = "R B' L2 L' U R2 R' U U L F B' D F2 U D' U2 D' B2 F2 B2 L2 L' L' R U R D' L U'"
-    # scramble = "B R' B B2 U2 R' D2 F R' U' "
-    # scramble = get_random_scramble()
-    scramble = SUPER_FLIP
-    print(f"SCRAMBLE = \"{scramble}\"")
-    cubie = cc.CubieCube()
+    parser = argparse.ArgumentParser(description="Rubik's Cube Solver, with Kociemba algorithm")
+    parser.add_argument("-d", "--debug", nargs="?", type=bool,
+                        const=True, default=False, help="Debug mode")
+    parser.add_argument("-s", "--scramble", nargs="+", type=str, metavar="move",
+                        help="Scramble of Rubik's Cube to be solved")
+    parser.add_argument("-p", "--print", nargs="?", type=bool,
+                        const=True, default=False, help="Print moves")
+    args = parser.parse_args()
+    scramble = args.scramble
+    debug = args.debug
+    print_moves = args.print
 
-    cubie.scramble(scramble)
-
-    f1 = cubie.to_facelet_cube()
-    print(f1)
-
-    solver = tfs.TwoPhaseSolver(cubie)
-
-    moves = solver.solve()
-    scramble = ' '.join([i for i in moves])
-    print(scramble)
-    print(len(moves))
-    f1.scramble(scramble)
-    print(f1)
+    if args.scramble is None:
+        while True:
+            try:
+                scramble = input("Enter a scramble: ")
+                scramble = ' '.join(scramble.split())
+            except EOFError:
+                print()
+                sys.exit(0)
+            if scramble in ["Q", "QUIT"]:
+                sys.exit(0)
+            elif scramble in ["D", "DEBUG"]:
+                debug = not debug
+            elif scramble in ["M", "MOVES"]:
+                print_moves = not print_moves
+            elif scramble == "RANDOM":
+                scramble = u.get_random_scramble()
+                print(f"Random scramble = {scramble}")
+                solve(scramble, debug, print_moves)
+            else:
+                solve(scramble, debug, print_moves)
+    else:
+        solve(' '.join(scramble), debug, print_moves)

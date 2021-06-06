@@ -4,8 +4,6 @@ import rubik.Tables as t
 from copy import deepcopy
 from datetime import datetime
 
-MAX_MOVES = 25
-
 
 class TwoPhaseSolver:
 
@@ -19,24 +17,51 @@ class TwoPhaseSolver:
         self.end_phase1_time = None
         self.end_phase2_time = None
 
-    def solve(self) -> list:
+    def solve(self, debug=False, print_moves=False) -> list:
 
         self.start_phase1_time = datetime.now()
 
         phase1_dist = get_phase1_depth(self.cubie)
-
         self.search_phase1(self.cubie.get_corners_twist(),
                            self.cubie.get_edges_flip(),
                            self.cubie.get_ud_slice_sorted(),
                            phase1_dist,
                            phase1_dist)
 
-        p1 = self.end_phase1_time - self.start_phase1_time
-        p2 = self.end_phase2_time - self.end_phase1_time
-        all = p1 + p2
-        print(f"PHASE_1 = {p1}s")
-        print(f"PHASE_2 = {p2}s")
-        print(f"ALL = {all}")
+        if debug or print_moves:
+            time_p1 = self.end_phase1_time - self.start_phase1_time
+            time_p2 = self.end_phase2_time - self.end_phase1_time
+            total_time = time_p1 + time_p2
+
+            print("Initial permutation:")
+            print(self.cubie.to_facelet_cube())
+
+            debug_cubie = deepcopy(self.cubie)
+
+            print(f"Phase 1 permutation: {u.moves_to_scramble(self.moves_p1)}")
+            if print_moves:
+                for m in self.moves_p1:
+                    print(f"Move {u.MOVES_S[m]}")
+                    debug_cubie.move(m)
+                    print(debug_cubie.to_facelet_cube())
+            else:
+                debug_cubie.apply_moves(self.moves_p1)
+                print(debug_cubie.to_facelet_cube())
+            print(f"Time spend on Phase 1 = {time_p1}s")
+
+            print(f"Phase 2 permutation: {u.moves_to_scramble(self.moves_p2)}")
+            if print_moves:
+                for m in self.moves_p2:
+                    print(f"Move {u.MOVES_S[m]}")
+                    debug_cubie.move(m)
+                    print(debug_cubie.to_facelet_cube())
+            else:
+                debug_cubie.apply_moves(self.moves_p2)
+                print(debug_cubie.to_facelet_cube())
+            print(f"Time spend on Phase 2 = {time_p2}s")
+
+            print(f"Total time spend = {total_time}")
+            print(f"Total moves = {len(self.moves_p1) + len(self.moves_p2)}")
 
         return [u.MOVES_S[x] for x in self.moves_p1 + self.moves_p2]
 
@@ -53,7 +78,7 @@ class TwoPhaseSolver:
             dist2 = get_phase2_depth(temp)
 
             self.end_phase1_time = datetime.now()
-            for left in range(dist2, MAX_MOVES - len(self.moves_p1)):
+            for left in range(dist2, 50 - len(self.moves_p1)):
                 self.search_phase2(corners, ud_edges, slice_sorted, dist2, left)
                 if self.solved:
                     self.end_phase2_time = datetime.now()

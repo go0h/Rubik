@@ -82,20 +82,20 @@ class CubieCube:
             if move in MOVES:
                 self.move(move)
             else:
-                raise ValueError(f"Can't recognize move {move}. Allowed moves in range 0-17")
+                raise ValueError(f"Can't recognize move '{move}'. Allowed moves in range 0-17")
 
     def scramble(self, scramble: str) -> None:
         """Разрешенные действия F R U B L D - F' R' U' B' L' D'"""
         if len(scramble.strip()) == 0:
             return
-        moves = scramble.strip().split(" ")
+        moves = scramble.upper().strip().split(" ")
         if len(moves) == 0:
             return
         for move in moves:
             if move in MOVES_S:
                 self.move(MOVES_S.index(move.upper()))
             else:
-                raise ValueError(f"Can't recognize move {move}")
+                raise ValueError(f"Can't recognize move '{move}'")
 
     def move(self, move):
         """Разрешенные действия 0-17"""

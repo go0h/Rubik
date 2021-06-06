@@ -6,21 +6,12 @@ import numpy as np
 from ctypes import CDLL
 import os
 
-libname = "pruning.so"
-dir = os.getcwd() + "/pruning_on_c/"
-if os.getcwd().endswith("test"):
-    dir = dir.replace("/test", "")
 
-lib_prun = CDLL(dir + libname)
-create_phase1_prun_c = lib_prun.create_phase1_prun_norm
-create_phase2_prun_c = lib_prun.create_phase2_prun_norm
-
-
-def create_pruning1_table():
+def create_pruning1_table_p():
 
     total = 64430 * 2187
     # fs_twist_depth[64430][2187] = 140689710
-    fs_twist_depth = [[20 for _ in range(2187)] for _ in range(64430 + 1)]
+    fs_twist_depth = [[20 for _ in range(2187)] for _ in range(64430)]
 
     # создаем таблицу ссиметрий fs_class
     cub = cc.CubieCube()
@@ -45,9 +36,6 @@ def create_pruning1_table():
 
     while done != total:
         print(f"Depth - {depth} done")
-
-        if depth == 9:
-            back_search = True
 
         for classidx in range(64430):
             twist = 0
@@ -89,7 +77,7 @@ def create_pruning1_table():
     return fs_twist_depth
 
 
-def create_pruning2_table():
+def create_pruning2_table_p():
 
     # co_ud_edges_depth[2768][40320] = 111605760
     co_ud_edges_depth = [[20 for _ in range(40320)] for _ in range(2768)]
@@ -183,10 +171,10 @@ def create_pruning1_table_c():
                            fs_sym + fs_rep,
                            dtype=np.int32)
 
-    create_phase1_prun_c.argtypes = [t8, t32, t32, t32]
-    create_phase1_prun_c.restype = None
+    create_phase1_prun.argtypes = [t8, t32, t32, t32]
+    create_phase1_prun.restype = None
 
-    create_phase1_prun_c(fs_twist_depth, moves, conj_twist, fs_classidx)
+    create_phase1_prun(fs_twist_depth, moves, conj_twist, fs_classidx)
 
     return fs_twist_depth.reshape((64430, 2187))
 
@@ -223,8 +211,24 @@ def create_pruning2_table_c():
                            co_sym + co_rep,
                            dtype=np.int32)
 
-    create_phase2_prun_c.argtypes = [t8, t32, t32, t32]
-    create_phase2_prun_c.restype = None
+    create_phase2_prun.argtypes = [t8, t32, t32, t32]
+    create_phase2_prun.restype = None
 
-    create_phase2_prun_c(co_ud_edges_depth, moves, co_classidx, conj_ud_edges)
+    create_phase2_prun(co_ud_edges_depth, moves, co_classidx, conj_ud_edges)
     return co_ud_edges_depth.reshape((2768, 40320))
+
+
+libname = "pruning.so"
+dir = os.getcwd() + "/pruning_lib/"
+if os.getcwd().endswith("test"):
+    dir = dir.replace("/test", "")
+
+if os.path.exists(dir + libname):
+    lib_prun = CDLL(dir + libname)
+    create_phase1_prun = lib_prun.create_phase1_prun
+    create_phase2_prun = lib_prun.create_phase2_prun
+    create_pruning1_table = create_pruning1_table_c
+    create_pruning2_table = create_pruning2_table_c
+else:
+    create_pruning1_table = create_pruning1_table_p
+    create_pruning2_table = create_pruning2_table_p
