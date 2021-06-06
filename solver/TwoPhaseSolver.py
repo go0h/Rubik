@@ -7,11 +7,17 @@ from datetime import datetime
 
 class TwoPhaseSolver:
 
-    def __init__(self, cubie: cc.CubieCube):
+    def __init__(self, cubie: cc.CubieCube, max_moves=None):
         self.cubie = deepcopy(cubie)
         self.moves_p1 = []
         self.moves_p2 = []
+        self.solutions = []
         self.solved = False
+
+        if max_moves is None:
+            self.max_moves = 40
+        else:
+            self.max_moves = max_moves
 
         self.start_phase1_time = None
         self.end_phase1_time = None
@@ -22,11 +28,17 @@ class TwoPhaseSolver:
         self.start_phase1_time = datetime.now()
 
         phase1_dist = get_phase1_depth(self.cubie)
-        self.search_phase1(self.cubie.get_corners_twist(),
-                           self.cubie.get_edges_flip(),
-                           self.cubie.get_ud_slice_sorted(),
-                           phase1_dist,
-                           phase1_dist)
+
+        for left in range(phase1_dist, 13):
+            self.search_phase1(self.cubie.get_corners_twist(),
+                               self.cubie.get_edges_flip(),
+                               self.cubie.get_ud_slice_sorted(),
+                               phase1_dist,
+                               left)
+            if self.solved:
+                break
+            self.moves_p1 = []
+            self.moves_p2 = []
 
         if debug or print_moves:
             time_p1 = self.end_phase1_time - self.start_phase1_time
@@ -74,12 +86,11 @@ class TwoPhaseSolver:
 
             ud_edges = temp.get_ud_edges()
             corners = temp.get_corners()
-
             dist2 = get_phase2_depth(temp)
 
             self.end_phase1_time = datetime.now()
-            for left in range(dist2, 50 - len(self.moves_p1)):
-                self.search_phase2(corners, ud_edges, slice_sorted, dist2, left)
+            for left in range(dist2, self.max_moves - len(self.moves_p1) + 1):
+                self.search_phase2(corners, ud_edges, slice_sorted, left)
                 if self.solved:
                     self.end_phase2_time = datetime.now()
                     break
@@ -113,21 +124,24 @@ class TwoPhaseSolver:
 
                 self.moves_p1.append(move)
                 self.search_phase1(twist1, flip1, slice_sorted1, dist1, left - 1)
-                if not u.check_cubie_in_phase2(self.cubie, self.moves_p1):
-                    self.moves_p1.pop(-1)
                 if self.solved:
                     break
+                else:
+                    self.moves_p1.pop(-1)
 
-    def search_phase2(self, corners, ud_edges, slice_sorted, dist2, left):
+    def search_phase2(self, corners, ud_edges, slice_sorted, left):
 
         if corners == 0 and ud_edges == 0 and slice_sorted == 0 and not self.solved:
-            self.solved = True
+            solution = u.moves_to_scramble(self.moves_p1 + self.moves_p2)
+            if solution not in self.solutions:
+                self.solutions += [solution]
+                if len(self.moves_p1) + len(self.moves_p2) <= self.max_moves:
+                    self.solved = True
             return
         elif left == 0:
             return
 
         for move in u.PHASE2_MOVES:
-
             if len(self.moves_p2) > 0:
                 last = self.moves_p2[-1] // 3 - move // 3
                 if last == 0 or last == 3:
@@ -150,7 +164,7 @@ class TwoPhaseSolver:
                 continue
 
             self.moves_p2.append(move)
-            self.search_phase2(corners1, ud_edges1, slice_sorted1, dist2_new, left - 1)
+            self.search_phase2(corners1, ud_edges1, slice_sorted1, left - 1)
             if not self.solved:
                 self.moves_p2.pop(-1)
             else:
