@@ -43,13 +43,13 @@ if __name__ == '__main__':
         while True:
             try:
                 scramble = input("Enter a scramble: ")
-                scramble = ' '.join(scramble.split())
+                scramble = ' '.join(scramble.split()).upper()
             except EOFError or KeyboardInterrupt:
                 print()
                 sys.exit(0)
             if scramble in ["Q", "QUIT"]:
                 sys.exit(0)
-            elif scramble in ["D", "DEBUG"]:
+            elif scramble == "DEBUG":
                 debug = not debug
             elif scramble in ["M", "MOVES"]:
                 print_moves = not print_moves

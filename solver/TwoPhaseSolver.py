@@ -21,7 +21,7 @@ class TwoPhaseSolver:
 
         self.start_phase1_time = None
         self.end_phase1_time = None
-        self.end_phase2_time = None
+        self.end_phase2_time = datetime.now()
 
     def solve(self, debug=False, print_moves=False) -> list:
 
