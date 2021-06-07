@@ -44,7 +44,7 @@ if __name__ == '__main__':
             try:
                 scramble = input("Enter a scramble: ")
                 scramble = ' '.join(scramble.split())
-            except EOFError:
+            except EOFError or KeyboardInterrupt:
                 print()
                 sys.exit(0)
             if scramble in ["Q", "QUIT"]:

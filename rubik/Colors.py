@@ -22,36 +22,3 @@ colors = {
     UP: YELLOW,
     DOWN: WHITE,
 }
-
-
-# Противоположная сторона
-opposite = {
-    DOWN: UP,
-    UP: DOWN,
-    FRONT: BACK,
-    BACK: FRONT,
-    RIGHT: LEFT,
-    LEFT: RIGHT
-}
-
-# Левая сторона относительно текущей, если Белая сторона это верх
-# Правая вычисляется opposite[left[side]]
-left = {
-    DOWN: BACK,
-    UP: BACK,
-    BACK: LEFT,
-    RIGHT: BACK,
-    FRONT: RIGHT,
-    LEFT: FRONT
-}
-
-# Верхняя сторона относительно текущей, если Белая сторона это верх
-# Нижняя вычисляется opposite[up[side]]
-up = {
-    BACK: DOWN,
-    RIGHT: DOWN,
-    FRONT: DOWN,
-    LEFT: DOWN,
-    DOWN: LEFT,
-    UP: RIGHT
-}

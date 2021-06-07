@@ -13,7 +13,7 @@ def create_pruning1_table_p():
     # fs_twist_depth[64430][2187] = 140689710
     fs_twist_depth = [[20 for _ in range(2187)] for _ in range(64430)]
 
-    # создаем таблицу ссиметрий fs_class
+    # создаем таблицу симетрий fs_class
     cub = cc.CubieCube()
     fs_rep = list(dict.fromkeys([t.fs_classidx[i][2] for i in range(len(t.fs_classidx))]))
     fs_sym = [0 for _ in range(64430)]
@@ -33,7 +33,6 @@ def create_pruning1_table_p():
     fs_twist_depth[0][0] = 0
     done = 1
     depth = 0
-
     while done != total:
         print(f"Depth - {depth} done")
 

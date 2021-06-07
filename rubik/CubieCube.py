@@ -9,59 +9,59 @@ from math import comb  # биномиальный коэффициент
 # приращение координаты и ориентации углов и ребер путем вращения
 CUBIE_MOVE = [
     # U
-    [[(UBR, 0), (URF, 0), (UFL, 0), (ULB, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
-     [(UB, 0), (UR, 0), (UF, 0), (UL, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    [[[UBR, 0], [URF, 0], [UFL, 0], [ULB, 0], [DFR, 0], [DLF, 0], [DBL, 0], [DRB, 0]],
+     [[UB, 0], [UR, 0], [UF, 0], [UL, 0], [DR, 0], [DF, 0], [DL, 0], [DB, 0], [FR, 0], [FL, 0], [BL, 0], [BR, 0]]],
     # U2
-    [[(ULB, 0), (UBR, 0), (URF, 0), (UFL, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
-     [(UL, 0), (UB, 0), (UR, 0), (UF, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    [[[ULB, 0], [UBR, 0], [URF, 0], [UFL, 0], [DFR, 0], [DLF, 0], [DBL, 0], [DRB, 0]],
+     [[UL, 0], [UB, 0], [UR, 0], [UF, 0], [DR, 0], [DF, 0], [DL, 0], [DB, 0], [FR, 0], [FL, 0], [BL, 0], [BR, 0]]],
     # U'
-    [[(UFL, 0), (ULB, 0), (UBR, 0), (URF, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
-     [(UF, 0), (UL, 0), (UB, 0), (UR, 0), (DR, 0), (DF, 0), (DL, 0), (DB, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    [[[UFL, 0], [ULB, 0], [UBR, 0], [URF, 0], [DFR, 0], [DLF, 0], [DBL, 0], [DRB, 0]],
+     [[UF, 0], [UL, 0], [UB, 0], [UR, 0], [DR, 0], [DF, 0], [DL, 0], [DB, 0], [FR, 0], [FL, 0], [BL, 0], [BR, 0]]],
     # R
-    [[(DFR, 2), (UFL, 0), (ULB, 0), (URF, 1), (DRB, 1), (DLF, 0), (DBL, 0), (UBR, 2)],
-     [(FR, 0), (UF, 0), (UL, 0), (UB, 0), (BR, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FL, 0), (BL, 0), (UR, 0)]],
+    [[[DFR, 2], [UFL, 0], [ULB, 0], [URF, 1], [DRB, 1], [DLF, 0], [DBL, 0], [UBR, 2]],
+     [[FR, 0], [UF, 0], [UL, 0], [UB, 0], [BR, 0], [DF, 0], [DL, 0], [DB, 0], [DR, 0], [FL, 0], [BL, 0], [UR, 0]]],
     # R2
-    [[(DRB, 0), (UFL, 0), (ULB, 0), (DFR, 0), (UBR, 0), (DLF, 0), (DBL, 0), (URF, 0)],
-     [(DR, 0), (UF, 0), (UL, 0), (UB, 0), (UR, 0), (DF, 0), (DL, 0), (DB, 0), (BR, 0), (FL, 0), (BL, 0), (FR, 0)]],
+    [[[DRB, 0], [UFL, 0], [ULB, 0], [DFR, 0], [UBR, 0], [DLF, 0], [DBL, 0], [URF, 0]],
+     [[DR, 0], [UF, 0], [UL, 0], [UB, 0], [UR, 0], [DF, 0], [DL, 0], [DB, 0], [BR, 0], [FL, 0], [BL, 0], [FR, 0]]],
     # R'
-    [[(UBR, 2), (UFL, 0), (ULB, 0), (DRB, 1), (URF, 1), (DLF, 0), (DBL, 0), (DFR, 2)],
-     [(BR, 0), (UF, 0), (UL, 0), (UB, 0), (FR, 0), (DF, 0), (DL, 0), (DB, 0), (UR, 0), (FL, 0), (BL, 0), (DR, 0)]],
+    [[[UBR, 2], [UFL, 0], [ULB, 0], [DRB, 1], [URF, 1], [DLF, 0], [DBL, 0], [DFR, 2]],
+     [[BR, 0], [UF, 0], [UL, 0], [UB, 0], [FR, 0], [DF, 0], [DL, 0], [DB, 0], [UR, 0], [FL, 0], [BL, 0], [DR, 0]]],
     # F
-    [[(UFL, 1), (DLF, 2), (ULB, 0), (UBR, 0), (URF, 2), (DFR, 1), (DBL, 0), (DRB, 0)],
-     [(UR, 0), (FL, 1), (UL, 0), (UB, 0), (DR, 0), (FR, 1), (DL, 0), (DB, 0), (UF, 1), (DF, 1), (BL, 0), (BR, 0)]],
+    [[[UFL, 1], [DLF, 2], [ULB, 0], [UBR, 0], [URF, 2], [DFR, 1], [DBL, 0], [DRB, 0]],
+     [[UR, 0], [FL, 1], [UL, 0], [UB, 0], [DR, 0], [FR, 1], [DL, 0], [DB, 0], [UF, 1], [DF, 1], [BL, 0], [BR, 0]]],
     # F2
-    [[(DLF, 0), (DFR, 0), (ULB, 0), (UBR, 0), (UFL, 0), (URF, 0), (DBL, 0), (DRB, 0)],
-     [(UR, 0), (DF, 0), (UL, 0), (UB, 0), (DR, 0), (UF, 0), (DL, 0), (DB, 0), (FL, 0), (FR, 0), (BL, 0), (BR, 0)]],
+    [[[DLF, 0], [DFR, 0], [ULB, 0], [UBR, 0], [UFL, 0], [URF, 0], [DBL, 0], [DRB, 0]],
+     [[UR, 0], [DF, 0], [UL, 0], [UB, 0], [DR, 0], [UF, 0], [DL, 0], [DB, 0], [FL, 0], [FR, 0], [BL, 0], [BR, 0]]],
     # F'
-    [[(DFR, 1), (URF, 2), (ULB, 0), (UBR, 0), (DLF, 2), (UFL, 1), (DBL, 0), (DRB, 0)],
-     [(UR, 0), (FR, 1), (UL, 0), (UB, 0), (DR, 0), (FL, 1), (DL, 0), (DB, 0), (DF, 1), (UF, 1), (BL, 0), (BR, 0)]],
+    [[[DFR, 1], [URF, 2], [ULB, 0], [UBR, 0], [DLF, 2], [UFL, 1], [DBL, 0], [DRB, 0]],
+     [[UR, 0], [FR, 1], [UL, 0], [UB, 0], [DR, 0], [FL, 1], [DL, 0], [DB, 0], [DF, 1], [UF, 1], [BL, 0], [BR, 0]]],
     # D
-    [[(URF, 0), (UFL, 0), (ULB, 0), (UBR, 0), (DLF, 0), (DBL, 0), (DRB, 0), (DFR, 0)],
-     [(UR, 0), (UF, 0), (UL, 0), (UB, 0), (DF, 0), (DL, 0), (DB, 0), (DR, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    [[[URF, 0], [UFL, 0], [ULB, 0], [UBR, 0], [DLF, 0], [DBL, 0], [DRB, 0], [DFR, 0]],
+     [[UR, 0], [UF, 0], [UL, 0], [UB, 0], [DF, 0], [DL, 0], [DB, 0], [DR, 0], [FR, 0], [FL, 0], [BL, 0], [BR, 0]]],
     # D2
-    [[(URF, 0), (UFL, 0), (ULB, 0), (UBR, 0), (DBL, 0), (DRB, 0), (DFR, 0), (DLF, 0)],
-     [(UR, 0), (UF, 0), (UL, 0), (UB, 0), (DL, 0), (DB, 0), (DR, 0), (DF, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    [[[URF, 0], [UFL, 0], [ULB, 0], [UBR, 0], [DBL, 0], [DRB, 0], [DFR, 0], [DLF, 0]],
+     [[UR, 0], [UF, 0], [UL, 0], [UB, 0], [DL, 0], [DB, 0], [DR, 0], [DF, 0], [FR, 0], [FL, 0], [BL, 0], [BR, 0]]],
     # D'
-    [[(URF, 0), (UFL, 0), (ULB, 0), (UBR, 0), (DRB, 0), (DFR, 0), (DLF, 0), (DBL, 0)],
-     [(UR, 0), (UF, 0), (UL, 0), (UB, 0), (DB, 0), (DR, 0), (DF, 0), (DL, 0), (FR, 0), (FL, 0), (BL, 0), (BR, 0)]],
+    [[[URF, 0], [UFL, 0], [ULB, 0], [UBR, 0], [DRB, 0], [DFR, 0], [DLF, 0], [DBL, 0]],
+     [[UR, 0], [UF, 0], [UL, 0], [UB, 0], [DB, 0], [DR, 0], [DF, 0], [DL, 0], [FR, 0], [FL, 0], [BL, 0], [BR, 0]]],
     # L
-    [[(URF, 0), (ULB, 1), (DBL, 2), (UBR, 0), (DFR, 0), (UFL, 2), (DLF, 1), (DRB, 0)],
-     [(UR, 0), (UF, 0), (BL, 0), (UB, 0), (DR, 0), (DF, 0), (FL, 0), (DB, 0), (FR, 0), (UL, 0), (DL, 0), (BR, 0)]],
+    [[[URF, 0], [ULB, 1], [DBL, 2], [UBR, 0], [DFR, 0], [UFL, 2], [DLF, 1], [DRB, 0]],
+     [[UR, 0], [UF, 0], [BL, 0], [UB, 0], [DR, 0], [DF, 0], [FL, 0], [DB, 0], [FR, 0], [UL, 0], [DL, 0], [BR, 0]]],
     # L2
-    [[(URF, 0), (DBL, 0), (DLF, 0), (UBR, 0), (DFR, 0), (ULB, 0), (UFL, 0), (DRB, 0)],
-     [(UR, 0), (UF, 0), (DL, 0), (UB, 0), (DR, 0), (DF, 0), (UL, 0), (DB, 0), (FR, 0), (BL, 0), (FL, 0), (BR, 0)]],
+    [[[URF, 0], [DBL, 0], [DLF, 0], [UBR, 0], [DFR, 0], [ULB, 0], [UFL, 0], [DRB, 0]],
+     [[UR, 0], [UF, 0], [DL, 0], [UB, 0], [DR, 0], [DF, 0], [UL, 0], [DB, 0], [FR, 0], [BL, 0], [FL, 0], [BR, 0]]],
     # L'
-    [[(URF, 0), (DLF, 1), (UFL, 2), (UBR, 0), (DFR, 0), (DBL, 2), (ULB, 1), (DRB, 0)],
-     [(UR, 0), (UF, 0), (FL, 0), (UB, 0), (DR, 0), (DF, 0), (BL, 0), (DB, 0), (FR, 0), (DL, 0), (UL, 0), (BR, 0)]],
+    [[[URF, 0], [DLF, 1], [UFL, 2], [UBR, 0], [DFR, 0], [DBL, 2], [ULB, 1], [DRB, 0]],
+     [[UR, 0], [UF, 0], [FL, 0], [UB, 0], [DR, 0], [DF, 0], [BL, 0], [DB, 0], [FR, 0], [DL, 0], [UL, 0], [BR, 0]]],
     # B
-    [[(URF, 0), (UFL, 0), (UBR, 1), (DRB, 2), (DFR, 0), (DLF, 0), (ULB, 2), (DBL, 1)],
-     [(UR, 0), (UF, 0), (UL, 0), (BR, 1), (DR, 0), (DF, 0), (DL, 0), (BL, 1), (FR, 0), (FL, 0), (UB, 1), (DB, 1)]],
+    [[[URF, 0], [UFL, 0], [UBR, 1], [DRB, 2], [DFR, 0], [DLF, 0], [ULB, 2], [DBL, 1]],
+     [[UR, 0], [UF, 0], [UL, 0], [BR, 1], [DR, 0], [DF, 0], [DL, 0], [BL, 1], [FR, 0], [FL, 0], [UB, 1], [DB, 1]]],
     # B2
-    [[(URF, 0), (UFL, 0), (DRB, 0), (DBL, 0), (DFR, 0), (DLF, 0), (UBR, 0), (ULB, 0)],
-     [(UR, 0), (UF, 0), (UL, 0), (DB, 0), (DR, 0), (DF, 0), (DL, 0), (UB, 0), (FR, 0), (FL, 0), (BR, 0), (BL, 0)]],
+    [[[URF, 0], [UFL, 0], [DRB, 0], [DBL, 0], [DFR, 0], [DLF, 0], [UBR, 0], [ULB, 0]],
+     [[UR, 0], [UF, 0], [UL, 0], [DB, 0], [DR, 0], [DF, 0], [DL, 0], [UB, 0], [FR, 0], [FL, 0], [BR, 0], [BL, 0]]],
     # B'
-    [[(URF, 0), (UFL, 0), (DBL, 1), (ULB, 2), (DFR, 0), (DLF, 0), (DRB, 2), (UBR, 1)],
-     [(UR, 0), (UF, 0), (UL, 0), (BL, 1), (DR, 0), (DF, 0), (DL, 0), (BR, 1), (FR, 0), (FL, 0), (DB, 1), (UB, 1)]]
+    [[[URF, 0], [UFL, 0], [DBL, 1], [ULB, 2], [DFR, 0], [DLF, 0], [DRB, 2], [UBR, 1]],
+     [[UR, 0], [UF, 0], [UL, 0], [BL, 1], [DR, 0], [DF, 0], [DL, 0], [BR, 1], [FR, 0], [FL, 0], [DB, 1], [UB, 1]]]
 ]
 
 
@@ -160,22 +160,22 @@ class CubieCube:
             # (A*B)(x).o = A(B(x).c).o + B(x).o
             ori_a = self.corners[other.corners[i].c].o
             ori_b = other.corners[i].o
+            # базовый случай
             if ori_a < 3 and ori_b < 3:
                 ori = (ori_a + ori_b) % 3
-
-            # if we use reflections at the LR-plane in symmetry operations
-            elif ori_a < 3 <= ori_b:  # cube b is in a mirrored state
+            # если мы используем зеркальное отображение относительно оси LR
+            elif ori_a < 3 <= ori_b:
                 ori = ori_a + ori_b
                 if ori >= 6:
-                    ori -= 3  # the composition also is in a mirrored state
-            elif ori_a >= 3 > ori_b:  # cube a is in a mirrored state
+                    ori -= 3
+            elif ori_a >= 3 > ori_b:
                 ori = ori_a - ori_b
                 if ori < 3:
-                    ori += 3  # the composition is a mirrored cube
-            elif ori_a >= 3 and ori_b >= 3:  # if both cubes are in mirrored states
+                    ori += 3
+            elif ori_a >= 3 and ori_b >= 3:
                 ori = ori_a - ori_b
                 if ori < 0:
-                    ori += 3  # the composition is a regular cube
+                    ori += 3
             corners[i].o = ori
         self.corners = corners
 
@@ -210,32 +210,18 @@ class CubieCube:
         other_edge = [UR, UF, UL, UB, DR, DF, DL, DB]
         a = idx
         for e in self.edges:
-            e.c = -1  # Invalidate all edge positions
-
-        x = 4  # set slice edges
+            e.c = -1
+        x = 4
         for j in range(12):
             if a - comb(11 - j, x) >= 0:
                 self.edges[j].c = slice_edge[4 - x]
                 a -= comb(11 - j, x)
                 x -= 1
-
-        x = 0  # set the remaining edges UR..DB
+        x = 0
         for j in range(12):
             if self.edges[j].c == -1:
                 self.edges[j].c = other_edge[x]
                 x += 1
-
-    # def __edges_coord__(self, start, end):
-    #     from collections import deque
-    #     res, n = 0, 0
-    #     edges = deque(self.edges[:])
-    #     if start == UR or start == DR:
-    #         edges.rotate(4)
-    #     for i in range(BR, UR - 1, -1):
-    #         if start <= edges[i].c <= end:
-    #             res += comb(11 - i, n + 1)
-    #             n += 1
-    #     return res
 
     def get_corners_twist(self):
         """Ориентация углов описывается числом от 0 до 2186 (3^7 - 1)"""
@@ -268,17 +254,16 @@ class CubieCube:
         self.edges[BR].o = ((2 - parity % 2) % 2)
 
     def get_ud_slice_sorted(self):
-        """Get the permutation and location of the UD-slice edges FR,FL,BL and BR.
-            0 <= slice_sorted < 11880 in phase 1, 0 <= slice_sorted < 24 in phase 2, slice_sorted = 0 for solved cube."""
+        """Перестановка 4 ребер UD-среза - FR, FL, BL и BR
+            Фаза 1 - от 0 до 11880 (12*11*10*9)
+            Фаза 2 - от 0 до 24 (4!)"""
         a = x = 0
         edge4 = [0] * 4
-        # First compute the index a < (12 choose 4) and the permutation array perm.
         for j in range(BR, UR - 1, -1):
             if FR <= self.edges[j].c <= BR:
                 a += comb(11 - j, x + 1)
                 edge4[3 - x] = self.edges[j].c
                 x += 1
-        # Then compute the index b < 4! for the permutation in edge4
         b = 0
         for j in range(3, 0, -1):
             k = 0
@@ -291,12 +276,11 @@ class CubieCube:
     def set_ud_slice_sorted(self, idx):
         slice_edge = [FR, FL, BL, BR]
         other_edge = [UR, UF, UL, UB, DR, DF, DL, DB]
-        b = idx % 24  # Permutation
-        a = idx // 24  # Location
+        b = idx % 24
+        a = idx // 24
         for e in self.edges:
-            e.c = -1  # Invalidate all edge positions
-
-        j = 1  # generate permutation from index b
+            e.c = -1
+        j = 1
         while j < 4:
             k = b % (j + 1)
             b //= j + 1
@@ -304,67 +288,23 @@ class CubieCube:
                 rotate_right(slice_edge, 0, j)
                 k -= 1
             j += 1
-
-        x = 4  # set slice edges
+        x = 4
         for j in range(12):
             if a - comb(11 - j, x) >= 0:
                 self.edges[j].c = slice_edge[4 - x]
                 a -= comb(11 - j, x)
                 x -= 1
-
-        x = 0  # set the remaining edges UR..DB
+        x = 0
         for j in range(12):
             if self.edges[j].c == -1:
                 self.edges[j].c = other_edge[x]
                 x += 1
-
-    # # ДЛЯ ПРОВЕРКИ
-    # def get_ud_slice_sorted(self):
-    #     j = 0
-    #     pos = [0 for _ in range(4)]
-    #     for i in range(UR, BR + 1):
-    #         if self.edges[i].c in [FR, FL, BL, BR]:
-    #             pos[j] = self.edges[i].c
-    #             j += 1
-    #     c_res = 0
-    #     for j in range(3, 0, -1):
-    #         s = 0
-    #         for k in range(j - 1, -1, -1):
-    #             if pos[k] > pos[j]:
-    #                 s += 1
-    #         c_res = (c_res + s) * j
-    #     return 24 * self.get_ud_slice_coord() + c_res
-
-    # def __get_edges__(self, start, end):
-    #     j = 0
-    #     pos = [0 for _ in range(4)]
-    #     edges = list(range(start, end + 1))
-    #     for i in range(UR, BR + 1):
-    #         if self.edges[i].c in edges:
-    #             pos[j] = self.edges[i].c
-    #             j += 1
-    #     c_res = 0
-    #     for j in range(3, 0, -1):
-    #         s = 0
-    #         for k in range(j - 1, -1, -1):
-    #             if pos[k] > pos[j]:
-    #                 s += 1
-    #         c_res = (c_res + s) * j
-    #     return 24 * self.__edges_coord__(start, end) + c_res
 
     def get_corners(self):
         """http://kociemba.org/math/coordlevel.htm
            Перестановки 8 углов
            Фаза 1,2: от 0 до 40320
            Решенный куб: 0"""
-        # res = 0
-        # for i in range(DRB, URF, -1):
-        #     s = 0
-        #     for j in range(i - 1, URF - 1, -1):
-        #         if self.corners[j].c > self.corners[i].c:
-        #             s += 1
-        #     res = (res + s) * i
-        # return res
         perm = list([corner.c for corner in self.corners])
         b, j = 0, DRB
         while j > -1:
@@ -379,7 +319,6 @@ class CubieCube:
     def set_corners(self, idx):
         for i in range(8):
             self.corners[i].c = i
-
         for j in range(8):
             k = idx % (j + 1)
             idx //= j + 1
@@ -393,23 +332,6 @@ class CubieCube:
            Фаза 1: не определено
            Фаза 2: от 0 до 40320
            Решенный куб: 0"""
-        # res = 0
-        # for i in range(DB, UR, -1):
-        #     s = 0
-        #     for j in range(i - 1, UR - 1, -1):
-        #         if self.edges[j].c > self.edges[i].c:
-        #             s += 1
-        #     res = (res + s) * i
-        # return res
-
-        # res = 0
-        # for i in range(DB, UR - 1, -1):
-        #     s = 0
-        #     for j in range(i - 1, UR - 1, -1):
-        #         if self.edges[j].c > self.edges[i].c:
-        #             s += 1
-        #     res = (res + s) * i
-        # return res
         perm = list([edge.c for edge in self.edges[0:8]])
         b, j = 0, DB
         while j > -1:
