@@ -3,6 +3,13 @@ import rubik.FaceletCube as fc
 import rubik.CubieCube as cc
 from copy import deepcopy
 
+
+__all__ = ['SUPER_FLIP', 'PONS_ASINORUM', 'PONS_ASINORUM_SUPER_FLIP', 'MOVES', 'MOVES_S', 'PHASE2_MOVES',
+           'PHASE2_MOVES_S', 'get_random_cubie', 'get_random_cubie_2', 'get_random_facelet', 'get_random_facelet_2',
+           'get_random_scramble', 'get_random_scramble_2', 'moves_to_scramble', 'check_cubie_in_phase2',
+           'rotate_left', 'rotate_right']
+
+
 SUPER_FLIP = "D' R2 F' D2 F2 U2 L' R D' R2 B F R' U2 L' F2 R' U2 R' U'"
 PONS_ASINORUM = "B2 F2 L2 R2 D2 U2"
 PONS_ASINORUM_SUPER_FLIP = "R B L F D L R' B2 F D' U L D' U R' D' F' R' U'"

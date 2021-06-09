@@ -6,6 +6,9 @@ import rubik.Tables as tb
 from copy import deepcopy
 
 
+__all__ = ['TwoPhaseSolver']
+
+
 class TwoPhaseSolver:
 
     def __init__(self, cubie: cc.CubieCube):

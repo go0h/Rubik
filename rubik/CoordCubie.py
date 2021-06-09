@@ -3,6 +3,9 @@ import rubik.Tables as tb
 import rubik.Utils as u
 
 
+__all__ = ['CoordCubie']
+
+
 class CoordCubie:
     """http://kociemba.org/math/coordlevel.htm
         Представление перестановок и ориетанция углов и ребер куба, с помощью натуральных чисел"""

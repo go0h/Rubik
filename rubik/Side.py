@@ -2,6 +2,9 @@
 from rubik.Colors import *
 
 
+__all__ = ['Side']
+
+
 class Side:
     """Сторона кубика"""
     def __init__(self, size, color, side=None):

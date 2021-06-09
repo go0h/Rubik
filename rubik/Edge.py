@@ -2,6 +2,11 @@
 from collections import deque
 from rubik.Colors import B, L, U, R, D, F
 
+
+__all__ = ['UR', 'UB', 'UL', 'UF', 'DB', 'DF', 'DL', 'DR', 'FL', 'FR', 'BL', 'BR', 'EDGES', 'EDGE_SIDES',
+           'EDGE_BY_SIDES', 'EDGE_FACES_COORDS', 'Edge']
+
+
 # Координаты ребер
 # Пример: UR - UP RIGHT (вернее правое ребро)
 UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR = range(12)

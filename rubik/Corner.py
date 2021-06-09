@@ -1,6 +1,10 @@
-
 from collections import deque
 from rubik.Colors import B, L, U, R, D, F
+
+
+__all__ = ['URF', 'UFL', 'ULB', 'UBR', 'DBL', 'DFR', 'DLF', 'DRB', 'CORNERS', 'CORNERS_SIDES', 'CORNER_FACES_COORDS',
+           'CORNER_BY_SIDES', 'Corner']
+
 
 # Угловые координаты
 # Пример: URF - UP, RIGHT, FRONT (верхний правый передний угол)

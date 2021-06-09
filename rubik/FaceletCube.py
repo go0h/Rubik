@@ -7,6 +7,7 @@ from rubik.Edge import EDGE_SIDES
 import rubik.CubieCube as cc
 import rubik.Utils as u
 
+__all__ = ['FaceletCube']
 
 class FaceletCube:
     """http://kociemba.org/math/faceletlevel.htm"""

@@ -3,17 +3,18 @@ import sys
 import array
 
 
-def load_table(file_name, table_size, elem_size, resource_dir=f"{os.getcwd()}/resources/"):
+def load_table(file_name, table_size, elem_size, resource_dir=f"{os.path.join(os.getcwd(),'resources')}"):
     # для тестов
     if os.getcwd().endswith("test"):
         resource_dir = resource_dir.replace("/test", "")
+        resource_dir = resource_dir.replace(r"\test", "")
     try:
-        with open(resource_dir + file_name, "rb") as file:
+        with open(os.path.join(resource_dir, file_name), "rb") as file:
             table = array.array(elem_size)
             table.fromfile(file, table_size)
             return table
     except IOError:
-        print(f"File {resource_dir}{file_name} not accessible")
+        print(f"File {os.path.join(resource_dir, file_name)} not accessible")
         sys.exit(-1)
 
 

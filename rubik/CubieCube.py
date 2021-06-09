@@ -5,6 +5,10 @@ from rubik.Edge import *
 from rubik.Corner import *
 from math import comb  # биномиальный коэффициент
 
+
+__all__ = ['BASIC_CORNER_MOVES', 'BASIC_EDGE_MOVES', 'CubieCube']
+
+
 # приращение координаты и ориентации угла путем вращения
 BASIC_CORNER_MOVES = {
     U: [(UBR, 0), (URF, 0), (UFL, 0), (ULB, 0), (DFR, 0), (DLF, 0), (DBL, 0), (DRB, 0)],
