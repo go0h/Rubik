@@ -104,32 +104,24 @@ class CubieCube:
         c = [(c.c, c.o) for c in self.corners]
         e = [(e.c, e.o) for e in self.edges]
 
-        i = 0
-        while i < 8:
+        for i in range(8):
             t = c[c_m[i][0]]
             self.corners[i].c = t[0]
             self.corners[i].o = (t[1] + c_m[i][1]) % 3
-            i += 1
 
-        i = 0
-        while i < 12:
+        for i in range(12):
             t = e[e_m[i][0]]
             self.edges[i].c = t[0]
             self.edges[i].o = (t[1] + e_m[i][1]) % 2
-            i += 1
 
     def solved(self) -> bool:
         """Комментарии излишни"""
-        i = 0
-        for corner in self.corners:
+        for i, corner in zip(range(len(self.corners)), self.corners):
             if corner.c != i or corner.o != 0:
                 return False
-            i += 1
-        i = 0
-        for edge in self.edges:
+        for i, edge in zip(range(len(self.edges)), self.edges):
             if edge.c != i or edge.o != 0:
                 return False
-            i += 1
         return True
 
     def check_in_phase2(self):
@@ -280,14 +272,12 @@ class CubieCube:
         a = idx // 24
         for e in self.edges:
             e.c = -1
-        j = 1
-        while j < 4:
+        for j in range(1, 4):
             k = b % (j + 1)
             b //= j + 1
             while k > 0:
                 rotate_right(slice_edge, 0, j)
                 k -= 1
-            j += 1
         x = 4
         for j in range(12):
             if a - comb(11 - j, x) >= 0:
@@ -322,9 +312,8 @@ class CubieCube:
         for j in range(8):
             k = idx % (j + 1)
             idx //= j + 1
-            while k > 0:
+            for _ in range(k, 0, -1):
                 rotate_right(self.corners, 0, j)
-                k -= 1
 
     def get_ud_edges(self):
         """http://kociemba.org/math/coordlevel.htm
@@ -350,9 +339,8 @@ class CubieCube:
         for j in range(0, 8):
             k = ud_edge % (j + 1)
             ud_edge //= j + 1
-            while k > 0:
+            for _ in range(k, 0, -1):
                 rotate_right(self.edges, 0, j)
-                k -= 1
 
     def __mul__(self, other):
         self.corner_multiply(other)

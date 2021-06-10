@@ -9,7 +9,7 @@ from datetime import datetime
 
 def get_table(table_name, create_table_func, shape, type_=np.int32):
 
-    dir = os.path.join(os.getcwd() + "resources")
+    dir = os.path.join(os.getcwd(), "resources")
     if os.getcwd().endswith("test"):
         dir = dir.replace("/test", "")
         dir = dir.replace(r"\test", "")
