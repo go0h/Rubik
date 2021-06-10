@@ -218,12 +218,13 @@ def create_pruning2_table_c():
 
 
 libname = "pruning.so"
-dir = os.getcwd() + "/pruning_lib/"
+dir = os.path.join(os.getcwd(), "pruning_lib")
 if os.getcwd().endswith("test"):
     dir = dir.replace("/test", "")
+    dir = dir.replace(r"\test", "")
 
-if os.path.exists(dir + libname):
-    lib_prun = CDLL(dir + libname)
+if os.path.exists(os.path.join(dir, libname)):
+    lib_prun = CDLL(os.path.join(dir, libname))
     create_phase1_prun = lib_prun.create_phase1_prun
     create_phase2_prun = lib_prun.create_phase2_prun
     create_pruning1_table = create_pruning1_table_c
